@@ -6,8 +6,8 @@ import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
-import { Plus, Minus } from 'lucide-react';
-import { DatePicker } from '@/components/DatePicker';
+import TravellerCount from '@/components/travellers/TravellerCount';
+import TravellerDateOfBirth from '@/components/travellers/TravellerDateOfBirth';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -71,15 +71,13 @@ const TravellersStep = () => {
       updateTraveller(index, { dob: date.toISOString() });
       
       // Calculate age from date of birth
-      if (date) {
-        const today = new Date();
-        let age = today.getFullYear() - date.getFullYear();
-        const monthDiff = today.getMonth() - date.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
-          age--;
-        }
-        updateTraveller(index, { age: age.toString() });
+      const today = new Date();
+      let age = today.getFullYear() - date.getFullYear();
+      const monthDiff = today.getMonth() - date.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+        age--;
       }
+      updateTraveller(index, { age: age.toString() });
       
       // Clear error if exists
       if (errors[index]?.dob) {
@@ -109,45 +107,22 @@ const TravellersStep = () => {
         </p>
         
         <div className="w-full max-w-md space-y-6">
-          <div className="flex border border-gray-300 rounded-md overflow-hidden">
-            <button 
-              className="p-4 hover:bg-gray-100 flex items-center justify-center"
-              onClick={handleDecrease}
-            >
-              <Minus className="h-4 w-4" />
-            </button>
-            <div className="flex-1 flex items-center justify-center text-xl">
-              {travellersCount.toString().padStart(2, '0')}
-            </div>
-            <button 
-              className="p-4 hover:bg-gray-100 flex items-center justify-center"
-              onClick={handleIncrease}
-            >
-              <Plus className="h-4 w-4" />
-            </button>
-          </div>
+          <TravellerCount 
+            travellersCount={travellersCount}
+            handleDecrease={handleDecrease}
+            handleIncrease={handleIncrease}
+          />
           
           {travellers.map((traveller, index) => (
-            <div key={index} className="flex gap-4">
-              <div className="flex-1">
-                <DatePicker
-                  value={traveller.dob ? new Date(traveller.dob) : undefined}
-                  onChange={(date) => handleDateChange(index, date)}
-                  placeholder={`Traveller ${index + 1} DOB`}
-                  error={errors[index]?.dob}
-                />
-              </div>
-              
-              <div className="w-1/3">
-                <input
-                  type="text"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder={`T ${index + 1} Age`}
-                  value={traveller.age || ''}
-                  onChange={(e) => updateTraveller(index, { age: e.target.value })}
-                />
-              </div>
-            </div>
+            <TravellerDateOfBirth
+              key={index}
+              index={index}
+              dob={traveller.dob}
+              age={traveller.age}
+              handleDateChange={handleDateChange}
+              updateTraveller={updateTraveller}
+              error={errors[index]?.dob}
+            />
           ))}
           
           <div className="pt-4">
