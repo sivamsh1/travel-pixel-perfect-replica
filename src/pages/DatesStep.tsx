@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -18,7 +19,7 @@ const steps = [
 
 const DatesStep = () => {
   const navigate = useNavigate();
-  const { startDate, setStartDate, endDate, setEndDate, setDuration } = useTravelForm();
+  const { startDate, setStartDate, endDate, setEndDate, setDuration, duration } = useTravelForm();
   
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newStartDate = e.target.value;
@@ -83,32 +84,33 @@ const DatesStep = () => {
           Overseas Travel Insurance is only valid for Indian passport holders, commencing their journey from India.*
         </p>
         
-        <div className="w-full max-w-md space-y-6">
+        <div className="w-full max-w-md space-y-4">
           <div className="flex gap-4">
             <div className="flex-1 relative">
               <input
                 type="date"
-                className="w-full p-3 border border-gray-300 rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full p-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
                 value={startDate}
                 onChange={handleStartDateChange}
+                placeholder="Start Date"
               />
-              <Calendar className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
             </div>
             
             <div className="flex-1 relative">
               <input
                 type="date"
-                className="w-full p-3 border border-gray-300 rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full p-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
                 value={endDate}
                 onChange={handleEndDateChange}
+                placeholder="End Date"
               />
-              <Calendar className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
             </div>
           </div>
           
-          <div className="text-center">
-            <span className="font-medium">Duration: </span>
-            <span className="text-primary font-medium">10 days</span>
+          <div className="text-center text-gray-600">
+            Duration : <span className="text-primary font-medium">{duration} days</span>
           </div>
           
           <div className="pt-4">
