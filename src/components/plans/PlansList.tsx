@@ -1,7 +1,6 @@
 
 import React from 'react';
 import PlanCard, { InsurancePlan } from '@/components/PlanCard';
-import { insurancePlans } from '@/constants/insurancePlans';
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface PlansListProps {
@@ -21,11 +20,6 @@ const PlansList: React.FC<PlansListProps> = ({
   onToggleCompare,
   isLoading = false
 }) => {
-  // Use API quotes if available, otherwise fallback to hardcoded plans
-  const plansToDisplay = apiQuotes.length > 0 
-    ? apiQuotes 
-    : insurancePlans.map(plan => ({ ...plan, travellersCount }));
-
   if (isLoading) {
     return (
       <div className="w-full space-y-5 mb-20">
@@ -36,9 +30,18 @@ const PlansList: React.FC<PlansListProps> = ({
     );
   }
 
+  // Only render cards if we have API quotes and we're not in a loading state
+  if (apiQuotes.length === 0) {
+    return (
+      <div className="w-full py-10 text-center">
+        <p className="text-gray-500">No plans available. Please try again later.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full space-y-5 mb-20">
-      {plansToDisplay.map((plan) => (
+      {apiQuotes.map((plan) => (
         <PlanCard
           key={plan.id}
           plan={plan}
