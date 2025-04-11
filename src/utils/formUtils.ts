@@ -1,4 +1,3 @@
-
 import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
 
 interface FormErrors {
@@ -42,16 +41,10 @@ export const convertToJsDateFormat = (dateString: string): Date => {
 export const formatTravelData = () => {
   const travelData = {
     destination: "679e707834ecd414eb0004de",
-    dob: "17/08/1997", // Static DOB as required
-    startDate: "19/06/2025", // Static start date as required
-    returnDate: "29/07/2025", // Static end date as required
+    dob: ["17/08/1997"], // Placed in array as required
+    startDate: "19/06/2025", // Keep as string in DD/MM/YYYY format
+    returnDate: "29/07/2025", // Keep as string in DD/MM/YYYY format
   };
 
-  // Convert dates to JavaScript Date objects
-  return {
-    ...travelData,
-    dob: convertToJsDateFormat(travelData.dob),
-    startDate: convertToJsDateFormat(travelData.startDate),
-    returnDate: convertToJsDateFormat(travelData.returnDate)
-  };
+  return travelData; // Return formatted data directly without converting dates
 };
