@@ -9,7 +9,6 @@ import { useTravelForm } from '@/context/TravelFormContext';
 import { useToast } from '@/hooks/use-toast';
 import { validateContactForm, formatTravelData } from '@/utils/formUtils';
 import ContactForm from '@/components/contact/ContactForm';
-import { useQuery } from '@tanstack/react-query';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -98,15 +97,24 @@ const ContactStep = () => {
       setIsLoading(true);
       // Get formatted travel data
       const travelData = formatTravelData();
+      console.log('Sending travel data:', travelData);
       
       // Fetch quotes
       const quotesResponse = await fetchQuotes(travelData);
+      console.log('Quotes response:', quotesResponse);
       
+      // Check the structure of the response
+      const quotesArray = Array.isArray(quotesResponse.result) 
+        ? quotesResponse.result 
+        : Array.isArray(quotesResponse) 
+          ? quotesResponse 
+          : [];
+
       // Store quotes in context
-      setQuotes(quotesResponse.result || []);
+      setQuotes(quotesArray);
       
       // Store quotes in localStorage as backup
-      localStorage.setItem('travelQuotes', JSON.stringify(quotesResponse.result || []));
+      localStorage.setItem('travelQuotes', JSON.stringify(quotesArray));
       
       // Navigate to the quotes page
       navigate('/quotes');

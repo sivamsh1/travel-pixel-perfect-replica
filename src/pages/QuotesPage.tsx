@@ -26,7 +26,16 @@ const QuotesPage = () => {
       if (storedQuotes) {
         try {
           const parsedQuotes = JSON.parse(storedQuotes);
-          setQuotes(parsedQuotes);
+          // Ensure parsedQuotes is an array before setting
+          if (Array.isArray(parsedQuotes)) {
+            setQuotes(parsedQuotes);
+          } else if (parsedQuotes.result && Array.isArray(parsedQuotes.result)) {
+            // If quotes are nested in a result property
+            setQuotes(parsedQuotes.result);
+          } else {
+            console.error('Stored quotes is not an array:', parsedQuotes);
+            navigate('/contact'); // Redirect back to contact form if quotes format is invalid
+          }
         } catch (error) {
           console.error('Error parsing stored quotes:', error);
           navigate('/contact'); // Redirect back to contact form if quotes can't be loaded
@@ -55,7 +64,7 @@ const QuotesPage = () => {
       <div className="flex flex-1 flex-col items-center px-6">
         <h2 className="text-3xl font-bold mb-8">Available Insurance Plans</h2>
         
-        {quotes.length === 0 ? (
+        {!Array.isArray(quotes) || quotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8">
             <p className="text-xl text-gray-500">Loading available quotes...</p>
           </div>
