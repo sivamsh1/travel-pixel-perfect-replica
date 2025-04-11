@@ -37,6 +37,7 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
           placeholder={`T ${index + 1} Age`}
           value={age || ''}
           onChange={(e) => updateTraveller(index, { age: e.target.value })}
+          readOnly
         />
       </div>
     </div>
