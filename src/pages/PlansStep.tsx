@@ -19,6 +19,15 @@ const steps = [
   { id: 5, name: "Review & Pay" }
 ];
 
+interface QuoteData {
+  id: string;
+  name: string;
+  provider: string;
+  description: string;
+  details: string;
+  netPremium: number;
+}
+
 const PlansStep = () => {
   const { 
     startDate, 
@@ -31,6 +40,7 @@ const PlansStep = () => {
   } = useTravelForm();
 
   const [plansToCompare, setPlansToCompare] = useState<PlanToCompare[]>([]);
+  const [apiQuotes, setApiQuotes] = useState<InsurancePlan[]>([]);
 
   const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
   const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
@@ -72,6 +82,34 @@ const PlansStep = () => {
         const data = await response.json();
         console.log('API Response:', data);
         
+        if (data && data.result) {
+          // Convert API response to InsurancePlan format
+          const quotePlans: InsurancePlan[] = Object.entries(data.result).map(([key, value]: [string, any]) => {
+            // Format the plan name from the key (e.g., reliance_Student_Basic -> Student Basic)
+            const planNameParts = key.split('_');
+            const provider = planNameParts[0] || 'Reliance';
+            const planName = planNameParts.slice(1).join(' ');
+            
+            return {
+              id: key,
+              name: planName || key,
+              provider: provider,
+              logo: '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png', // Reliance logo
+              description: `${planName} Insurance Plan`,
+              details: `${provider} Insurance`,
+              price: `₹${value.netPremium || 0}`,
+              benefits: [
+                { icon: "✓", text: "Medical Coverage" },
+                { icon: "✓", text: "Trip Cancellation" },
+                { icon: "✓", text: "Baggage Loss" }
+              ],
+              coveragePoints: ["Medical", "Travel", "Baggage"],
+              travellersCount
+            };
+          });
+          
+          setApiQuotes(quotePlans);
+        }
       } catch (error) {
         console.error('Error fetching quotes:', error);
         toast({
@@ -124,11 +162,10 @@ const PlansStep = () => {
     setPlansToCompare(prev => prev.filter(p => p.id !== planId));
   };
 
-  // Add travellersCount to each plan for rendering
-  const plansWithTravellersCount = insurancePlans.map(plan => ({
-    ...plan,
-    travellersCount
-  }));
+  // Use API quotes if available, otherwise fallback to hardcoded plans
+  const plansToDisplay = apiQuotes.length > 0 
+    ? apiQuotes 
+    : insurancePlans.map(plan => ({ ...plan, travellersCount }));
 
   return (
     <Layout>
@@ -150,9 +187,9 @@ const PlansStep = () => {
           formattedEndDate={formattedEndDate}
         />
         
-        {/* Insurance Plan Cards */}
+        {/* Insurance Plan Cards - Dynamic rendering based on API data */}
         <div className="w-full space-y-5 mb-20">
-          {plansWithTravellersCount.map((plan) => (
+          {plansToDisplay.map((plan) => (
             <PlanCard
               key={plan.id}
               plan={plan}
