@@ -22,8 +22,8 @@ export interface NomineeDetails {
 export interface QuoteData {
   id: string;
   planName: string;
-  netPremium: number;
-  premium: number;
+  netPremium: number | string;
+  premium: number | string;
   companyName: string;
   [key: string]: any; // Allow for additional properties
 }

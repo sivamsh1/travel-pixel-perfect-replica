@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -71,6 +70,7 @@ const ContactStep = () => {
     }
   };
 
+  // Handle form submission and fetch quotes
   const handleNext = async () => {
     const { isValid, errors: formErrors } = validateContactForm(contactEmail, contactPhone);
     
@@ -111,12 +111,21 @@ const ContactStep = () => {
           const keyParts = key.split('_');
           const companyName = keyParts[0].charAt(0).toUpperCase() + keyParts[0].slice(1);
           
+          // Ensure numeric values for premiums
+          const netPremium = typeof value.netPremium === 'string' 
+            ? parseFloat(value.netPremium) 
+            : Number(value.netPremium || 0);
+            
+          const premium = typeof value.premium === 'string' 
+            ? parseFloat(value.premium) 
+            : Number(value.premium || 0);
+          
           return {
             id: key,
             companyName,
             planName: value.planName || keyParts.slice(1).join(' '),
-            netPremium: value.netPremium || 0,
-            premium: value.premium || 0
+            netPremium,
+            premium
           };
         });
         

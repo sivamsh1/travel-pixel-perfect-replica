@@ -63,9 +63,17 @@ const QuotesPage = () => {
   useEffect(() => {
     if (quotes.length > 0) {
       try {
+        console.log("Processing quotes:", quotes);
+        
         // If the quotes are already in the expected format
-        if (Array.isArray(quotes) && quotes.every(q => q.planName && q.premium !== undefined)) {
-          setFormattedQuotes(quotes);
+        if (Array.isArray(quotes) && quotes.every(q => q.planName && (q.premium !== undefined || q.netPremium !== undefined))) {
+          // Ensure numeric properties are properly formatted
+          const processedQuotes = quotes.map(quote => ({
+            ...quote,
+            premium: typeof quote.premium === 'string' ? parseFloat(quote.premium) : Number(quote.premium || 0),
+            netPremium: typeof quote.netPremium === 'string' ? parseFloat(quote.netPremium) : Number(quote.netPremium || 0)
+          }));
+          setFormattedQuotes(processedQuotes);
         } 
         // If we have a result object with key-value pairs
         else if (quotes.length === 1 && typeof quotes[0] === 'object') {
@@ -75,12 +83,16 @@ const QuotesPage = () => {
             const keyParts = key.split('_');
             const companyName = keyParts[0].charAt(0).toUpperCase() + keyParts[0].slice(1);
             
+            // Ensure numeric values are properly parsed
+            const netPremium = typeof value.netPremium === 'string' ? parseFloat(value.netPremium) : Number(value.netPremium || 0);
+            const premium = typeof value.premium === 'string' ? parseFloat(value.premium) : Number(value.premium || 0);
+            
             return {
               id: key,
               companyName,
               planName: value.planName || keyParts.slice(1).join(' '),
-              netPremium: value.netPremium || 0,
-              premium: value.premium || 0
+              netPremium,
+              premium
             };
           });
           
