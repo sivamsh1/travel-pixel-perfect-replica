@@ -23,22 +23,34 @@ const ProgressIndicator = ({ steps, currentStep, completedSteps }: ProgressIndic
           <div className="flex flex-col items-center">
             <div 
               className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center",
-                (currentStep === step.id || completedSteps.includes(step.id)) 
+                "w-12 h-12 rounded-full flex items-center justify-center relative",
+                currentStep === step.id 
                   ? "bg-primary text-white" 
-                  : "bg-gray-300 text-gray-400"
+                  : completedSteps.includes(step.id)
+                    ? "bg-gray-200 text-primary"
+                    : "bg-gray-200 text-gray-400"
               )}
             >
-              {(currentStep === step.id || completedSteps.includes(step.id)) && index === 0 ? (
-                <Plane className="h-4 w-4" />
-              ) : null}
+              {currentStep === step.id && (
+                <Plane 
+                  className="h-6 w-6 animate-bounce" 
+                  style={{ transform: 'rotate(45deg)' }} 
+                />
+              )}
+              {completedSteps.includes(step.id) && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-4 h-4 bg-primary rounded-full"></div>
+                </div>
+              )}
             </div>
             <span 
               className={cn(
-                "text-xs mt-2",
-                (currentStep === step.id || completedSteps.includes(step.id)) 
-                  ? "text-primary font-medium" 
-                  : "text-gray-500"
+                "text-xs mt-2 font-medium",
+                currentStep === step.id 
+                  ? "text-primary" 
+                  : completedSteps.includes(step.id)
+                    ? "text-primary"
+                    : "text-gray-500"
               )}
             >
               {step.name}
@@ -49,8 +61,10 @@ const ProgressIndicator = ({ steps, currentStep, completedSteps }: ProgressIndic
           {index < steps.length - 1 && (
             <div 
               className={cn(
-                "flex-grow h-0.5 mx-2",
-                completedSteps.includes(step.id) ? "bg-primary" : "bg-gray-300"
+                "flex-grow h-1 mx-2",
+                completedSteps.includes(step.id) 
+                  ? "bg-primary" 
+                  : "bg-gray-200"
               )}
             />
           )}
