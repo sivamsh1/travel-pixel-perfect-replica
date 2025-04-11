@@ -14,7 +14,7 @@ const ActionButton = ({
 }: ActionButtonProps) => {
   return (
     <Button 
-      className="bg-primary hover:bg-primary/90 text-white font-medium rounded-md py-2 px-8"
+      className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg py-3 px-8 transition-colors"
       variant={variant}
       {...props}
     >

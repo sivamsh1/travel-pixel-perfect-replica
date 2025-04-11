@@ -18,7 +18,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
   duration
 }) => {
   return (
-    <div className="w-full max-w-md space-y-4">
+    <div className="w-full space-y-5">
       <div className="flex gap-4">
         <DateInput 
           value={startDate} 
@@ -34,7 +34,7 @@ const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
       </div>
       
       <div className="text-center text-gray-600">
-        Duration : <span className="text-primary font-medium">{duration} days</span>
+        Duration : <span className="text-blue-500 font-medium">{duration} days</span>
       </div>
     </div>
   );

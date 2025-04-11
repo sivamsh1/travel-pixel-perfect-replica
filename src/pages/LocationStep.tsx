@@ -25,13 +25,13 @@ const LocationStep = () => {
         <ProgressIndicator steps={formSteps} currentStep={1} completedSteps={[]} />
       </div>
       
-      <div className="flex flex-1 flex-col items-center px-6">
-        <h2 className="text-3xl font-bold mb-4">Where are you travelling to?</h2>
-        <p className="text-gray-600 mb-8 text-center max-w-2xl">
+      <div className="flex flex-1 flex-col items-center px-6 md:px-0 max-w-md mx-auto w-full">
+        <h2 className="text-4xl font-bold mb-3 text-center">Where are you travelling to?</h2>
+        <p className="text-gray-600 mb-8 text-center">
           Overseas Travel Insurance is only valid for Indian passport holders, commencing their journey from India.*
         </p>
         
-        <div className="w-full max-w-md space-y-4">
+        <div className="w-full space-y-5">
           <RegionSelector 
             value={region} 
             onChange={setRegion}
@@ -43,10 +43,7 @@ const LocationStep = () => {
           />
           
           <div className="pt-4">
-            <ActionButton
-              onClick={handleNext}
-              className="w-full"
-            >
+            <ActionButton onClick={handleNext}>
               NEXT
             </ActionButton>
           </div>
