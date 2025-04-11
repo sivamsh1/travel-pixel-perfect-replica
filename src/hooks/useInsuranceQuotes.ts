@@ -15,16 +15,18 @@ export const useInsuranceQuotes = () => {
   } = useTravelForm();
 
   const [apiQuotes, setApiQuotes] = useState<InsurancePlan[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Start with loading state true
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchQuotes = async () => {
       setIsLoading(true);
       setError(null);
+      // Clear existing quotes while loading
+      setApiQuotes([]);
       
       try {
-        // Prepare the request payload
+        // Prepare the request payload with fallback values
         const dob = travellers.map(traveller => {
           return traveller.dob ? format(parse(traveller.dob, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
         }).filter(Boolean);
@@ -32,12 +34,12 @@ export const useInsuranceQuotes = () => {
         const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
         const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
         
-        // Create the data object for API call
+        // Create the data object for API call with fallbacks
         const requestData = {
-          destination: destination || "679e707834ecd414eb0004de",
-          dob: dob.length ? dob : ["17/08/1997"],
-          startDate: formattedStartDate || "19/06/2025",
-          returnDate: formattedEndDate || "29/07/2025",
+          destination: destination || "679e707834ecd414eb0004de", // Fallback destination
+          dob: dob.length ? dob : ["17/08/1997"], // Fallback DOB
+          startDate: formattedStartDate || "19/06/2025", // Fallback start date
+          returnDate: formattedEndDate || "29/07/2025", // Fallback end date
         };
         
         console.log('Fetching quotes with payload:', requestData);
@@ -98,6 +100,7 @@ export const useInsuranceQuotes = () => {
       }
     };
     
+    // Always fetch quotes on component mount
     fetchQuotes();
   }, [destination, startDate, endDate, travellers, travellersCount]);
 

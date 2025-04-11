@@ -9,6 +9,7 @@ import PlanFilters from '@/components/PlanFilters';
 import { useInsuranceQuotes } from '@/hooks/useInsuranceQuotes';
 import PlansList from '@/components/plans/PlansList';
 import PlanComparisonManager from '@/components/plans/PlanComparisonManager';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -26,7 +27,8 @@ const PlansStep = () => {
     selectedPlan, 
     setSelectedPlan
   } = useTravelForm();
-
+  
+  const isMobile = useIsMobile();
   const { quotes, isLoading } = useInsuranceQuotes();
 
   const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
@@ -40,7 +42,7 @@ const PlansStep = () => {
 
   return (
     <Layout>
-      <div className="px-6 md:px-12">
+      <div className={`px-${isMobile ? '4' : '6'} md:px-12`}>
         <BackButton />
         <ProgressIndicator 
           steps={steps} 
@@ -49,8 +51,8 @@ const PlansStep = () => {
         />
       </div>
       
-      <div className="flex flex-1 flex-col items-center px-6 max-w-5xl mx-auto w-full">
-        <h2 className="text-3xl font-bold mb-6">Select Your Plan</h2>
+      <div className={`flex flex-1 flex-col items-center px-${isMobile ? '4' : '6'} max-w-5xl mx-auto w-full`}>
+        <h2 className={`text-${isMobile ? '2xl' : '3xl'} font-bold mb-6`}>Select Your Plan</h2>
         
         <PlanFilters 
           travellersCount={travellersCount}

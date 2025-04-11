@@ -2,6 +2,7 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface RegionSelectorProps {
   value: string;
@@ -9,15 +10,18 @@ interface RegionSelectorProps {
 }
 
 const RegionSelector = ({ value, onChange }: RegionSelectorProps) => {
+  const isMobile = useIsMobile();
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onChange(e.target.value);
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <select
         className={cn(
-          "w-full h-12 px-3 py-3 border rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 text-base md:text-sm font-jost",
+          "w-full h-12 px-3 py-3 border rounded-md appearance-none pr-10 focus:outline-none focus:ring-2",
+          isMobile ? "text-base" : "text-base md:text-sm",
+          "font-jost",
           value ? "border-primary focus:ring-primary" : "border-primary border-opacity-50 focus:ring-primary"
         )}
         value={value}

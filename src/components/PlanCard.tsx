@@ -8,6 +8,7 @@ import PlanCardHeader from './plans/PlanCardHeader';
 import PlanCardBenefits from './plans/PlanCardBenefits';
 import PlanCardCoveragePoints from './plans/PlanCardCoveragePoints';
 import PlanCardActions from './plans/PlanCardActions';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Benefit {
   icon: string;
@@ -42,6 +43,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const { destination, startDate, endDate, travellers } = useTravelForm();
+  const isMobile = useIsMobile();
   
   // Use the consistent Reliance logo for all plans
   const relianceLogo = "/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png";
@@ -75,20 +77,22 @@ const PlanCard: React.FC<PlanCardProps> = ({
   
   return (
     <div className="border border-gray-200 rounded-md p-4 relative">
-      <div className="flex">
-        <PlanCardLogo logo={relianceLogo} provider={plan.provider} />
-        
-        <div className="flex-1">
-          <PlanCardHeader 
-            name={plan.name}
-            details={plan.details}
-            travellersCount={plan.travellersCount}
-            price={plan.price}
-          />
+      <div className={`flex ${isMobile ? 'flex-col space-y-4' : ''}`}>
+        <div className={`${isMobile ? 'flex' : ''}`}>
+          <PlanCardLogo logo={relianceLogo} provider={plan.provider} />
           
-          <PlanCardBenefits benefits={plan.benefits} />
-          
-          <PlanCardCoveragePoints coveragePoints={plan.coveragePoints} />
+          <div className="flex-1">
+            <PlanCardHeader 
+              name={plan.name}
+              details={plan.details}
+              travellersCount={plan.travellersCount}
+              price={plan.price}
+            />
+            
+            <PlanCardBenefits benefits={plan.benefits} />
+            
+            <PlanCardCoveragePoints coveragePoints={plan.coveragePoints} />
+          </div>
         </div>
         
         <PlanCardActions

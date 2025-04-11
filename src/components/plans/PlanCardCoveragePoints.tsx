@@ -1,13 +1,16 @@
 
 import React from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PlanCardCoveragePointsProps {
   coveragePoints: string[];
 }
 
 const PlanCardCoveragePoints: React.FC<PlanCardCoveragePointsProps> = ({ coveragePoints }) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="flex mt-4 gap-6 text-sm">
+    <div className={`flex mt-4 ${isMobile ? 'flex-wrap' : ''} gap-6 text-sm`}>
       <div className="bg-blue-50 p-1 px-2 rounded text-xs">
         Plan Benefits
       </div>

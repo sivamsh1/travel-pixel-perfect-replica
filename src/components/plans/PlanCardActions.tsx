@@ -2,6 +2,7 @@
 import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { InsurancePlan } from '@/components/PlanCard';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PlanCardActionsProps {
   plan: InsurancePlan;
@@ -16,8 +17,10 @@ const PlanCardActions: React.FC<PlanCardActionsProps> = ({
   onBuyNow,
   onToggleCompare
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="flex flex-col items-end ml-4 gap-2">
+    <div className={`${isMobile ? 'flex justify-between items-center' : 'flex flex-col items-end ml-4'} gap-2`}>
       <button 
         className="bg-primary text-white py-1 px-3 rounded text-sm"
         onClick={() => onBuyNow(plan.name)}

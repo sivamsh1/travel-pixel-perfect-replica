@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PlanCardHeaderProps {
   name: string;
@@ -14,14 +15,16 @@ const PlanCardHeader: React.FC<PlanCardHeaderProps> = ({
   travellersCount, 
   price 
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="flex justify-between items-start">
+    <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'justify-between'} items-start`}>
       <div>
         <h3 className="font-bold text-lg text-[#FF6B35]">{name}</h3>
         <p className="text-sm text-gray-600">{details}</p>
       </div>
       
-      <div className="text-right">
+      <div className={isMobile ? 'w-full' : 'text-right'}>
         {travellersCount !== undefined && (
           <div className="text-xs text-gray-500">{travellersCount} traveller(s)</div>
         )}

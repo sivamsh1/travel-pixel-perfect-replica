@@ -2,6 +2,7 @@
 import React from 'react';
 import PlanCard, { InsurancePlan } from '@/components/PlanCard';
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PlansListProps {
   apiQuotes: InsurancePlan[];
@@ -20,6 +21,8 @@ const PlansList: React.FC<PlansListProps> = ({
   onToggleCompare,
   isLoading = false
 }) => {
+  const isMobile = useIsMobile();
+  
   if (isLoading) {
     return (
       <div className="w-full space-y-5 mb-20">
