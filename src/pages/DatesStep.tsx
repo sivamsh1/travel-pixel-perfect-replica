@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -8,14 +7,7 @@ import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { Calendar } from 'lucide-react';
 import { format, differenceInDays, addDays, parse } from 'date-fns';
-
-const steps = [
-  { id: 1, name: "Trip Details" },
-  { id: 2, name: "Choose Plan" },
-  { id: 3, name: "Choose Add-Ons" },
-  { id: 4, name: "Travellers Details" },
-  { id: 5, name: "Review & Pay" }
-];
+import { formSteps } from '@/constants/formSteps';
 
 const DatesStep = () => {
   const navigate = useNavigate();
@@ -25,7 +17,6 @@ const DatesStep = () => {
     const newStartDate = e.target.value;
     setStartDate(newStartDate);
     
-    // Update end date if needed
     if (endDate) {
       try {
         const startDateObj = parse(newStartDate, 'yyyy-MM-dd', new Date());
@@ -75,7 +66,7 @@ const DatesStep = () => {
     <Layout>
       <div className="px-6 md:px-12">
         <BackButton />
-        <ProgressIndicator steps={steps} currentStep={1} completedSteps={[]} />
+        <ProgressIndicator steps={formSteps} currentStep={1} completedSteps={[]} />
       </div>
       
       <div className="flex flex-1 flex-col items-center px-6">
