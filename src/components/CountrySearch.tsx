@@ -104,8 +104,8 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
     <div className="relative w-full">
       <Input
         ref={inputRef}
-        className="w-full h-14 px-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-        placeholder="Countries of Visit*"
+        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+        placeholder="Destination*"
         value={inputValue}
         onChange={(e) => {
           setInputValue(e.target.value);
@@ -120,12 +120,12 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
         }}
         onKeyDown={handleKeyDown}
       />
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none">
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none">
         {isLoading ? <Loader2 className="animate-spin" /> : <Search />}
       </div>
 
       {open && inputValue.length >= 2 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
           {countries.length === 0 && !isLoading && (
             <div className="py-3 px-4 text-gray-500 text-center">
               No countries found

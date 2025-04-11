@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -6,9 +5,9 @@ import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
+import { Calendar } from 'lucide-react';
 import { format, differenceInDays, addDays, parse } from 'date-fns';
 import { formSteps } from '@/constants/formSteps';
-import DateRangeSelector from '@/components/DateRangeSelector';
 
 const DatesStep = () => {
   const navigate = useNavigate();
@@ -76,21 +75,43 @@ const DatesStep = () => {
           Overseas Travel Insurance is only valid for Indian passport holders, commencing their journey from India.*
         </p>
         
-        <DateRangeSelector
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={handleStartDateChange}
-          onEndDateChange={handleEndDateChange}
-          duration={duration}
-        />
-        
-        <div className="pt-4 w-full max-w-md">
-          <ActionButton
-            onClick={handleNext}
-            className="w-full"
-          >
-            NEXT
-          </ActionButton>
+        <div className="w-full max-w-md space-y-4">
+          <div className="flex gap-4">
+            <div className="flex-1 relative">
+              <input
+                type="date"
+                className="w-full p-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
+                value={startDate}
+                onChange={handleStartDateChange}
+                placeholder="Start Date"
+              />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+            </div>
+            
+            <div className="flex-1 relative">
+              <input
+                type="date"
+                className="w-full p-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
+                value={endDate}
+                onChange={handleEndDateChange}
+                placeholder="End Date"
+              />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+          
+          <div className="text-center text-gray-600">
+            Duration : <span className="text-primary font-medium">{duration} days</span>
+          </div>
+          
+          <div className="pt-4">
+            <ActionButton
+              onClick={handleNext}
+              className="w-full"
+            >
+              NEXT
+            </ActionButton>
+          </div>
         </div>
       </div>
     </Layout>
