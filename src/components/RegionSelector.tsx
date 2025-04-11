@@ -18,7 +18,7 @@ const RegionSelector = ({ value, onChange }: RegionSelectorProps) => {
       <select
         className={cn(
           "w-full h-12 px-3 py-3 border rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 text-base md:text-sm font-jost",
-          value ? "border-primary focus:ring-primary" : "border-red-300 focus:ring-red-500"
+          value ? "border-primary focus:ring-primary" : "border-primary border-opacity-50 focus:ring-primary"
         )}
         value={value}
         onChange={handleChange}

@@ -107,7 +107,7 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
         ref={inputRef}
         className={cn(
           "w-full rounded-md focus:outline-none focus:ring-2 pr-10",
-          inputValue ? "border-primary focus:ring-primary" : "border-red-300 focus:ring-red-500"
+          inputValue ? "border-primary focus:ring-primary" : "border-primary border-opacity-50 focus:ring-primary"
         )}
         placeholder="Destination*"
         value={inputValue}
