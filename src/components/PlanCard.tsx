@@ -11,13 +11,13 @@ export interface InsurancePlan {
   id: string;
   name: string;
   provider: string;
-  logo: string;
+  logo: string; // We'll keep this property but override it with the Reliance logo
   description: string;
   details: string;
   price: string;
   benefits: Benefit[];
   coveragePoints: string[];
-  travellersCount?: number; // Added this optional property
+  travellersCount?: number;
 }
 
 interface PlanCardProps {
@@ -33,11 +33,18 @@ const PlanCard: React.FC<PlanCardProps> = ({
   onBuyNow,
   onToggleCompare
 }) => {
+  // Use the consistent Reliance logo for all plans
+  const relianceLogo = "/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png";
+  
   return (
     <div className="border border-gray-200 rounded-md p-4 relative">
       <div className="flex">
-        <div className="mr-4 bg-blue-100 p-2 rounded">
-          <img src={plan.logo} alt={plan.provider} className="h-6" />
+        <div className="mr-4 bg-blue-50 p-2 rounded-md border border-blue-100 flex items-center justify-center">
+          <img 
+            src={relianceLogo} 
+            alt="Reliance General Insurance" 
+            className="h-8 w-auto object-contain" 
+          />
         </div>
         
         <div className="flex-1">
