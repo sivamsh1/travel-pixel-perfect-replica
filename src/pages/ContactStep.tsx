@@ -29,7 +29,11 @@ const ContactStep = () => {
     contactPhone, 
     setContactPhone,
     agreeToContact,
-    setAgreeToContact
+    setAgreeToContact,
+    destination,
+    travellers,
+    startDate,
+    endDate
   } = useTravelForm();
 
   // State for validation errors
@@ -37,6 +41,12 @@ const ContactStep = () => {
     email: '',
     phone: ''
   });
+
+  // Convert date from DD/MM/YYYY to YYYY-MM-DD format
+  const convertToJsDateFormat = (dateString: string): Date => {
+    const [day, month, year] = dateString.split('/');
+    return new Date(`${year}-${month}-${day}`);
+  };
 
   // Handle form validation
   const validateForm = (): boolean => {
@@ -84,6 +94,26 @@ const ContactStep = () => {
       return;
     }
 
+    // Collect data to be logged
+    const travelData = {
+      destination: "679e707834ecd414eb0004de",
+      dob: "17/08/1997", // Static DOB as required
+      startDate: "19/06/2025", // Static start date as required
+      returnDate: "29/07/2025", // Static end date as required
+    };
+
+    // Convert dates to JavaScript Date objects
+    const jsData = {
+      ...travelData,
+      dob: convertToJsDateFormat(travelData.dob),
+      startDate: convertToJsDateFormat(travelData.startDate),
+      returnDate: convertToJsDateFormat(travelData.returnDate)
+    };
+
+    // Log the converted data
+    console.log('Travel data with converted dates:', jsData);
+
+    // Navigate to the next page
     navigate('/plans');
   };
 
