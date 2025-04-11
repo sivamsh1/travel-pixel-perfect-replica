@@ -1,12 +1,33 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Search, Loader2 } from 'lucide-react';
+import { 
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { useDebounce } from '@/hooks/useDebounce';
+
+interface Country {
+  _id: string;
+  name: string;
+  continent: string;
+}
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -19,6 +40,39 @@ const steps = [
 const LocationStep = () => {
   const navigate = useNavigate();
   const { region, setRegion, destination, setDestination } = useTravelForm();
+  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState(destination);
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Debounce search input to avoid excessive API calls
+  const debouncedValue = useDebounce<string>(inputValue, 300);
+
+  // Fetch countries when input changes
+  useEffect(() => {
+    const fetchCountries = async () => {
+      if (debouncedValue.length < 2) {
+        setCountries([]);
+        return;
+      }
+      
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `https://gyaantree.com/api/travel/v1/area-search/countries?search=${encodeURIComponent(debouncedValue)}`
+        );
+        const data = await response.json();
+        setCountries(data.result || []);
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+        setCountries([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCountries();
+  }, [debouncedValue]);
 
   const handleNext = () => {
     // Validation removed
@@ -52,12 +106,50 @@ const LocationStep = () => {
             <ChevronDown className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
           </div>
           
-          <input
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="Destination*"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-          />
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <div className="relative">
+                <Input
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Destination*"
+                  value={inputValue}
+                  onChange={(e) => {
+                    setInputValue(e.target.value);
+                    if (!open) setOpen(true);
+                  }}
+                />
+                <div className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none">
+                  {isLoading ? <Loader2 className="animate-spin" /> : <Search />}
+                </div>
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0 max-w-[300px] md:max-w-md" align="start">
+              <Command>
+                <CommandList>
+                  <CommandEmpty>
+                    {isLoading ? "Loading..." : "No countries found"}
+                  </CommandEmpty>
+                  <CommandGroup>
+                    {countries.map((country) => (
+                      <CommandItem
+                        key={country._id}
+                        onSelect={() => {
+                          setInputValue(country.name);
+                          setDestination(country.name);
+                          setOpen(false);
+                        }}
+                      >
+                        <span>{country.name}</span>
+                        <span className="ml-auto text-xs text-gray-400">
+                          {country.continent}
+                        </span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
           
           <div className="pt-4">
             <ActionButton
