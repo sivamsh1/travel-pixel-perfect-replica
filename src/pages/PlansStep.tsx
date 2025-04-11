@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { format, parse } from 'date-fns';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -20,7 +19,6 @@ const steps = [
 ];
 
 const PlansStep = () => {
-  const navigate = useNavigate();
   const { 
     startDate, 
     endDate, 
@@ -35,8 +33,9 @@ const PlansStep = () => {
   const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
 
   const handleBuyNow = (planName: string) => {
+    // Only update the selected plan in context
     setSelectedPlan(planName);
-    navigate('/addons');
+    // Navigation is now handled in the PlanCard component
   };
 
   const handleToggleCompare = (plan: InsurancePlan) => {
