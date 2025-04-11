@@ -1,27 +1,46 @@
 
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Check, X } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import { PlanToCompare } from '@/components/ComparePopup';
 
-const ComparisonRow = ({ 
+interface ComparisonRowProps {
+  label: string;
+  values: (string | React.ReactNode)[];
+  isHighlighted?: boolean;
+  isCategoryHeader?: boolean;
+}
+
+const ComparisonRow: React.FC<ComparisonRowProps> = ({ 
   label, 
-  values 
-}: { 
-  label: string; 
-  values: (string | React.ReactNode)[] 
+  values,
+  isHighlighted = false,
+  isCategoryHeader = false
 }) => {
   return (
-    <div className="grid grid-cols-[1fr_2fr_2fr] gap-4 py-3 border-b">
-      <div className="font-medium text-gray-700">{label}</div>
+    <TableRow className={isHighlighted ? 'bg-blue-50' : ''}>
+      <TableCell className={`border-r ${isCategoryHeader ? 'font-semibold text-blue-600' : 'text-gray-700'}`}>
+        {label}
+      </TableCell>
       {values.map((value, index) => (
-        <div key={index} className={index === 0 ? "text-primary" : "text-gray-600"}>
+        <TableCell 
+          key={index} 
+          className={`text-center ${index === 0 ? 'bg-[#f5faff]' : 'bg-[#fff9f5]'}`}
+        >
           {value}
-        </div>
+        </TableCell>
       ))}
-    </div>
+    </TableRow>
   );
 };
 
@@ -47,7 +66,7 @@ const ComparePlans = () => {
 
   return (
     <Layout>
-      <div className="px-6 md:px-12">
+      <div className="px-2 md:px-6 lg:px-12 max-w-7xl mx-auto">
         <button 
           onClick={handleBack} 
           className="flex items-center text-gray-600 mt-6 mb-4"
@@ -56,55 +75,151 @@ const ComparePlans = () => {
           <span>Back to Plans</span>
         </button>
         
-        <h1 className="text-3xl font-bold mb-6">Compare Plans</h1>
+        <h1 className="text-3xl font-bold mb-2 text-center">Plan Comparison</h1>
+        <p className="text-center text-sm text-gray-600 mb-6">Summary - 1 traveller | 11 Oct - 20 Oct '23</p>
         
-        <div className="bg-white rounded-lg shadow mb-12">
-          {/* Header */}
-          <div className="grid grid-cols-[1fr_2fr_2fr] gap-4 p-4 bg-gray-50 rounded-t-lg">
-            <div className="font-bold">Features</div>
-            {plans.map(plan => (
-              <div key={plan.id} className="flex flex-col">
-                <div className="h-12 w-24 bg-blue-100 p-2 rounded mb-2 flex items-center justify-center">
-                  <img src={plan.logo || "https://via.placeholder.com/100x50"} alt={plan.provider} className="h-8 max-w-full object-contain" />
-                </div>
-                <h3 className="text-lg font-bold text-primary">{plan.name}</h3>
-                <p className="text-sm text-gray-600">{plan.provider}</p>
-              </div>
-            ))}
-          </div>
-          
-          {/* Comparison Rows */}
-          <div className="p-4">
-            <ComparisonRow 
-              label="Medical Coverage" 
-              values={["$50,000", "$50,000"]} 
-            />
-            <ComparisonRow 
-              label="Trip Cancellation" 
-              values={["$5,000", "$5,000"]} 
-            />
-            <ComparisonRow 
-              label="Emergency Assistance" 
-              values={["Yes", "Yes"]} 
-            />
-            <ComparisonRow 
-              label="Luggage Protection" 
-              values={["Yes", "Yes"]} 
-            />
-            <ComparisonRow 
-              label="Roadside Assistance" 
-              values={["Yes", "Yes"]} 
-            />
-            <ComparisonRow 
-              label="Price" 
-              values={["₹ 969", "₹ 969"]} 
-            />
-          </div>
-          
-          {/* Actions */}
-          <div className="p-4 flex justify-end gap-4">
-            <Button onClick={handleBack} variant="outline">Back to Plans</Button>
-          </div>
+        <div className="overflow-x-auto pb-10">
+          <Table className="border">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-1/3 border-r">Coverage Plan</TableHead>
+                {plans.map((plan, index) => (
+                  <TableHead 
+                    key={plan.id} 
+                    className={`w-1/3 text-center ${index === 0 ? 'bg-[#f5faff]' : 'bg-[#fff9f5]'}`}
+                  >
+                    <div className={`rounded-md p-2 text-center ${index === 0 ? 'bg-[#143d7a]' : 'bg-[#FF6B35]'}`}>
+                      <div className="text-white font-bold">{plan.name}</div>
+                      <div className="text-white text-xs">{index === 0 ? 'AIG Multi Trip with Add-On' : 'HDFC Single Trip (Standard)'}</div>
+                    </div>
+                    <div className="mt-3 font-bold text-center text-lg">
+                      {index === 0 ? '₹ 3998' : '₹ 2500'}
+                    </div>
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {/* Medical Benefits Category */}
+              <ComparisonRow
+                label="Medical Benefits"
+                values={["", ""]}
+                isCategoryHeader={true}
+                isHighlighted={true}
+              />
+              <ComparisonRow 
+                label="Medical Expense Coverage" 
+                values={["$500", "$50,000"]} 
+              />
+              <ComparisonRow 
+                label="Daily Expense – Loss of Hospitalization" 
+                values={["$50 per day | max 7 days", "NA"]} 
+              />
+              <ComparisonRow 
+                label="Personal Accident (Age 18+ Yrs, PD)" 
+                values={["$25,000", "NA"]} 
+              />
+              <ComparisonRow 
+                label="Flight Delay" 
+                values={["$75", "$50"]} 
+              />
+              <ComparisonRow 
+                label="Flight Delays Coverage" 
+                values={["$50 per day | max 7 days", "$50 per day | max 3 days"]} 
+              />
+              
+              {/* Travel Delays & Losses Category */}
+              <ComparisonRow
+                label="Travel Delays & Losses Benefits"
+                values={["", ""]}
+                isCategoryHeader={true}
+                isHighlighted={true}
+              />
+              <ComparisonRow 
+                label="Flight Delays Coverage" 
+                values={["$75", "$50"]} 
+              />
+              <ComparisonRow 
+                label="Loss of Passport" 
+                values={["$300", "NA"]} 
+              />
+              <ComparisonRow 
+                label="Trip Delay" 
+                values={["$300", "$100 per day | max 7 days"]} 
+              />
+              
+              {/* Property Losses Category */}
+              <ComparisonRow
+                label="Property Losses"
+                values={["", ""]}
+                isCategoryHeader={true}
+                isHighlighted={true}
+              />
+              <ComparisonRow 
+                label="Checked-in Luggage" 
+                values={["$25,000", "$10,000"]} 
+              />
+              <ComparisonRow 
+                label="Home Break-in during trip" 
+                values={["$25,000", "NA"]} 
+              />
+              <ComparisonRow 
+                label="Bail Bond" 
+                values={["$500", "NA"]} 
+              />
+
+              {/* Support Features */}
+              <ComparisonRow
+                label="Additional Features"
+                values={["", ""]}
+                isCategoryHeader={true}
+                isHighlighted={true}
+              />
+              <ComparisonRow 
+                label="Adventure Protection (in case of injury during sport)" 
+                values={[<Check key="1" className="mx-auto text-green-500" />, <X key="2" className="mx-auto text-red-500" />]} 
+              />
+              <ComparisonRow 
+                label="Bounce Coverage Cover" 
+                values={[<Check key="1" className="mx-auto text-green-500" />, <X key="2" className="mx-auto text-red-500" />]} 
+              />
+              <ComparisonRow 
+                label="Covid cover" 
+                values={[<Check key="1" className="mx-auto text-green-500" />, <X key="2" className="mx-auto text-red-500" />]} 
+              />
+              <ComparisonRow 
+                label="Hotel cover" 
+                values={[<Check key="1" className="mx-auto text-green-500" />, <X key="2" className="mx-auto text-red-500" />]} 
+              />
+
+              {/* Action row */}
+              <TableRow>
+                <TableCell className="border-r">
+                  <div className="text-blue-600 font-bold">Pick this plan that best fits for you</div>
+                </TableCell>
+                {[0, 1].map((index) => (
+                  <TableCell key={index} className={`text-center ${index === 0 ? 'bg-[#f5faff]' : 'bg-[#fff9f5]'}`}>
+                    <div className="text-xs mb-2 text-gray-500">
+                      {index === 0 ? 
+                        "Have any query about this policy? Contact us" : 
+                        "Have any query about this policy? Contact us"
+                      }
+                    </div>
+                    <Button 
+                      className={`${index === 0 ? 'bg-[#143d7a]' : 'bg-[#FF6B35]'}`}
+                      size="sm"
+                    >
+                      {index === 0 ? "Buy Now" : "Buy Now"}
+                    </Button>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+        
+        <div className="text-center text-xs text-gray-500 mb-6">
+          © Travel Insurance 2023
         </div>
       </div>
     </Layout>
