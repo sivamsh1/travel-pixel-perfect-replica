@@ -52,12 +52,12 @@ const ContactStep = () => {
       isValid = false;
     }
 
-    // Validate phone number
+    // Validate phone number - must be exactly 10 digits
     if (!contactPhone) {
       newErrors.phone = 'Phone number is required';
       isValid = false;
     } else if (!isValidPhone(contactPhone)) {
-      newErrors.phone = 'Please enter a valid phone number';
+      newErrors.phone = 'Please enter a valid 10-digit phone number';
       isValid = false;
     }
 
@@ -85,6 +85,20 @@ const ContactStep = () => {
     }
 
     navigate('/plans');
+  };
+
+  // Format phone input to show only digits
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    // Remove all non-digit characters
+    const digitsOnly = input.replace(/\D/g, '');
+    // Limit to 10 digits
+    const limitedDigits = digitsOnly.slice(0, 10);
+    setContactPhone(limitedDigits);
+    
+    if (errors.phone) {
+      setErrors(prev => ({ ...prev, phone: '' }));
+    }
   };
 
   return (
@@ -126,12 +140,10 @@ const ContactStep = () => {
               <Input
                 type="tel"
                 className={`pl-10 ${errors.phone ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                placeholder="Phone No."
+                placeholder="Phone No. (10 digits)"
                 value={contactPhone}
-                onChange={(e) => {
-                  setContactPhone(e.target.value);
-                  if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
-                }}
+                onChange={handlePhoneChange}
+                maxLength={10}
               />
             </div>
             {errors.phone && (
@@ -140,6 +152,9 @@ const ContactStep = () => {
                 <span>{errors.phone}</span>
               </div>
             )}
+            <div className="text-xs text-gray-500 px-1">
+              Please enter exactly 10 digits without spaces or special characters
+            </div>
           </div>
           
           <div className="flex items-start space-x-3">

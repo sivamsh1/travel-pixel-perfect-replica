@@ -11,13 +11,13 @@ export const isValidEmail = (email: string): boolean => {
 };
 
 /**
- * Validates a phone number (allows various formats)
+ * Validates a phone number (requires exactly 10 digits)
  * @param phone The phone number to validate
  * @returns True if the phone number is valid, false otherwise
  */
 export const isValidPhone = (phone: string): boolean => {
-  // Allows formats: +1234567890, 123-456-7890, (123) 456-7890, 123.456.7890
-  // Minimum 10 digits (excluding formatting characters)
-  const phoneRegex = /^(?:\+\d{1,3}[-\s]?)?\(?(?:\d{3})?\)?[-\s.]?\d{3}[-\s.]?\d{4,}$/;
-  return phoneRegex.test(phone);
+  // Remove all non-digit characters
+  const digitsOnly = phone.replace(/\D/g, '');
+  // Check if exactly 10 digits
+  return digitsOnly.length === 10;
 };
