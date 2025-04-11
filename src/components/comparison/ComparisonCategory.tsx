@@ -21,6 +21,7 @@ const ComparisonCategory: React.FC<ComparisonCategoryProps> = ({ title, rows }) 
           key={index}
           label={row.label}
           values={row.values}
+          isHighlighted={index % 2 === 0} // Alternate row highlighting for better readability
         />
       ))}
     </>
