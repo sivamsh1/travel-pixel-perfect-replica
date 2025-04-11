@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -103,18 +102,16 @@ const ContactStep = () => {
       const quotesResponse = await fetchQuotes(travelData);
       console.log('Quotes response:', quotesResponse);
       
-      // Check the structure of the response
-      const quotesArray = Array.isArray(quotesResponse.result) 
-        ? quotesResponse.result 
-        : Array.isArray(quotesResponse) 
-          ? quotesResponse 
-          : [];
-
-      // Store quotes in context
-      setQuotes(quotesArray);
-      
-      // Store quotes in localStorage as backup
-      localStorage.setItem('travelQuotes', JSON.stringify(quotesArray));
+      // Store quotes in context - keep the raw response format
+      if (quotesResponse && quotesResponse.result) {
+        // We're storing the result directly, which could be an object with key-value pairs
+        setQuotes([quotesResponse.result]);
+        localStorage.setItem('travelQuotes', JSON.stringify([quotesResponse.result]));
+      } else {
+        // If response structure is different, at least try to store what we got
+        setQuotes([quotesResponse]);
+        localStorage.setItem('travelQuotes', JSON.stringify([quotesResponse]));
+      }
       
       // Navigate to the quotes page
       navigate('/quotes');

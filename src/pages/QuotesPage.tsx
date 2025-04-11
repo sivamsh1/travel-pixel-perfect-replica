@@ -1,11 +1,12 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import { useTravelForm } from '@/context/TravelFormContext';
 import QuoteCard from '@/components/quotes/QuoteCard';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -15,30 +16,48 @@ const steps = [
   { id: 5, name: "Review & Pay" }
 ];
 
+interface QuoteItem {
+  id: string;
+  planName: string;
+  netPremium: number;
+  premium: number;
+  companyName: string;
+}
+
 const QuotesPage = () => {
   const navigate = useNavigate();
   const { quotes, setQuotes } = useTravelForm();
+  const [isLoading, setIsLoading] = useState(true);
+  const [formattedQuotes, setFormattedQuotes] = useState<QuoteItem[]>([]);
 
-  // If no quotes in context, try to get them from localStorage
   useEffect(() => {
+    // If no quotes in context, try to get them from localStorage
     if (quotes.length === 0) {
       const storedQuotes = localStorage.getItem('travelQuotes');
       if (storedQuotes) {
         try {
-          const parsedQuotes = JSON.parse(storedQuotes);
-          // Ensure parsedQuotes is an array before setting
-          if (Array.isArray(parsedQuotes)) {
-            setQuotes(parsedQuotes);
-          } else if (parsedQuotes.result && Array.isArray(parsedQuotes.result)) {
-            // If quotes are nested in a result property
-            setQuotes(parsedQuotes.result);
+          const parsedData = JSON.parse(storedQuotes);
+          
+          // Check if we have valid data structure
+          if (parsedData && typeof parsedData === 'object') {
+            // If it's already an array of quote objects, use it directly
+            if (Array.isArray(parsedData)) {
+              setQuotes(parsedData);
+            }
+            // If quotes are nested in a result property as an object
+            else if (parsedData.result && typeof parsedData.result === 'object') {
+              setQuotes([parsedData.result]); // Wrap in array if it's not already an array
+            } else {
+              console.error('Invalid quotes format:', parsedData);
+              navigate('/contact');
+            }
           } else {
-            console.error('Stored quotes is not an array:', parsedQuotes);
-            navigate('/contact'); // Redirect back to contact form if quotes format is invalid
+            console.error('Invalid stored quotes data:', parsedData);
+            navigate('/contact');
           }
         } catch (error) {
           console.error('Error parsing stored quotes:', error);
-          navigate('/contact'); // Redirect back to contact form if quotes can't be loaded
+          navigate('/contact');
         }
       } else {
         // No quotes found, redirect back to form
@@ -46,6 +65,43 @@ const QuotesPage = () => {
       }
     }
   }, [quotes, setQuotes, navigate]);
+
+  // Process quotes when they're available
+  useEffect(() => {
+    if (quotes.length > 0) {
+      try {
+        // If the quotes are already in the expected format
+        if (Array.isArray(quotes) && quotes.every(q => q.planName && q.premium !== undefined)) {
+          setFormattedQuotes(quotes);
+        } 
+        // If we have a result object with key-value pairs
+        else if (quotes.length === 1 && typeof quotes[0] === 'object') {
+          const quotesObj = quotes[0];
+          const formattedData = Object.entries(quotesObj).map(([key, value]: [string, any]) => {
+            // Extract company name from the key (e.g., reliance_Student_Basic)
+            const keyParts = key.split('_');
+            const companyName = keyParts[0].charAt(0).toUpperCase() + keyParts[0].slice(1);
+            
+            return {
+              id: key,
+              companyName,
+              planName: value.planName || keyParts.slice(1).join(' '),
+              netPremium: value.netPremium || 0,
+              premium: value.premium || 0
+            };
+          });
+          
+          setFormattedQuotes(formattedData);
+        }
+      } catch (error) {
+        console.error('Error formatting quotes:', error);
+      }
+      
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
+    }
+  }, [quotes]);
 
   const handleBuyNow = (planId: string) => {
     // Store selected plan ID
@@ -64,18 +120,31 @@ const QuotesPage = () => {
       <div className="flex flex-1 flex-col items-center px-6">
         <h2 className="text-3xl font-bold mb-8">Available Insurance Plans</h2>
         
-        {!Array.isArray(quotes) || quotes.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex flex-col space-y-3">
+                <Skeleton className="h-40 w-full rounded-lg" />
+                <div className="space-y-2">
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-4/5" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : formattedQuotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8">
-            <p className="text-xl text-gray-500">Loading available quotes...</p>
+            <p className="text-xl text-gray-500">No quotes available. Please try again later.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-            {quotes.map((quote, index) => (
+            {formattedQuotes.map((quote, index) => (
               <QuoteCard 
                 key={`${quote.planName}-${index}`}
                 planName={quote.planName}
                 netPremium={quote.netPremium}
                 premium={quote.premium}
+                companyName={quote.companyName}
                 onBuyNow={() => handleBuyNow(quote.id)}
               />
             ))}

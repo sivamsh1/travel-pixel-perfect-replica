@@ -8,6 +8,7 @@ interface QuoteCardProps {
   planName: string;
   netPremium: number;
   premium: number;
+  companyName?: string;
   onBuyNow: () => void;
 }
 
@@ -15,11 +16,15 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
   planName,
   netPremium,
   premium,
+  companyName,
   onBuyNow
 }) => {
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg">
       <CardHeader className="bg-primary/10 pb-2">
+        {companyName && (
+          <p className="text-sm text-gray-600 mb-1">{companyName}</p>
+        )}
         <CardTitle className="text-xl font-bold text-center">{planName}</CardTitle>
       </CardHeader>
       
