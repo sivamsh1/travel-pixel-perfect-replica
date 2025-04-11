@@ -2,6 +2,7 @@
 import React from 'react';
 import PlanCard, { InsurancePlan } from '@/components/PlanCard';
 import { insurancePlans } from '@/constants/insurancePlans';
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PlansListProps {
   apiQuotes: InsurancePlan[];
