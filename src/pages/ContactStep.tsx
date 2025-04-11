@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -5,9 +6,11 @@ import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
+import { Mail, Phone, AlertCircle } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { validateContactForm, formatTravelData } from '@/utils/formUtils';
-import ContactForm from '@/components/contact/ContactForm';
+import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -16,23 +19,6 @@ const steps = [
   { id: 4, name: "Travellers Details" },
   { id: 5, name: "Review & Pay" }
 ];
-
-// Function to fetch quotes from API
-const fetchQuotes = async (travelData: any) => {
-  const response = await fetch('https://gyaantree.com/api/travel/v1/quickQuote/fetch-quotes', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(travelData),
-  });
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch quotes');
-  }
-  
-  return response.json();
-};
 
 const ContactStep = () => {
   const navigate = useNavigate();
@@ -44,7 +30,10 @@ const ContactStep = () => {
     setContactPhone,
     agreeToContact,
     setAgreeToContact,
-    setQuotes,
+    destination,
+    travellers,
+    startDate,
+    endDate
   } = useTravelForm();
 
   // State for validation errors
@@ -53,29 +42,41 @@ const ContactStep = () => {
     phone: ''
   });
 
-  // State for loading status
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Format phone input to show only digits
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    // Remove all non-digit characters
-    const digitsOnly = input.replace(/\D/g, '');
-    // Limit to 10 digits
-    const limitedDigits = digitsOnly.slice(0, 10);
-    setContactPhone(limitedDigits);
-    
-    if (errors.phone) {
-      setErrors(prev => ({ ...prev, phone: '' }));
-    }
+  // Convert date from DD/MM/YYYY to YYYY-MM-DD format
+  const convertToJsDateFormat = (dateString: string): Date => {
+    const [day, month, year] = dateString.split('/');
+    return new Date(`${year}-${month}-${day}`);
   };
 
-  // Handle form submission and fetch quotes
-  const handleNext = async () => {
-    const { isValid, errors: formErrors } = validateContactForm(contactEmail, contactPhone);
-    
-    if (!isValid) {
-      setErrors(formErrors);
+  // Handle form validation
+  const validateForm = (): boolean => {
+    let isValid = true;
+    const newErrors = { email: '', phone: '' };
+
+    // Validate email
+    if (!contactEmail) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!isValidEmail(contactEmail)) {
+      newErrors.email = 'Please enter a valid email address';
+      isValid = false;
+    }
+
+    // Validate phone number - must be exactly 10 digits
+    if (!contactPhone) {
+      newErrors.phone = 'Phone number is required';
+      isValid = false;
+    } else if (!isValidPhone(contactPhone)) {
+      newErrors.phone = 'Please enter a valid 10-digit phone number';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleNext = () => {
+    if (!validateForm()) {
       toast({
         title: "Validation Error",
         description: "Please correct the errors in the form",
@@ -93,61 +94,40 @@ const ContactStep = () => {
       return;
     }
 
-    try {
-      setIsLoading(true);
-      // Get formatted travel data
-      const travelData = formatTravelData();
-      console.log('Sending travel data:', travelData);
-      
-      // Fetch quotes
-      const quotesResponse = await fetchQuotes(travelData);
-      console.log('Quotes response:', quotesResponse);
-      
-      // Process and store quotes in context
-      if (quotesResponse && quotesResponse.result) {
-        // Format the quotes to ensure they have the companyName property
-        const processedQuotes = Object.entries(quotesResponse.result).map(([key, value]: [string, any]) => {
-          // Extract company name from the key (e.g., reliance_Student_Basic)
-          const keyParts = key.split('_');
-          const companyName = keyParts[0].charAt(0).toUpperCase() + keyParts[0].slice(1);
-          
-          // Ensure numeric values for premiums
-          const netPremium = typeof value.netPremium === 'string' 
-            ? parseFloat(value.netPremium) 
-            : Number(value.netPremium || 0);
-            
-          const premium = typeof value.premium === 'string' 
-            ? parseFloat(value.premium) 
-            : Number(value.premium || 0);
-          
-          return {
-            id: key,
-            companyName,
-            planName: value.planName || keyParts.slice(1).join(' '),
-            netPremium,
-            premium
-          };
-        });
-        
-        setQuotes(processedQuotes);
-        localStorage.setItem('travelQuotes', JSON.stringify(processedQuotes));
-      } else {
-        // Handle empty or unexpected response format
-        setQuotes([]);
-        localStorage.setItem('travelQuotes', JSON.stringify([]));
-      }
-      
-      // Navigate to the quotes page
-      navigate('/quotes');
-    } catch (error) {
-      console.error('Error fetching quotes:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch quotes. Please try again later.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
+    // Collect data to be logged
+    const travelData = {
+      destination: "679e707834ecd414eb0004de",
+      dob: "17/08/1997", // Static DOB as required
+      startDate: "19/06/2025", // Static start date as required
+      returnDate: "29/07/2025", // Static end date as required
+    };
+
+    // Convert dates to JavaScript Date objects
+    const jsData = {
+      ...travelData,
+      dob: convertToJsDateFormat(travelData.dob),
+      startDate: convertToJsDateFormat(travelData.startDate),
+      returnDate: convertToJsDateFormat(travelData.returnDate)
+    };
+
+    // Log the converted data
+    console.log('Travel data with converted dates:', jsData);
+
+    // Navigate to the next page
+    navigate('/plans');
+  };
+
+  // Format phone input to show only digits
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    // Remove all non-digit characters
+    const digitsOnly = input.replace(/\D/g, '');
+    // Limit to 10 digits
+    const limitedDigits = digitsOnly.slice(0, 10);
+    setContactPhone(limitedDigits);
+    
+    if (errors.phone) {
+      setErrors(prev => ({ ...prev, phone: '' }));
     }
   };
 
@@ -161,25 +141,74 @@ const ContactStep = () => {
       <div className="flex flex-1 flex-col items-center px-6">
         <h2 className="text-3xl font-bold mb-4">Our representatives to contact you via</h2>
         
-        <ContactForm 
-          contactEmail={contactEmail}
-          setContactEmail={setContactEmail}
-          contactPhone={contactPhone}
-          handlePhoneChange={handlePhoneChange}
-          agreeToContact={agreeToContact}
-          setAgreeToContact={setAgreeToContact}
-          errors={errors}
-          setErrors={setErrors}
-        />
-        
-        <div className="w-full max-w-md pt-4">
-          <ActionButton
-            onClick={handleNext}
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? "LOADING..." : "NEXT"}
-          </ActionButton>
+        <div className="w-full max-w-md space-y-6 mt-6">
+          <div className="space-y-1">
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <Input
+                type="email"
+                className={`pl-10 ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                placeholder="Email"
+                value={contactEmail}
+                onChange={(e) => {
+                  setContactEmail(e.target.value);
+                  if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
+                }}
+              />
+            </div>
+            {errors.email && (
+              <div className="flex items-center text-destructive text-sm space-x-1 px-1">
+                <AlertCircle className="h-4 w-4" />
+                <span>{errors.email}</span>
+              </div>
+            )}
+          </div>
+          
+          <div className="space-y-1">
+            <div className="relative">
+              <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <Input
+                type="tel"
+                className={`pl-10 ${errors.phone ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                placeholder="Phone No. (10 digits)"
+                value={contactPhone}
+                onChange={handlePhoneChange}
+                maxLength={10}
+              />
+            </div>
+            {errors.phone && (
+              <div className="flex items-center text-destructive text-sm space-x-1 px-1">
+                <AlertCircle className="h-4 w-4" />
+                <span>{errors.phone}</span>
+              </div>
+            )}
+            <div className="text-xs text-gray-500 px-1">
+              Please enter exactly 10 digits without spaces or special characters
+            </div>
+          </div>
+          
+          <div className="flex items-start space-x-3">
+            <Checkbox 
+              id="terms" 
+              checked={agreeToContact} 
+              onCheckedChange={(checked) => setAgreeToContact(checked === true)}
+            />
+            <label 
+              htmlFor="terms" 
+              className="text-sm text-gray-600 leading-relaxed"
+            >
+              By entering the above details, you authorize our representatives to contact you via SMS, email, call or WhatsApp, irrespective of availing Travel Assistance & Insurance or not.
+            </label>
+          </div>
+          
+          <div className="pt-4">
+            <ActionButton
+              onClick={handleNext}
+              className="w-full"
+            >
+              NEXT
+            </ActionButton>
+          </div>
         </div>
       </div>
     </Layout>

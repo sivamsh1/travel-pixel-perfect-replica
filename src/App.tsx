@@ -10,7 +10,6 @@ import DatesStep from "./pages/DatesStep";
 import TravellersStep from "./pages/TravellersStep";
 import ContactStep from "./pages/ContactStep";
 import PlansStep from "./pages/PlansStep";
-import QuotesPage from "./pages/QuotesPage";
 import AddonsStep from "./pages/AddonsStep";
 import TravellersDetailsStep from "./pages/TravellersDetailsStep";
 import ReviewStep from "./pages/ReviewStep";
@@ -31,7 +30,6 @@ const App = () => (
             <Route path="/dates" element={<DatesStep />} />
             <Route path="/travellers" element={<TravellersStep />} />
             <Route path="/contact" element={<ContactStep />} />
-            <Route path="/quotes" element={<QuotesPage />} />
             <Route path="/plans" element={<PlansStep />} />
             <Route path="/addons" element={<AddonsStep />} />
             <Route path="/traveller-details" element={<TravellersDetailsStep />} />

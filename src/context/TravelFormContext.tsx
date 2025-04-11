@@ -19,15 +19,6 @@ export interface NomineeDetails {
   relationship?: string;
 }
 
-export interface QuoteData {
-  id: string;
-  planName: string;
-  netPremium: number | string;
-  premium: number | string;
-  companyName: string;
-  [key: string]: any; // Allow for additional properties
-}
-
 interface TravelFormContextType {
   region: string;
   setRegion: (region: string) => void;
@@ -58,8 +49,6 @@ interface TravelFormContextType {
   updateNominee: (details: Partial<NomineeDetails>) => void;
   agreeToTerms: boolean;
   setAgreeToTerms: (agree: boolean) => void;
-  quotes: QuoteData[];
-  setQuotes: (quotes: QuoteData[]) => void;
 }
 
 const TravelFormContext = createContext<TravelFormContextType | undefined>(undefined);
@@ -79,7 +68,6 @@ export const TravelFormProvider: React.FC<{ children: ReactNode }> = ({ children
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [nominee, setNominee] = useState<NomineeDetails>({});
   const [agreeToTerms, setAgreeToTerms] = useState<boolean>(false);
-  const [quotes, setQuotes] = useState<QuoteData[]>([]);
 
   const updateTraveller = (index: number, details: Partial<TravellerDetails>) => {
     setTravellers(prev => {
@@ -146,8 +134,6 @@ export const TravelFormProvider: React.FC<{ children: ReactNode }> = ({ children
         updateNominee,
         agreeToTerms,
         setAgreeToTerms,
-        quotes,
-        setQuotes,
       }}
     >
       {children}
