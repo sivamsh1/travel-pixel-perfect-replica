@@ -75,6 +75,12 @@ const ComparePlans = () => {
   const handleBack = () => {
     navigate('/plans');
   };
+  
+  // New function to handle buy now button click
+  const handleBuyNow = (planName: string) => {
+    // Navigate to the Addons page
+    navigate('/addons');
+  };
 
   return (
     <Layout>
@@ -209,19 +215,17 @@ const ComparePlans = () => {
                 <TableCell className="border-r">
                   <div className="text-blue-600 font-bold">Pick this plan that best fits for you</div>
                 </TableCell>
-                {[0, 1].map((index) => (
+                {plans.map((plan, index) => (
                   <TableCell key={index} className={`text-center ${index === 0 ? 'bg-[#f5faff]' : 'bg-[#fff9f5]'}`}>
                     <div className="text-xs mb-2 text-gray-500">
-                      {index === 0 ? 
-                        "Have any query about this policy? Contact us" : 
-                        "Have any query about this policy? Contact us"
-                      }
+                      Have any query about this policy? Contact us
                     </div>
                     <Button 
-                      className={`${index === 0 ? 'bg-[#143d7a]' : 'bg-[#FF6B35]'}`}
+                      className={`${index === 0 ? 'bg-[#143d7a] hover:bg-[#143d7a]/80' : 'bg-[#FF6B35] hover:bg-[#FF6B35]/80'} cursor-pointer transition-colors`}
                       size="sm"
+                      onClick={() => handleBuyNow(plan.name)}
                     >
-                      {index === 0 ? "Buy Now" : "Buy Now"}
+                      Buy Now
                     </Button>
                   </TableCell>
                 ))}
