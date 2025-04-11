@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -55,7 +54,6 @@ const DatesStep = () => {
         const endDateObj = parse(newEndDate, 'yyyy-MM-dd', new Date());
         
         if (endDateObj < startDateObj) {
-          alert('End date cannot be before start date');
           setEndDate('');
           return;
         }
@@ -69,10 +67,6 @@ const DatesStep = () => {
   };
 
   const handleNext = () => {
-    if (!startDate || !endDate) {
-      alert('Please select both start and end dates');
-      return;
-    }
     navigate('/travellers');
   };
 

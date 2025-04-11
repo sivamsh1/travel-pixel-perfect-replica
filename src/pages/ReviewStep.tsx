@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -31,11 +30,7 @@ const ReviewStep = () => {
   } = useTravelForm();
 
   const handlePayNow = () => {
-    if (!agreeToTerms) {
-      alert('Please agree to the terms and conditions');
-      return;
-    }
-    
+    // Validation removed
     alert('Payment successful! Thank you for purchasing travel insurance.');
     navigate('/');
   };

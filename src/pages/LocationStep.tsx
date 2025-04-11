@@ -21,10 +21,7 @@ const LocationStep = () => {
   const { region, setRegion, destination, setDestination } = useTravelForm();
 
   const handleNext = () => {
-    if (!region || !destination) {
-      alert('Please fill in all fields');
-      return;
-    }
+    // Validation removed
     navigate('/dates');
   };
 

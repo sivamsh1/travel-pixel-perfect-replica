@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -29,16 +29,7 @@ const ContactStep = () => {
   } = useTravelForm();
 
   const handleNext = () => {
-    if (!contactEmail || !contactPhone) {
-      alert('Please provide both email and phone number');
-      return;
-    }
-    
-    if (!agreeToContact) {
-      alert('Please agree to the contact terms');
-      return;
-    }
-    
+    // Validation removed
     navigate('/plans');
   };
 

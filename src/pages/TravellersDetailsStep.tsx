@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -29,8 +28,13 @@ const TravellersDetailsStep = () => {
     updateNominee
   } = useTravelForm();
 
-  const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
-  const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
+  const formattedStartDate = startDate ? 
+    format(parse(startDate, 'yyyy-MM-dd', new Date()), 'do MMM') : 
+    '1st Jan';
+  
+  const formattedEndDate = endDate ? 
+    format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : 
+    '10th Jan';
 
   const handleContinue = () => {
     navigate('/review');
