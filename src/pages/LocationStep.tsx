@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -9,13 +9,46 @@ import { useTravelForm } from '@/context/TravelFormContext';
 import RegionSelector from '@/components/RegionSelector';
 import CountrySearch from '@/components/CountrySearch';
 import { formSteps } from '@/constants/formSteps';
+import { toast } from "@/components/ui/use-toast";
 
 const LocationStep = () => {
   const navigate = useNavigate();
   const { region, setRegion, destination, setDestination } = useTravelForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  const validateForm = () => {
+    if (!region) {
+      setFormError('Please select a travel region');
+      return false;
+    }
+
+    if (!destination) {
+      setFormError('Please select a destination');
+      return false;
+    }
+
+    setFormError('');
+    return true;
+  };
 
   const handleNext = () => {
-    navigate('/dates');
+    if (validateForm()) {
+      setIsSubmitting(true);
+      
+      // Simulating form submission - in a real app, this might be an API call
+      setTimeout(() => {
+        navigate('/dates');
+        setIsSubmitting(false);
+      }, 300);
+    } else {
+      // Show toast error
+      toast({
+        title: "Form Error",
+        description: formError,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -34,20 +67,31 @@ const LocationStep = () => {
         <div className="w-full max-w-md space-y-4">
           <RegionSelector 
             value={region} 
-            onChange={setRegion}
+            onChange={(value) => {
+              setRegion(value);
+              setFormError('');
+            }}
           />
           
           <CountrySearch 
             initialValue={destination}
-            onSelect={setDestination}
+            onSelect={(value) => {
+              setDestination(value);
+              setFormError('');
+            }}
           />
+          
+          {formError && (
+            <p className="text-red-500 text-sm">{formError}</p>
+          )}
           
           <div className="pt-4">
             <ActionButton
               onClick={handleNext}
               className="w-full"
+              disabled={isSubmitting}
             >
-              NEXT
+              {isSubmitting ? 'PROCESSING...' : 'NEXT'}
             </ActionButton>
           </div>
         </div>

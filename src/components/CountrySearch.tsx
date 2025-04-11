@@ -4,6 +4,7 @@ import { Search, Loader2 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { useDebounce } from '@/hooks/useDebounce';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface Country {
   _id: string;
@@ -104,7 +105,10 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
     <div className="relative w-full">
       <Input
         ref={inputRef}
-        className="w-full border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+        className={cn(
+          "w-full rounded-md focus:outline-none focus:ring-2 pr-10",
+          inputValue ? "border-primary focus:ring-primary" : "border-red-300 focus:ring-red-500"
+        )}
         placeholder="Destination*"
         value={inputValue}
         onChange={(e) => {

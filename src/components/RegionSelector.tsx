@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface RegionSelectorProps {
   value: string;
@@ -8,12 +9,20 @@ interface RegionSelectorProps {
 }
 
 const RegionSelector = ({ value, onChange }: RegionSelectorProps) => {
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onChange(e.target.value);
+  };
+
   return (
     <div className="relative">
       <select
-        className="w-full h-12 px-3 py-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary text-base md:text-sm font-jost"
+        className={cn(
+          "w-full h-12 px-3 py-3 border rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 text-base md:text-sm font-jost",
+          value ? "border-primary focus:ring-primary" : "border-red-300 focus:ring-red-500"
+        )}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleChange}
+        aria-required="true"
       >
         <option value="" disabled>Travel Region</option>
         <option value="Student Overseas | Excluding USA and CANADA">Student Overseas | Excluding USA and CANADA</option>
