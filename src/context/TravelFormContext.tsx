@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-interface TravellerDetails {
+export interface TravellerDetails {
   dob?: string;
   age?: string;
   passportNumber?: string;
@@ -14,7 +14,7 @@ interface TravellerDetails {
   hasPreExistingCondition?: boolean;
 }
 
-interface NomineeDetails {
+export interface NomineeDetails {
   name?: string;
   relationship?: string;
 }
