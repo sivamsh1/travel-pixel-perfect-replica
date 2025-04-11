@@ -17,6 +17,7 @@ export interface InsurancePlan {
   price: string;
   benefits: Benefit[];
   coveragePoints: string[];
+  travellersCount?: number; // Added this optional property
 }
 
 interface PlanCardProps {
