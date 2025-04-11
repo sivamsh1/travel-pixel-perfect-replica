@@ -13,6 +13,7 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { PlanToCompare } from '@/components/ComparePopup';
+import { insurancePlans } from '@/constants/insurancePlans';
 
 interface ComparisonRowProps {
   label: string;
@@ -44,25 +45,36 @@ const ComparisonRow: React.FC<ComparisonRowProps> = ({
   );
 };
 
+// Default example plans to show when no plans are selected
+const defaultPlans: PlanToCompare[] = [
+  {
+    id: "icon-plan",
+    name: "Icon Plan",
+    provider: "Reliance General Insurance",
+    logo: "https://via.placeholder.com/100x50",
+    description: "Reliance General Insurance",
+  },
+  {
+    id: "magna-plan",
+    name: "Magna Plan",
+    provider: "Future Generali",
+    logo: "https://via.placeholder.com/100x50",
+    description: "Future Generali",
+  }
+];
+
 const ComparePlans = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { plans } = location.state as { plans: PlanToCompare[] };
+  
+  // Use default plans if location.state is null or plans array is missing/empty
+  const plans = location.state?.plans && location.state.plans.length >= 2
+    ? location.state.plans
+    : defaultPlans;
 
   const handleBack = () => {
     navigate('/plans');
   };
-
-  if (!plans || plans.length < 2) {
-    return (
-      <Layout>
-        <div className="flex flex-col items-center justify-center p-12">
-          <p className="text-lg mb-4">No plans selected for comparison</p>
-          <Button onClick={() => navigate('/plans')}>Return to Plans</Button>
-        </div>
-      </Layout>
-    );
-  }
 
   return (
     <Layout>
