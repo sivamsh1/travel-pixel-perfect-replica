@@ -1,12 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
-import { Calendar, Plus, Minus } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
+import { DatePicker } from '@/components/DatePicker';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -24,6 +25,9 @@ const TravellersStep = () => {
     travellers,
     updateTraveller
   } = useTravelForm();
+  
+  // Validation state
+  const [errors, setErrors] = useState<{ [key: number]: { dob?: string, age?: string } }>({});
 
   const handleDecrease = () => {
     if (travellersCount > 1) {
@@ -38,7 +42,57 @@ const TravellersStep = () => {
   };
 
   const handleNext = () => {
-    navigate('/contact');
+    // Validate form fields
+    const newErrors: { [key: number]: { dob?: string, age?: string } } = {};
+    let hasErrors = false;
+    
+    travellers.forEach((traveller, index) => {
+      const travellerErrors: { dob?: string, age?: string } = {};
+      
+      if (!traveller.dob) {
+        travellerErrors.dob = "Date of birth is required";
+        hasErrors = true;
+      }
+      
+      if (Object.keys(travellerErrors).length > 0) {
+        newErrors[index] = travellerErrors;
+      }
+    });
+    
+    setErrors(newErrors);
+    
+    if (!hasErrors) {
+      navigate('/contact');
+    }
+  };
+
+  const handleDateChange = (index: number, date: Date | undefined) => {
+    if (date) {
+      updateTraveller(index, { dob: date.toISOString() });
+      
+      // Calculate age from date of birth
+      if (date) {
+        const today = new Date();
+        let age = today.getFullYear() - date.getFullYear();
+        const monthDiff = today.getMonth() - date.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+          age--;
+        }
+        updateTraveller(index, { age: age.toString() });
+      }
+      
+      // Clear error if exists
+      if (errors[index]?.dob) {
+        const newErrors = { ...errors };
+        if (newErrors[index]) {
+          delete newErrors[index].dob;
+          if (Object.keys(newErrors[index]).length === 0) {
+            delete newErrors[index];
+          }
+        }
+        setErrors(newErrors);
+      }
+    }
   };
 
   return (
@@ -75,15 +129,13 @@ const TravellersStep = () => {
           
           {travellers.map((traveller, index) => (
             <div key={index} className="flex gap-4">
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  className="w-full p-3 border border-gray-300 rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
+              <div className="flex-1">
+                <DatePicker
+                  value={traveller.dob ? new Date(traveller.dob) : undefined}
+                  onChange={(date) => handleDateChange(index, date)}
                   placeholder={`Traveller ${index + 1} DOB`}
-                  value={traveller.dob || ''}
-                  onChange={(e) => updateTraveller(index, { dob: e.target.value })}
+                  error={errors[index]?.dob}
                 />
-                <Calendar className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
               </div>
               
               <div className="w-1/3">

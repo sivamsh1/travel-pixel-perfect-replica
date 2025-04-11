@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -6,8 +7,8 @@ import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { format, parse } from 'date-fns';
-import { Calendar } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { DatePicker } from '@/components/DatePicker';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -36,8 +37,43 @@ const TravellersDetailsStep = () => {
     format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : 
     '10th Jan';
 
+  // Validation state
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const handleDateChange = (index: number, date: Date | undefined) => {
+    if (date) {
+      updateTraveller(index, { dob: date.toISOString() });
+      
+      // Clear error if exists
+      if (errors[`traveller${index}Dob`]) {
+        const newErrors = { ...errors };
+        delete newErrors[`traveller${index}Dob`];
+        setErrors(newErrors);
+      }
+    }
+  };
+
   const handleContinue = () => {
-    navigate('/review');
+    // Validate required fields
+    const newErrors: { [key: string]: string } = {};
+    
+    travellers.forEach((traveller, index) => {
+      if (!traveller.passportNumber) {
+        newErrors[`traveller${index}Passport`] = "Passport number is required";
+      }
+      if (!traveller.name) {
+        newErrors[`traveller${index}Name`] = "Name is required";
+      }
+      if (!traveller.dob) {
+        newErrors[`traveller${index}Dob`] = "Date of birth is required";
+      }
+    });
+    
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length === 0) {
+      navigate('/review');
+    }
   };
 
   return (
@@ -70,34 +106,36 @@ const TravellersDetailsStep = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className={`w-full p-3 border ${errors[`traveller${index}Passport`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
                     value={traveller.passportNumber || ''}
                     onChange={(e) => updateTraveller(index, { passportNumber: e.target.value })}
                   />
+                  {errors[`traveller${index}Passport`] && (
+                    <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Passport`]}</p>
+                  )}
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    className={`w-full p-3 border ${errors[`traveller${index}Name`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
                     value={traveller.name || ''}
                     onChange={(e) => updateTraveller(index, { name: e.target.value })}
                   />
+                  {errors[`traveller${index}Name`] && (
+                    <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Name`]}</p>
+                  )}
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary pr-10"
-                      placeholder="mm/dd/yyyy"
-                      value={traveller.dob || ''}
-                      onChange={(e) => updateTraveller(index, { dob: e.target.value })}
-                    />
-                    <Calendar className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
-                  </div>
+                  <DatePicker
+                    value={traveller.dob ? new Date(traveller.dob) : undefined}
+                    onChange={(date) => handleDateChange(index, date)}
+                    placeholder="Select Date of Birth"
+                    error={errors[`traveller${index}Dob`]}
+                  />
                 </div>
                 
                 <div>
