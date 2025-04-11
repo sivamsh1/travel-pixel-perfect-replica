@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { Search, Loader2 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -104,7 +103,7 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
     <div className="relative w-full">
       <Input
         ref={inputRef}
-        className="w-full p-3 border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+        className="w-full border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary pr-10"
         placeholder="Destination*"
         value={inputValue}
         onChange={(e) => {

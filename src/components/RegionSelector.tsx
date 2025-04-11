@@ -11,7 +11,7 @@ const RegionSelector = ({ value, onChange }: RegionSelectorProps) => {
   return (
     <div className="relative">
       <select
-        className="w-full p-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
+        className="w-full h-12 px-3 py-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary text-base md:text-sm"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
@@ -19,7 +19,7 @@ const RegionSelector = ({ value, onChange }: RegionSelectorProps) => {
         <option value="Student Overseas | Excluding USA and CANADA">Student Overseas | Excluding USA and CANADA</option>
         <option value="Student Overseas | Including USA and CANADA (Worldwide)">Student Overseas | Including USA and CANADA (Worldwide)</option>
       </select>
-      <ChevronDown className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
     </div>
   );
 };
