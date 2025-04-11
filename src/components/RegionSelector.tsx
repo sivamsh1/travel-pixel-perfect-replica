@@ -11,7 +11,7 @@ const RegionSelector = ({ value, onChange }: RegionSelectorProps) => {
   return (
     <div className="relative">
       <select
-        className="w-full p-3 border border-gray-300 rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
+        className="w-full p-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
