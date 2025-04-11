@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { Search, Loader2 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -124,7 +125,7 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
       </div>
 
       {open && inputValue.length >= 2 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-white border border-primary rounded-md shadow-lg max-h-60 overflow-y-auto">
           {countries.length === 0 && !isLoading && (
             <div className="py-3 px-4 text-gray-500 text-center">
               No countries found

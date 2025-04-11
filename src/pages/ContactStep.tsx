@@ -8,6 +8,7 @@ import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { Mail, Phone } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -46,9 +47,9 @@ const ContactStep = () => {
         <div className="w-full max-w-md space-y-6 mt-6">
           <div className="relative">
             <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <input
+            <Input
               type="email"
-              className="w-full p-3 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="pl-10"
               placeholder="Email"
               value={contactEmail}
               onChange={(e) => setContactEmail(e.target.value)}
@@ -57,9 +58,9 @@ const ContactStep = () => {
           
           <div className="relative">
             <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <input
+            <Input
               type="tel"
-              className="w-full p-3 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="pl-10"
               placeholder="Phone No."
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
