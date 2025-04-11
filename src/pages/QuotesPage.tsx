@@ -7,6 +7,7 @@ import ProgressIndicator from '@/components/ProgressIndicator';
 import { useTravelForm } from '@/context/TravelFormContext';
 import QuoteCard from '@/components/quotes/QuoteCard';
 import { Skeleton } from "@/components/ui/skeleton";
+import { QuoteData } from '@/context/TravelFormContext';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -16,19 +17,11 @@ const steps = [
   { id: 5, name: "Review & Pay" }
 ];
 
-interface QuoteItem {
-  id: string;
-  planName: string;
-  netPremium: number;
-  premium: number;
-  companyName: string;
-}
-
 const QuotesPage = () => {
   const navigate = useNavigate();
   const { quotes, setQuotes } = useTravelForm();
   const [isLoading, setIsLoading] = useState(true);
-  const [formattedQuotes, setFormattedQuotes] = useState<QuoteItem[]>([]);
+  const [formattedQuotes, setFormattedQuotes] = useState<QuoteData[]>([]);
 
   useEffect(() => {
     // If no quotes in context, try to get them from localStorage
@@ -77,7 +70,7 @@ const QuotesPage = () => {
         // If we have a result object with key-value pairs
         else if (quotes.length === 1 && typeof quotes[0] === 'object') {
           const quotesObj = quotes[0];
-          const formattedData = Object.entries(quotesObj).map(([key, value]: [string, any]) => {
+          const formattedData: QuoteData[] = Object.entries(quotesObj).map(([key, value]: [string, any]) => {
             // Extract company name from the key (e.g., reliance_Student_Basic)
             const keyParts = key.split('_');
             const companyName = keyParts[0].charAt(0).toUpperCase() + keyParts[0].slice(1);

@@ -24,6 +24,7 @@ export interface QuoteData {
   planName: string;
   netPremium: number;
   premium: number;
+  companyName: string;
   [key: string]: any; // Allow for additional properties
 }
 

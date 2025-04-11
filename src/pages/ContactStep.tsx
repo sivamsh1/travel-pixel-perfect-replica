@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -102,15 +103,29 @@ const ContactStep = () => {
       const quotesResponse = await fetchQuotes(travelData);
       console.log('Quotes response:', quotesResponse);
       
-      // Store quotes in context - keep the raw response format
+      // Process and store quotes in context
       if (quotesResponse && quotesResponse.result) {
-        // We're storing the result directly, which could be an object with key-value pairs
-        setQuotes([quotesResponse.result]);
-        localStorage.setItem('travelQuotes', JSON.stringify([quotesResponse.result]));
+        // Format the quotes to ensure they have the companyName property
+        const processedQuotes = Object.entries(quotesResponse.result).map(([key, value]: [string, any]) => {
+          // Extract company name from the key (e.g., reliance_Student_Basic)
+          const keyParts = key.split('_');
+          const companyName = keyParts[0].charAt(0).toUpperCase() + keyParts[0].slice(1);
+          
+          return {
+            id: key,
+            companyName,
+            planName: value.planName || keyParts.slice(1).join(' '),
+            netPremium: value.netPremium || 0,
+            premium: value.premium || 0
+          };
+        });
+        
+        setQuotes(processedQuotes);
+        localStorage.setItem('travelQuotes', JSON.stringify(processedQuotes));
       } else {
-        // If response structure is different, at least try to store what we got
-        setQuotes([quotesResponse]);
-        localStorage.setItem('travelQuotes', JSON.stringify([quotesResponse]));
+        // Handle empty or unexpected response format
+        setQuotes([]);
+        localStorage.setItem('travelQuotes', JSON.stringify([]));
       }
       
       // Navigate to the quotes page
