@@ -90,7 +90,7 @@ const DatesStep = () => {
                 onChange={handleStartDateChange}
                 placeholder="Start Date"
               />
-              <label className="absolute left-3 top-1 text-xs text-gray-500">Start Date</label>
+              <div className="absolute left-3 top-1 text-xs text-gray-500">Start Date</div>
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
             </div>
             
@@ -102,7 +102,7 @@ const DatesStep = () => {
                 onChange={handleEndDateChange}
                 placeholder="End Date"
               />
-              <label className="absolute left-3 top-1 text-xs text-gray-500">End Date</label>
+              <div className="absolute left-3 top-1 text-xs text-gray-500">End Date</div>
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
             </div>
           </div>
