@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -6,7 +7,7 @@ import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { Calendar } from 'lucide-react';
-import { format, differenceInDays, addDays, parse } from 'date-fns';
+import { format, differenceInDays, parse } from 'date-fns';
 import { formSteps } from '@/constants/formSteps';
 
 const DatesStep = () => {
@@ -17,15 +18,14 @@ const DatesStep = () => {
     const newStartDate = e.target.value;
     setStartDate(newStartDate);
     
-    if (endDate) {
+    if (endDate && newStartDate) {
       try {
         const startDateObj = parse(newStartDate, 'yyyy-MM-dd', new Date());
         const endDateObj = parse(endDate, 'yyyy-MM-dd', new Date());
         
         if (startDateObj > endDateObj) {
-          const newEndDateObj = addDays(startDateObj, 10);
-          setEndDate(format(newEndDateObj, 'yyyy-MM-dd'));
-          setDuration(10);
+          setEndDate('');
+          setDuration(0);
         } else {
           const days = differenceInDays(endDateObj, startDateObj);
           setDuration(days);
@@ -33,6 +33,8 @@ const DatesStep = () => {
       } catch (error) {
         console.error('Date parsing error', error);
       }
+    } else {
+      setDuration(0);
     }
   };
   
@@ -40,13 +42,14 @@ const DatesStep = () => {
     const newEndDate = e.target.value;
     setEndDate(newEndDate);
     
-    if (startDate) {
+    if (startDate && newEndDate) {
       try {
         const startDateObj = parse(startDate, 'yyyy-MM-dd', new Date());
         const endDateObj = parse(newEndDate, 'yyyy-MM-dd', new Date());
         
         if (endDateObj < startDateObj) {
           setEndDate('');
+          setDuration(0);
           return;
         }
         
@@ -55,6 +58,8 @@ const DatesStep = () => {
       } catch (error) {
         console.error('Date parsing error', error);
       }
+    } else {
+      setDuration(0);
     }
   };
 
@@ -80,28 +85,30 @@ const DatesStep = () => {
             <div className="flex-1 relative">
               <input
                 type="date"
-                className="w-full p-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full h-12 px-3 py-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary text-base md:text-sm"
                 value={startDate}
                 onChange={handleStartDateChange}
                 placeholder="Start Date"
               />
+              <label className="absolute left-3 top-1 text-xs text-gray-500">Start Date</label>
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
             </div>
             
             <div className="flex-1 relative">
               <input
                 type="date"
-                className="w-full p-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full h-12 px-3 py-3 border border-primary rounded-md appearance-none pr-10 focus:outline-none focus:ring-2 focus:ring-primary text-base md:text-sm"
                 value={endDate}
                 onChange={handleEndDateChange}
                 placeholder="End Date"
               />
+              <label className="absolute left-3 top-1 text-xs text-gray-500">End Date</label>
               <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
             </div>
           </div>
           
           <div className="text-center text-gray-600">
-            Duration : <span className="text-primary font-medium">{duration} days</span>
+            Trip Duration: <span className="text-primary font-medium">{duration} days</span>
           </div>
           
           <div className="pt-4">
