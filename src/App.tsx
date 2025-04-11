@@ -13,6 +13,7 @@ import PlansStep from "./pages/PlansStep";
 import AddonsStep from "./pages/AddonsStep";
 import TravellersDetailsStep from "./pages/TravellersDetailsStep";
 import ReviewStep from "./pages/ReviewStep";
+import ComparePlans from "./pages/ComparePlans";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/addons" element={<AddonsStep />} />
             <Route path="/traveller-details" element={<TravellersDetailsStep />} />
             <Route path="/review" element={<ReviewStep />} />
+            <Route path="/compare" element={<ComparePlans />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
