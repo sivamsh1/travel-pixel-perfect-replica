@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format, parse } from 'date-fns';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -9,6 +9,7 @@ import PlanCard, { InsurancePlan } from '@/components/PlanCard';
 import PlanFilters from '@/components/PlanFilters';
 import ComparePopup, { PlanToCompare } from '@/components/ComparePopup';
 import { insurancePlans } from '@/constants/insurancePlans';
+import { toast } from "@/components/ui/use-toast";
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -24,13 +25,65 @@ const PlansStep = () => {
     endDate, 
     travellersCount, 
     selectedPlan, 
-    setSelectedPlan 
+    setSelectedPlan,
+    travellers,
+    destination
   } = useTravelForm();
 
   const [plansToCompare, setPlansToCompare] = useState<PlanToCompare[]>([]);
 
   const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
   const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
+
+  // Fetch quotes when the component mounts
+  useEffect(() => {
+    const fetchQuotes = async () => {
+      try {
+        // Prepare the request payload
+        const dob = travellers.map(traveller => {
+          return traveller.dob ? format(parse(traveller.dob, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
+        }).filter(Boolean);
+        
+        const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
+        const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
+        
+        // Create the data object for API call
+        const requestData = {
+          destination: destination || "679e707834ecd414eb0004de",
+          dob: dob.length ? dob : ["17/08/1997"],
+          startDate: formattedStartDate || "19/06/2025",
+          returnDate: formattedEndDate || "29/07/2025",
+        };
+        
+        console.log('Fetching quotes with payload:', requestData);
+        
+        const response = await fetch('https://gyaantree.com/api/travel/v1/quickQuote/fetch-quotes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('API Response:', data);
+        
+      } catch (error) {
+        console.error('Error fetching quotes:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch insurance quotes. Please try again.",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    fetchQuotes();
+  }, [destination, startDate, endDate, travellers]);
 
   const handleBuyNow = (planName: string) => {
     // Only update the selected plan in context
