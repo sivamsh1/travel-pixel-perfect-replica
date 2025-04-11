@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Airplane } from 'lucide-react';
+import { Plane } from 'lucide-react';
 
 interface Step {
   id: number;
@@ -30,7 +30,7 @@ const ProgressIndicator = ({ steps, currentStep, completedSteps }: ProgressIndic
               )}
             >
               {(currentStep === step.id || completedSteps.includes(step.id)) && index === 0 ? (
-                <Airplane className="h-4 w-4" />
+                <Plane className="h-4 w-4" />
               ) : null}
             </div>
             <span 
