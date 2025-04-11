@@ -1,14 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
-import { Mail, Phone } from 'lucide-react';
+import { Mail, Phone, AlertCircle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -20,6 +22,7 @@ const steps = [
 
 const ContactStep = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { 
     contactEmail, 
     setContactEmail, 
@@ -29,8 +32,58 @@ const ContactStep = () => {
     setAgreeToContact
   } = useTravelForm();
 
+  // State for validation errors
+  const [errors, setErrors] = useState({
+    email: '',
+    phone: ''
+  });
+
+  // Handle form validation
+  const validateForm = (): boolean => {
+    let isValid = true;
+    const newErrors = { email: '', phone: '' };
+
+    // Validate email
+    if (!contactEmail) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!isValidEmail(contactEmail)) {
+      newErrors.email = 'Please enter a valid email address';
+      isValid = false;
+    }
+
+    // Validate phone number
+    if (!contactPhone) {
+      newErrors.phone = 'Phone number is required';
+      isValid = false;
+    } else if (!isValidPhone(contactPhone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleNext = () => {
-    // Validation removed
+    if (!validateForm()) {
+      toast({
+        title: "Validation Error",
+        description: "Please correct the errors in the form",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!agreeToContact) {
+      toast({
+        title: "Agreement Required",
+        description: "Please agree to the contact terms to continue",
+        variant: "destructive"
+      });
+      return;
+    }
+
     navigate('/plans');
   };
 
@@ -45,26 +98,48 @@ const ContactStep = () => {
         <h2 className="text-3xl font-bold mb-4">Our representatives to contact you via</h2>
         
         <div className="w-full max-w-md space-y-6 mt-6">
-          <div className="relative">
-            <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <Input
-              type="email"
-              className="pl-10"
-              placeholder="Email"
-              value={contactEmail}
-              onChange={(e) => setContactEmail(e.target.value)}
-            />
+          <div className="space-y-1">
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <Input
+                type="email"
+                className={`pl-10 ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                placeholder="Email"
+                value={contactEmail}
+                onChange={(e) => {
+                  setContactEmail(e.target.value);
+                  if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
+                }}
+              />
+            </div>
+            {errors.email && (
+              <div className="flex items-center text-destructive text-sm space-x-1 px-1">
+                <AlertCircle className="h-4 w-4" />
+                <span>{errors.email}</span>
+              </div>
+            )}
           </div>
           
-          <div className="relative">
-            <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <Input
-              type="tel"
-              className="pl-10"
-              placeholder="Phone No."
-              value={contactPhone}
-              onChange={(e) => setContactPhone(e.target.value)}
-            />
+          <div className="space-y-1">
+            <div className="relative">
+              <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <Input
+                type="tel"
+                className={`pl-10 ${errors.phone ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                placeholder="Phone No."
+                value={contactPhone}
+                onChange={(e) => {
+                  setContactPhone(e.target.value);
+                  if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
+                }}
+              />
+            </div>
+            {errors.phone && (
+              <div className="flex items-center text-destructive text-sm space-x-1 px-1">
+                <AlertCircle className="h-4 w-4" />
+                <span>{errors.phone}</span>
+              </div>
+            )}
           </div>
           
           <div className="flex items-start space-x-3">
