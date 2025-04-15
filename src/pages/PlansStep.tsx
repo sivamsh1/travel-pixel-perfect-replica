@@ -11,7 +11,7 @@ import PlansList from '@/components/plans/PlansList';
 import PlanComparisonManager from '@/components/plans/PlanComparisonManager';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Progress } from "@/components/ui/progress";
-import { getFromLocalStorage } from '@/utils/localStorageUtils';
+import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -67,6 +67,23 @@ const PlansStep = () => {
   }
 
   const handleBuyNow = (planName: string) => {
+    // Find the selected plan from quotes
+    const selectedPlanData = quotes.find(plan => plan.name === planName);
+    
+    if (selectedPlanData) {
+      // Store plan details in localStorage
+      const planData = {
+        name: selectedPlanData.name,
+        provider: selectedPlanData.provider,
+        price: selectedPlanData.price,
+        details: selectedPlanData.details,
+        insurer: `${selectedPlanData.provider} ${selectedPlanData.name}`,
+        sumInsured: 'USD 50000' // This would ideally come from the plan data
+      };
+      
+      saveToLocalStorage('selectedPlan', planData);
+    }
+    
     setSelectedPlan(planName);
     // Navigation is handled in the PlanCard component
   };

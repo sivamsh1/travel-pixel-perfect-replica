@@ -41,11 +41,21 @@ interface ContactData {
   agreeToContact: boolean;
 }
 
+interface PlanData {
+  name: string;
+  provider: string;
+  price: string;
+  details?: string;
+  insurer?: string;
+  sumInsured?: string;
+}
+
 export interface TravelFormData {
   location?: LocationData;
   dates?: DatesData;
   travellers?: TravellersData;
   contact?: ContactData;
+  selectedPlan?: PlanData;
 }
 
 const STORAGE_KEY = 'travel_form_data';

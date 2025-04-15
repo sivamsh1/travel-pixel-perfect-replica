@@ -9,6 +9,7 @@ import PlanCardBenefits from './plans/PlanCardBenefits';
 import PlanCardCoveragePoints from './plans/PlanCardCoveragePoints';
 import PlanCardActions from './plans/PlanCardActions';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { saveToLocalStorage } from '@/utils/localStorageUtils';
 
 interface Benefit {
   icon: string;
@@ -51,6 +52,19 @@ const PlanCard: React.FC<PlanCardProps> = ({
     : "/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png";
   
   const handleBuyNow = () => {
+    // Store the selected plan details in localStorage
+    const planData = {
+      name: plan.name,
+      provider: plan.provider,
+      price: plan.price,
+      details: plan.details,
+      insurer: `${plan.provider} ${plan.name}`,
+      sumInsured: 'USD 50000' // This would ideally come from the plan data
+    };
+    
+    // Save plan data to localStorage
+    saveToLocalStorage('selectedPlan', planData);
+    
     // Collect data from previous pages with safe date parsing
     const dob = travellers.map(traveller => {
       if (!traveller.dob) return null;

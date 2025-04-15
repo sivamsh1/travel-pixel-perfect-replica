@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { PlanToCompare } from '@/components/ComparePopup';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { format, parse } from 'date-fns';
+import { saveToLocalStorage } from '@/utils/localStorageUtils';
 
 interface PlanActionsProps {
   plans: PlanToCompare[];
@@ -16,7 +17,21 @@ const PlanActions: React.FC<PlanActionsProps> = ({ plans, onBuyNow }) => {
   const navigate = useNavigate();
   const { destination, startDate, endDate, travellers } = useTravelForm();
 
-  const handleBuyNow = (planName: string) => {
+  const handleBuyNow = (planName: string, index: number) => {
+    // Save selected plan data
+    const plan = plans[index];
+    const planData = {
+      name: plan.name,
+      provider: index === 0 ? 'AIG' : 'HDFC', // Example providers based on index
+      price: index === 0 ? '₹ 3998' : '₹ 2500', // Fixed prices from the UI
+      details: index === 0 ? 'Multi Trip with Add-On' : 'Single Trip (Standard)',
+      insurer: index === 0 ? 'AIG Multi Trip with Add-On' : 'HDFC Single Trip (Standard)',
+      sumInsured: 'USD 50000'
+    };
+    
+    // Save to localStorage
+    saveToLocalStorage('selectedPlan', planData);
+    
     // Collect data from previous pages
     const dob = travellers.map(traveller => {
       return traveller.dob ? format(parse(traveller.dob, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
@@ -56,7 +71,7 @@ const PlanActions: React.FC<PlanActionsProps> = ({ plans, onBuyNow }) => {
           <Button 
             className={`${index === 0 ? 'bg-[#143d7a] hover:bg-[#143d7a]/80' : 'bg-[#FF6B35] hover:bg-[#FF6B35]/80'} cursor-pointer transition-colors`}
             size="sm"
-            onClick={() => handleBuyNow(plan.name)}
+            onClick={() => handleBuyNow(plan.name, index)}
           >
             Buy Now
           </Button>
