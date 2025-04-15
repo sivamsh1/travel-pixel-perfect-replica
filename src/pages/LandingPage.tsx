@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Plane, Shield, Luggage, MapPin, Heart, AlertCircle, Pill, Stretcher, UserPlus, XCircle, Check } from 'lucide-react';
+import { Plane, Shield, Luggage, MapPin, Heart, AlertCircle, Pill, UserPlus, XCircle, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const LandingPage = () => {
