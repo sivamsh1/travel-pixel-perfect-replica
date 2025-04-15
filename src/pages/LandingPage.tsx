@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plane, Shield, Luggage, MapPin, Heart, AlertCircle, Pill, UserPlus, XCircle, Check } from 'lucide-react';
@@ -12,7 +11,11 @@ const LandingPage = () => {
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png" alt="Policy Insure Logo" className="h-10" />
+              <img 
+                src="/lovable-uploads/dafe065b-e37a-436a-9495-630547ca23ad.png" 
+                alt="Policy Insure Logo" 
+                className="h-10" 
+              />
             </Link>
             <div className="hidden md:flex ml-10 space-x-6">
               <div className="relative group">
@@ -117,7 +120,7 @@ const LandingPage = () => {
               <div className="flex items-center mb-4">
                 <div className="h-10 w-10 rounded-md bg-blue-50 flex items-center justify-center mr-3">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold">Emergency dental expenses</h3>
@@ -131,7 +134,7 @@ const LandingPage = () => {
               <div className="flex items-center mb-4">
                 <div className="h-10 w-10 rounded-md bg-blue-50 flex items-center justify-center mr-3">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold">Medical evacuation</h3>
@@ -246,7 +249,7 @@ const LandingPage = () => {
               <div className="flex items-center mb-4">
                 <div className="h-10 w-10 rounded-md bg-blue-50 flex items-center justify-center mr-3">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0 0L9.121 9.121" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold">Cosmetic Treatment or Obesity</h3>
@@ -384,7 +387,11 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
               <div className="mb-6">
-                <img src="/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png" alt="Policy Insure Logo" className="h-10" />
+                <img 
+                  src="/lovable-uploads/dafe065b-e37a-436a-9495-630547ca23ad.png" 
+                  alt="Policy Insure Logo" 
+                  className="h-10" 
+                />
               </div>
               <p className="text-gray-700 mb-6">
                 With Policy Insure, you do more than compare policies; you truly understand them, narrow your choices, make wiser choices, and stay away from risks.
