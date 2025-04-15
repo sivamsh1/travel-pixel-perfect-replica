@@ -5,32 +5,44 @@ import { useTravelForm } from '@/context/TravelFormContext';
 import { InsurancePlan } from '@/components/PlanCard';
 import { toast } from "@/components/ui/use-toast";
 import { useQuery } from '@tanstack/react-query';
+import { getFromLocalStorage } from '@/utils/localStorageUtils';
 
 export const useInsuranceQuotes = () => {
   const { 
-    startDate, 
-    endDate, 
-    travellersCount, 
-    travellers,
-    destination
+    travellersCount,
+    travellers
   } = useTravelForm();
 
-  // Create the request payload with fallback values
+  // Create the request payload from localStorage data
   const requestPayload = useMemo(() => {
+    const storageData = getFromLocalStorage();
+    
+    // Get traveller DOBs from context
     const dob = travellers.map(traveller => {
       return traveller.dob ? format(parse(traveller.dob, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
     }).filter(Boolean);
     
-    const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
-    const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
+    // Get dates from localStorage or context
+    let startDate = '';
+    let endDate = '';
+    
+    if (storageData?.dates) {
+      startDate = storageData.dates.startDate ? 
+        format(parse(storageData.dates.startDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
+      endDate = storageData.dates.endDate ? 
+        format(parse(storageData.dates.endDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
+    }
+    
+    // Get destination ID from localStorage
+    const destinationId = storageData?.location?.destinationId || '679e707834ecd414eb0004de';
     
     return {
-      destination: destination || "679e707834ecd414eb0004de", // Fallback destination
-      dob: dob.length ? dob : ["17/08/1997"], // Fallback DOB
-      startDate: formattedStartDate || "19/06/2025", // Fallback start date
-      returnDate: formattedEndDate || "29/07/2025", // Fallback end date
+      destination: destinationId, // Use the actual destination ID from localStorage
+      dob: dob.length ? dob : ["17/08/1997"], // Use traveller data or fallback
+      startDate: startDate || "19/06/2025", // Use actual dates or fallback
+      returnDate: endDate || "29/07/2025", // Use actual dates or fallback
     };
-  }, [destination, startDate, endDate, travellers]);
+  }, [travellers]);
 
   // Fetch quotes using React Query
   const { data: apiQuotes, isLoading, error } = useQuery({

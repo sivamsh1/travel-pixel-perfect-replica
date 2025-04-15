@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -11,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
+import { saveToLocalStorage } from '@/utils/localStorageUtils';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -29,11 +29,7 @@ const ContactStep = () => {
     contactPhone, 
     setContactPhone,
     agreeToContact,
-    setAgreeToContact,
-    destination,
-    travellers,
-    startDate,
-    endDate
+    setAgreeToContact
   } = useTravelForm();
 
   // State for validation errors
@@ -41,12 +37,6 @@ const ContactStep = () => {
     email: '',
     phone: ''
   });
-
-  // Convert date from DD/MM/YYYY to YYYY-MM-DD format
-  const convertToJsDateFormat = (dateString: string): Date => {
-    const [day, month, year] = dateString.split('/');
-    return new Date(`${year}-${month}-${day}`);
-  };
 
   // Handle form validation
   const validateForm = (): boolean => {
@@ -94,24 +84,12 @@ const ContactStep = () => {
       return;
     }
 
-    // Collect data to be logged
-    const travelData = {
-      destination: "679e707834ecd414eb0004de",
-      dob: "17/08/1997", // Static DOB as required
-      startDate: "19/06/2025", // Static start date as required
-      returnDate: "29/07/2025", // Static end date as required
-    };
-
-    // Convert dates to JavaScript Date objects
-    const jsData = {
-      ...travelData,
-      dob: convertToJsDateFormat(travelData.dob),
-      startDate: convertToJsDateFormat(travelData.startDate),
-      returnDate: convertToJsDateFormat(travelData.returnDate)
-    };
-
-    // Log the converted data
-    console.log('Travel data with converted dates:', jsData);
+    // Save contact details to localStorage
+    saveToLocalStorage('contact', {
+      email: contactEmail,
+      phone: contactPhone,
+      agreeToContact
+    });
 
     // Navigate to the next page
     navigate('/plans');

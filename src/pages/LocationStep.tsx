@@ -10,12 +10,14 @@ import RegionSelector from '@/components/RegionSelector';
 import CountrySearch from '@/components/CountrySearch';
 import { formSteps } from '@/constants/formSteps';
 import { toast } from "@/components/ui/use-toast";
+import { saveToLocalStorage } from '@/utils/localStorageUtils';
 
 const LocationStep = () => {
   const navigate = useNavigate();
   const { region, setRegion, destination, setDestination } = useTravelForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [destinationId, setDestinationId] = useState<string>('');
 
   const validateForm = () => {
     if (!region) {
@@ -36,7 +38,14 @@ const LocationStep = () => {
     if (validateForm()) {
       setIsSubmitting(true);
       
-      // Simulating form submission - in a real app, this might be an API call
+      // Save to localStorage
+      saveToLocalStorage('location', {
+        region,
+        destination,
+        destinationId: destinationId || '679e707834ecd414eb0004de' // Use fallback if not available
+      });
+      
+      // Navigate to next page
       setTimeout(() => {
         navigate('/dates');
         setIsSubmitting(false);
@@ -75,8 +84,9 @@ const LocationStep = () => {
           
           <CountrySearch 
             initialValue={destination}
-            onSelect={(value) => {
+            onSelect={(value, id) => {
               setDestination(value);
+              setDestinationId(id);
               setFormError('');
             }}
           />

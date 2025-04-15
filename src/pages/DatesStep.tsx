@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -16,6 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
+import { saveToLocalStorage } from '@/utils/localStorageUtils';
 
 const DatesStep = () => {
   const navigate = useNavigate();
@@ -71,6 +71,15 @@ const DatesStep = () => {
   };
 
   const handleNext = () => {
+    // Save dates to localStorage
+    if (startDate && endDate) {
+      saveToLocalStorage('dates', {
+        startDate,
+        endDate,
+        duration
+      });
+    }
+    
     navigate('/travellers');
   };
 

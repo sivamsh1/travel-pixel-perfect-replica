@@ -14,7 +14,7 @@ interface Country {
 
 interface CountrySearchProps {
   initialValue: string;
-  onSelect: (country: string) => void;
+  onSelect: (country: string, countryId: string) => void;
 }
 
 const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
@@ -87,7 +87,7 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
         if (activeIndex >= 0 && activeIndex < countries.length) {
           const selectedCountry = countries[activeIndex];
           setInputValue(selectedCountry.name);
-          onSelect(selectedCountry.name);
+          onSelect(selectedCountry.name, selectedCountry._id);
           setOpen(false);
           inputRef.current?.blur();
         }
@@ -149,7 +149,7 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
                 }`}
                 onClick={() => {
                   setInputValue(country.name);
-                  onSelect(country.name);
+                  onSelect(country.name, country._id);
                   setOpen(false);
                 }}
                 onMouseEnter={() => setActiveIndex(index)}

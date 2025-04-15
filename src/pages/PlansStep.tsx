@@ -11,6 +11,7 @@ import PlansList from '@/components/plans/PlansList';
 import PlanComparisonManager from '@/components/plans/PlanComparisonManager';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Progress } from "@/components/ui/progress";
+import { getFromLocalStorage } from '@/utils/localStorageUtils';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -31,9 +32,16 @@ const PlansStep = () => {
   
   const isMobile = useIsMobile();
   const { quotes, isLoading, error } = useInsuranceQuotes();
-
-  const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
-  const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
+  
+  // Get data from localStorage for display
+  const storageData = getFromLocalStorage();
+  
+  // Use dates from localStorage if available, otherwise use context
+  const effectiveStartDate = storageData?.dates?.startDate || startDate;
+  const effectiveEndDate = storageData?.dates?.endDate || endDate;
+  
+  const formattedStartDate = effectiveStartDate ? format(parse(effectiveStartDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
+  const formattedEndDate = effectiveEndDate ? format(parse(effectiveEndDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
 
   const handleBuyNow = (planName: string) => {
     setSelectedPlan(planName);
