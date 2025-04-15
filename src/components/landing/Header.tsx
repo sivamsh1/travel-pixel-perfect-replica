@@ -18,7 +18,7 @@ const Header = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Link to="/" className="flex items-center gap-2">
+              <Link to="/" className="flex items-center">
                 <img 
                   src="/lovable-uploads/dafe065b-e37a-436a-9495-630547ca23ad.png" 
                   alt="Policy Insure Logo" 
@@ -27,9 +27,10 @@ const Header = () => {
               </Link>
             </div>
             
-            {/* Navigation Links - with consistent spacing */}
-            <nav className="hidden md:flex items-center justify-center flex-1 mx-8">
-              <div className="flex items-center justify-center space-x-8">
+            {/* Navigation and Actions - using flex-1 to distribute space evenly */}
+            <div className="hidden md:flex items-center justify-between flex-1 px-8">
+              {/* Navigation Links - evenly spaced */}
+              <nav className="flex items-center space-x-10">
                 <div className="relative group">
                   <button className="flex items-center text-gray-600 font-medium gap-1 py-2 hover:text-primary transition-colors">
                     Insurance Product
@@ -40,27 +41,29 @@ const Header = () => {
                 <Link to="/articles" className="text-gray-600 font-medium py-2 hover:text-primary transition-colors">Articles</Link>
                 <Link to="/press-release" className="text-gray-600 font-medium py-2 hover:text-primary transition-colors">Press-release</Link>
                 <Link to="/about" className="text-gray-600 font-medium py-2 hover:text-primary transition-colors">About Us</Link>
+              </nav>
+              
+              {/* Action Buttons - evenly spaced */}
+              <div className="flex items-center space-x-6">
+                <a href="tel:+1234567890" className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-50 text-primary hover:bg-blue-100 transition-colors">
+                  <Phone className="h-4 w-4" />
+                </a>
+                <Link to="/join" className="flex items-center justify-center px-6 py-2.5 bg-blue-50 text-primary rounded-full font-medium text-sm hover:bg-blue-100 transition-colors">
+                  Join as POS
+                </Link>
+                <Link to="/login" className="text-primary font-medium text-sm hover:underline transition-all">
+                  Login
+                </Link>
               </div>
-            </nav>
-            
-            {/* Action Buttons - with consistent spacing */}
-            <div className="flex items-center space-x-5">
-              <a href="tel:+1234567890" className="hidden md:flex items-center justify-center h-10 w-10 rounded-full bg-blue-50 text-primary hover:bg-blue-100 transition-colors">
-                <Phone className="h-4 w-4" />
-              </a>
-              <Link to="/join" className="hidden md:flex items-center justify-center px-6 py-2.5 bg-blue-50 text-primary rounded-full font-medium text-sm hover:bg-blue-100 transition-colors">
-                Join as POS
-              </Link>
-              <Link to="/login" className="hidden md:flex text-primary font-medium text-sm hover:underline transition-all">
-                Login
-              </Link>
-              <button 
-                onClick={toggleMobileMenu}
-                className="md:hidden flex items-center justify-center h-10 w-10 text-gray-700"
-              >
-                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
             </div>
+            
+            {/* Mobile menu button */}
+            <button 
+              onClick={toggleMobileMenu}
+              className="md:hidden flex items-center justify-center h-10 w-10 text-gray-700"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
         </div>
         <Separator className="opacity-30" />
