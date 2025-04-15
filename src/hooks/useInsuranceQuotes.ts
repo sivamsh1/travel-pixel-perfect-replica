@@ -67,20 +67,22 @@ export const useInsuranceQuotes = () => {
             const provider = planNameParts[0] || 'Reliance';
             const planName = planNameParts.slice(1).join(' ');
             
+            const details = "Overseas Travel | Excluding USA and CANADA";
+            
             return {
               id: key,
               name: planName || key,
               provider: provider,
               logo: '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png', // Reliance logo
               description: `${planName} Insurance Plan`,
-              details: `${provider} Insurance`,
+              details: details,
               price: `₹${value.netPremium || 0}`,
               benefits: [
-                { icon: "✓", text: "Medical Coverage" },
-                { icon: "✓", text: "Trip Cancellation" },
-                { icon: "✓", text: "Baggage Loss" }
+                { icon: "✓", text: "Emergency Medical Assistance" },
+                { icon: "✓", text: "Lifestyle Assistance" },
+                { icon: "✓", text: "Domestic Roadside Assistance" }
               ],
-              coveragePoints: ["Medical", "Travel", "Baggage"],
+              coveragePoints: ["$ 1000 Trip Cancellation", "$ 50000 Medical Expenses incl."],
               travellersCount
             };
           });

@@ -76,31 +76,62 @@ const PlanCard: React.FC<PlanCardProps> = ({
   };
   
   return (
-    <div className="border border-gray-200 rounded-md p-4 relative">
-      <div className={`flex ${isMobile ? 'flex-col space-y-4' : ''}`}>
-        <div className={`${isMobile ? 'flex' : ''}`}>
-          <PlanCardLogo logo={relianceLogo} provider={plan.provider} />
+    <div className="border border-gray-200 rounded-xl p-6 relative hover:shadow-md transition-shadow">
+      <div className="flex flex-col gap-6">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-4">
+            <PlanCardLogo logo={relianceLogo} provider={plan.provider} />
+            <div>
+              <h3 className="font-bold text-xl text-[#FF6B35]">{plan.name}</h3>
+              <p className="text-gray-600 text-sm">{plan.details}</p>
+            </div>
+          </div>
           
-          <div className="flex-1">
-            <PlanCardHeader 
-              name={plan.name}
-              details={plan.details}
-              travellersCount={plan.travellersCount}
-              price={plan.price}
-            />
-            
-            <PlanCardBenefits benefits={plan.benefits} />
-            
-            <PlanCardCoveragePoints coveragePoints={plan.coveragePoints} />
+          <div className="text-right">
+            {plan.travellersCount !== undefined && (
+              <div className="text-xs text-gray-500">{plan.travellersCount} traveller(s)</div>
+            )}
+            <div className="text-xl font-bold text-[#FF6B35]">{plan.price}</div>
           </div>
         </div>
         
-        <PlanCardActions
-          plan={plan}
-          isSelectedForComparison={isSelectedForComparison}
-          onBuyNow={handleBuyNow}
-          onToggleCompare={onToggleCompare}
-        />
+        <PlanCardBenefits benefits={plan.benefits} />
+        
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="bg-blue-500 text-white text-sm px-4 py-1.5 rounded-full">
+            Plan Benefits
+          </div>
+          
+          {plan.coveragePoints.map((point, index) => (
+            <div key={index} className="px-3 py-1 border border-gray-200 rounded-full text-sm text-gray-600">
+              {point}
+            </div>
+          ))}
+          
+          <div className="text-blue-500 text-sm ml-auto cursor-pointer hover:underline">
+            View All →
+          </div>
+        </div>
+        
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id={`compare-${plan.id}`}
+              checked={isSelectedForComparison}
+              onChange={() => onToggleCompare(plan)}
+              className="rounded text-blue-500 focus:ring-blue-500"
+            />
+            <label htmlFor={`compare-${plan.id}`} className="text-sm">Add to Compare</label>
+          </div>
+          
+          <button 
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-full text-sm font-medium transition-colors"
+            onClick={handleBuyNow}
+          >
+            Buy Now
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -8,11 +8,11 @@ interface PlanCardLogoProps {
 
 const PlanCardLogo: React.FC<PlanCardLogoProps> = ({ logo, provider }) => {
   return (
-    <div className="mr-4 bg-blue-50 p-2 rounded-md border border-blue-100 flex items-center justify-center">
+    <div className="p-2 rounded-lg border border-gray-100 flex items-center justify-center bg-white shadow-sm">
       <img 
         src={logo} 
         alt={`${provider} logo`} 
-        className="h-8 w-auto object-contain" 
+        className="h-10 w-auto object-contain" 
       />
     </div>
   );

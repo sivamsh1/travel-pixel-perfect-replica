@@ -25,10 +25,10 @@ const PlansList: React.FC<PlansListProps> = ({
   
   if (isLoading) {
     return (
-      <div className="w-full space-y-5 mb-20">
-        <div className="border border-gray-200 rounded-md p-4 animate-pulse h-24 bg-gray-50"></div>
-        <div className="border border-gray-200 rounded-md p-4 animate-pulse h-24 bg-gray-50"></div>
-        <div className="border border-gray-200 rounded-md p-4 animate-pulse h-24 bg-gray-50"></div>
+      <div className="w-full space-y-6 mb-20">
+        <div className="border border-gray-200 rounded-xl p-6 animate-pulse bg-gray-50 h-48"></div>
+        <div className="border border-gray-200 rounded-xl p-6 animate-pulse bg-gray-50 h-48"></div>
+        <div className="border border-gray-200 rounded-xl p-6 animate-pulse bg-gray-50 h-48"></div>
       </div>
     );
   }
@@ -43,7 +43,7 @@ const PlansList: React.FC<PlansListProps> = ({
   }
 
   return (
-    <div className="w-full space-y-5 mb-20">
+    <div className="w-full space-y-6 mb-20">
       {apiQuotes.map((plan) => (
         <PlanCard
           key={plan.id}

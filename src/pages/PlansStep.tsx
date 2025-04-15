@@ -42,7 +42,7 @@ const PlansStep = () => {
 
   return (
     <Layout>
-      <div className={`px-${isMobile ? '4' : '6'} md:px-12`}>
+      <div className="px-6 md:px-12">
         <BackButton />
         <ProgressIndicator 
           steps={steps} 
@@ -51,8 +51,8 @@ const PlansStep = () => {
         />
       </div>
       
-      <div className={`flex flex-1 flex-col items-center px-${isMobile ? '4' : '6'} max-w-5xl mx-auto w-full`}>
-        <h2 className={`text-${isMobile ? '2xl' : '3xl'} font-bold mb-6`}>Select Your Plan</h2>
+      <div className="flex flex-1 flex-col items-center px-6 max-w-5xl mx-auto w-full">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6">Select Your Plan</h2>
         
         <PlanFilters 
           travellersCount={travellersCount}
