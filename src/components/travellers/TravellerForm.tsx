@@ -24,7 +24,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number<span className="text-red-500">*</span></label>
           <input
             type="text"
             className={`w-full p-3 border ${errors[`traveller${index}Passport`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
@@ -37,7 +37,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Name<span className="text-red-500">*</span></label>
           <input
             type="text"
             className={`w-full p-3 border ${errors[`traveller${index}Name`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
@@ -50,7 +50,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth<span className="text-red-500">*</span></label>
           <DatePicker
             value={traveller.dob ? new Date(traveller.dob) : undefined}
             onChange={(date) => handleDateChange(index, date)}
@@ -73,10 +73,14 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
           <input
             type="text"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className={`w-full p-3 border ${errors[`traveller${index}Pincode`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
             value={traveller.pincode || ''}
             onChange={(e) => updateTraveller(index, { pincode: e.target.value })}
+            maxLength={6}
           />
+          {errors[`traveller${index}Pincode`] && (
+            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Pincode`]}</p>
+          )}
         </div>
         
         <div>
@@ -93,20 +97,27 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-1">Mobile No.</label>
           <input
             type="tel"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className={`w-full p-3 border ${errors[`traveller${index}Mobile`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
             value={traveller.mobileNo || ''}
             onChange={(e) => updateTraveller(index, { mobileNo: e.target.value })}
+            maxLength={10}
           />
+          {errors[`traveller${index}Mobile`] && (
+            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Mobile`]}</p>
+          )}
         </div>
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
             type="email"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className={`w-full p-3 border ${errors[`traveller${index}Email`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
             value={traveller.email || ''}
             onChange={(e) => updateTraveller(index, { email: e.target.value })}
           />
+          {errors[`traveller${index}Email`] && (
+            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Email`]}</p>
+          )}
         </div>
       </div>
     </div>

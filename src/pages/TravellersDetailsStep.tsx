@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, parse } from 'date-fns';
 import Layout from '@/components/Layout';
@@ -11,6 +11,9 @@ import TravellerForm from '@/components/travellers/TravellerForm';
 import NomineeForm from '@/components/travellers/NomineeForm';
 import MedicalConditionSelector from '@/components/travellers/MedicalConditionSelector';
 import TripSummary from '@/components/travellers/TripSummary';
+import { getFromLocalStorage } from '@/utils/localStorageUtils';
+import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
+import { toast } from "@/components/ui/use-toast";
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -42,6 +45,31 @@ const TravellersDetailsStep = () => {
   // Validation state
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  // Effect to populate fields from localStorage on mount
+  useEffect(() => {
+    const storageData = getFromLocalStorage();
+    
+    // Auto-fill traveller fields if we have contact data
+    if (storageData?.contact) {
+      // We'll only populate the first traveller with contact data
+      if (travellers.length > 0) {
+        const updatedTraveller = { ...travellers[0] };
+        
+        // Only update if the field is empty
+        if (!updatedTraveller.email && storageData.contact.email) {
+          updatedTraveller.email = storageData.contact.email;
+        }
+        
+        if (!updatedTraveller.mobileNo && storageData.contact.phone) {
+          updatedTraveller.mobileNo = storageData.contact.phone;
+        }
+        
+        // Update the first traveller with the contact data
+        updateTraveller(0, updatedTraveller);
+      }
+    }
+  }, []);
+
   const handleDateChange = (index: number, date: Date | undefined) => {
     if (date) {
       updateTraveller(index, { dob: date.toISOString() });
@@ -55,26 +83,59 @@ const TravellersDetailsStep = () => {
     }
   };
 
-  const handleContinue = () => {
-    // Validate required fields
+  const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
     
     travellers.forEach((traveller, index) => {
+      // Required fields validation
       if (!traveller.passportNumber) {
         newErrors[`traveller${index}Passport`] = "Passport number is required";
+      } else if (traveller.passportNumber.length < 8) {
+        newErrors[`traveller${index}Passport`] = "Passport number should be at least 8 characters";
       }
+      
       if (!traveller.name) {
         newErrors[`traveller${index}Name`] = "Name is required";
+      } else if (traveller.name.length < 3) {
+        newErrors[`traveller${index}Name`] = "Name should be at least 3 characters";
       }
+      
       if (!traveller.dob) {
         newErrors[`traveller${index}Dob`] = "Date of birth is required";
+      }
+      
+      // Optional fields format validation
+      if (traveller.mobileNo && !isValidPhone(traveller.mobileNo)) {
+        newErrors[`traveller${index}Mobile`] = "Please enter a valid 10-digit phone number";
+      }
+      
+      if (traveller.email && !isValidEmail(traveller.email)) {
+        newErrors[`traveller${index}Email`] = "Please enter a valid email address";
+      }
+      
+      if (traveller.pincode && !/^\d{6}$/.test(traveller.pincode)) {
+        newErrors[`traveller${index}Pincode`] = "Pincode should be 6 digits";
       }
     });
     
     setErrors(newErrors);
-    
-    if (Object.keys(newErrors).length === 0) {
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleContinue = () => {
+    // Validate required fields
+    if (validateForm()) {
+      toast({
+        title: "Success",
+        description: "Traveller details saved successfully",
+      });
       navigate('/review');
+    } else {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields correctly",
+        variant: "destructive"
+      });
     }
   };
 
