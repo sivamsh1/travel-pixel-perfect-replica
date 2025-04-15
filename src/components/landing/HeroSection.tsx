@@ -7,7 +7,10 @@ const HeroSection = () => {
   return (
     <section className="bg-white py-16 md:py-24">
       <div className="container mx-auto px-4 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-4">
+        <h1 
+          className="text-[90px] text-[#2C2C2C] font-medium leading-[120%] text-center"
+          style={{ fontFamily: 'Jost, sans-serif' }}
+        >
           Wherever you go<br />
           our coverage follows
         </h1>
