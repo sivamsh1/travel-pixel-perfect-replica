@@ -11,15 +11,28 @@ interface DatesData {
   duration: number;
 }
 
+interface TravellerDetail {
+  passportNumber?: string;
+  name?: string;
+  dob?: string;
+  age?: string;
+  address?: string;
+  pincode?: string;
+  city?: string;
+  mobileNo?: string;
+  email?: string;
+  hasPreExistingCondition?: boolean;
+}
+
+interface NomineeData {
+  name?: string;
+  relationship?: string;
+}
+
 interface TravellersData {
   count: number;
-  details: Array<{
-    dob?: string;
-    age?: string;
-    passportNumber?: string;
-    name?: string;
-    hasPreExistingCondition?: boolean;
-  }>;
+  details: TravellerDetail[];
+  nominee?: NomineeData;
 }
 
 interface ContactData {

@@ -11,7 +11,7 @@ import TravellerForm from '@/components/travellers/TravellerForm';
 import NomineeForm from '@/components/travellers/NomineeForm';
 import MedicalConditionSelector from '@/components/travellers/MedicalConditionSelector';
 import TripSummary from '@/components/travellers/TripSummary';
-import { getFromLocalStorage } from '@/utils/localStorageUtils';
+import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
 import { toast } from "@/components/ui/use-toast";
 
@@ -49,24 +49,35 @@ const TravellersDetailsStep = () => {
   useEffect(() => {
     const storageData = getFromLocalStorage();
     
-    // Auto-fill traveller fields if we have contact data
-    if (storageData?.contact) {
-      // We'll only populate the first traveller with contact data
-      if (travellers.length > 0) {
-        const updatedTraveller = { ...travellers[0] };
-        
-        // Only update if the field is empty
-        if (!updatedTraveller.email && storageData.contact.email) {
-          updatedTraveller.email = storageData.contact.email;
+    // Load traveller details if available in localStorage
+    if (storageData?.travellers?.details) {
+      storageData.travellers.details.forEach((storedTraveller, index) => {
+        if (index < travellers.length) {
+          updateTraveller(index, storedTraveller);
         }
-        
-        if (!updatedTraveller.mobileNo && storageData.contact.phone) {
-          updatedTraveller.mobileNo = storageData.contact.phone;
-        }
-        
-        // Update the first traveller with the contact data
-        updateTraveller(0, updatedTraveller);
+      });
+      
+      // Load nominee details if available
+      if (storageData.travellers.nominee) {
+        updateNominee(storageData.travellers.nominee);
       }
+    }
+    
+    // Auto-fill traveller fields if we have contact data
+    if (storageData?.contact && travellers.length > 0 && (!travellers[0].email || !travellers[0].mobileNo)) {
+      const updatedTraveller = { ...travellers[0] };
+      
+      // Only update if the field is empty
+      if (!updatedTraveller.email && storageData.contact.email) {
+        updatedTraveller.email = storageData.contact.email;
+      }
+      
+      if (!updatedTraveller.mobileNo && storageData.contact.phone) {
+        updatedTraveller.mobileNo = storageData.contact.phone;
+      }
+      
+      // Update the first traveller with the contact data
+      updateTraveller(0, updatedTraveller);
     }
   }, []);
 
@@ -122,9 +133,21 @@ const TravellersDetailsStep = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const saveTravellersToLocalStorage = () => {
+    // Save travellers data to localStorage
+    saveToLocalStorage('travellers', {
+      count: travellers.length,
+      details: travellers,
+      nominee: nominee
+    });
+  };
+
   const handleContinue = () => {
     // Validate required fields
     if (validateForm()) {
+      // Save traveller details to localStorage before navigating
+      saveTravellersToLocalStorage();
+      
       toast({
         title: "Success",
         description: "Traveller details saved successfully",
