@@ -15,6 +15,7 @@ import TravellersDetailsStep from "./pages/TravellersDetailsStep";
 import ReviewStep from "./pages/ReviewStep";
 import ComparePlans from "./pages/ComparePlans";
 import NotFound from "./pages/NotFound";
+import LandingPage from "./pages/LandingPage";
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,8 @@ const App = () => (
       <TravelFormProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<LocationStep />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/quote" element={<LocationStep />} />
             <Route path="/dates" element={<DatesStep />} />
             <Route path="/travellers" element={<TravellersStep />} />
             <Route path="/contact" element={<ContactStep />} />
