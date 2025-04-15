@@ -45,8 +45,10 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const { destination, startDate, endDate, travellers } = useTravelForm();
   const isMobile = useIsMobile();
   
-  // Use the consistent Reliance logo for all plans
-  const relianceLogo = "/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png";
+  // Choose logo based on provider
+  const logoUrl = plan.provider.toLowerCase() === 'godigit' 
+    ? "/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png" 
+    : "/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png";
   
   const handleBuyNow = () => {
     // Collect data from previous pages
@@ -80,7 +82,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       <div className="flex flex-col gap-6">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-4">
-            <PlanCardLogo logo={relianceLogo} provider={plan.provider} />
+            <PlanCardLogo logo={logoUrl} provider={plan.provider} />
             <div>
               <h3 className="font-bold text-xl text-[#FF6B35]">{plan.name}</h3>
               <p className="text-gray-600 text-sm">{plan.details}</p>

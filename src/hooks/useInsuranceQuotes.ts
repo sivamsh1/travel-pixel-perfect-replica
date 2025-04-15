@@ -62,9 +62,17 @@ export const useInsuranceQuotes = () => {
         if (data && data.result) {
           // Convert API response to InsurancePlan format
           const quotePlans: InsurancePlan[] = Object.entries(data.result).map(([key, value]: [string, any]) => {
+            // Determine the provider based on the key prefix
+            let provider = 'Reliance'; // Default provider
+            
+            if (key.toLowerCase().startsWith('godigit')) {
+              provider = 'GoDigit';
+            } else if (key.toLowerCase().startsWith('reliance')) {
+              provider = 'Reliance';
+            }
+            
             // Format the plan name from the key (e.g., reliance_Student_Basic -> Student Basic)
             const planNameParts = key.split('_');
-            const provider = planNameParts[0] || 'Reliance';
             const planName = planNameParts.slice(1).join(' ');
             
             const details = "Overseas Travel | Excluding USA and CANADA";
@@ -73,7 +81,9 @@ export const useInsuranceQuotes = () => {
               id: key,
               name: planName || key,
               provider: provider,
-              logo: '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png', // Reliance logo
+              logo: provider === 'GoDigit' 
+                ? '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png'
+                : '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png',
               description: `${planName} Insurance Plan`,
               details: details,
               price: `₹${value.netPremium || 0}`,
