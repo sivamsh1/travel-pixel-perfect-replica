@@ -10,6 +10,7 @@ import { useInsuranceQuotes } from '@/hooks/useInsuranceQuotes';
 import PlansList from '@/components/plans/PlansList';
 import PlanComparisonManager from '@/components/plans/PlanComparisonManager';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Progress } from "@/components/ui/progress";
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -35,9 +36,8 @@ const PlansStep = () => {
   const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
 
   const handleBuyNow = (planName: string) => {
-    // Only update the selected plan in context
     setSelectedPlan(planName);
-    // Navigation is now handled in the PlanCard component
+    // Navigation is handled in the PlanCard component
   };
 
   return (
@@ -60,6 +60,7 @@ const PlansStep = () => {
           formattedEndDate={formattedEndDate}
         />
         
+        {/* Always show skeleton while loading - this ensures a better UX during navigation */}
         <PlanComparisonManager>
           {({ isSelectedForComparison, togglePlanComparison }) => (
             <PlansList
