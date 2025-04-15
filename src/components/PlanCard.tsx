@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTravelForm } from '@/context/TravelFormContext';
-import { format, parse } from 'date-fns';
+import { format, parse, isValid } from 'date-fns';
 import PlanCardLogo from './plans/PlanCardLogo';
 import PlanCardHeader from './plans/PlanCardHeader';
 import PlanCardBenefits from './plans/PlanCardBenefits';
@@ -51,13 +51,45 @@ const PlanCard: React.FC<PlanCardProps> = ({
     : "/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png";
   
   const handleBuyNow = () => {
-    // Collect data from previous pages
+    // Collect data from previous pages with safe date parsing
     const dob = travellers.map(traveller => {
-      return traveller.dob ? format(parse(traveller.dob, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
-    }).filter(Boolean);
+      if (!traveller.dob) return null;
+      
+      try {
+        const parsedDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
+        if (!isValid(parsedDate)) return null;
+        return format(parsedDate, 'dd/MM/yyyy');
+      } catch (error) {
+        console.error('Error parsing traveller DOB:', error);
+        return null;
+      }
+    }).filter(Boolean); // Filter out any null values
     
-    const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
-    const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
+    // Safely parse and format start date
+    let formattedStartDate = '';
+    if (startDate) {
+      try {
+        const parsedStartDate = parse(startDate, 'yyyy-MM-dd', new Date());
+        if (isValid(parsedStartDate)) {
+          formattedStartDate = format(parsedStartDate, 'dd/MM/yyyy');
+        }
+      } catch (error) {
+        console.error('Error parsing start date:', error);
+      }
+    }
+    
+    // Safely parse and format end date
+    let formattedEndDate = '';
+    if (endDate) {
+      try {
+        const parsedEndDate = parse(endDate, 'yyyy-MM-dd', new Date());
+        if (isValid(parsedEndDate)) {
+          formattedEndDate = format(parsedEndDate, 'dd/MM/yyyy');
+        }
+      } catch (error) {
+        console.error('Error parsing end date:', error);
+      }
+    }
     
     // Create the data object to log
     const purchaseData = {

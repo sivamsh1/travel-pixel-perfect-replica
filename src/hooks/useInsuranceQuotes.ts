@@ -1,6 +1,6 @@
 
 import { useMemo } from 'react';
-import { format, parse } from 'date-fns';
+import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { InsurancePlan } from '@/components/PlanCard';
 import { toast } from "@/components/ui/use-toast";
@@ -17,20 +17,46 @@ export const useInsuranceQuotes = () => {
   const requestPayload = useMemo(() => {
     const storageData = getFromLocalStorage();
     
-    // Get traveller DOBs from context
+    // Get traveller DOBs from context with proper validation
     const dob = travellers.map(traveller => {
-      return traveller.dob ? format(parse(traveller.dob, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
-    }).filter(Boolean);
+      if (!traveller.dob) return null;
+      
+      try {
+        const parsedDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
+        if (!isValid(parsedDate)) return null;
+        return format(parsedDate, 'dd/MM/yyyy');
+      } catch (error) {
+        console.error('Error parsing traveller DOB:', error);
+        return null;
+      }
+    }).filter(Boolean); // Remove any null values
     
-    // Get dates from localStorage or context
+    // Get dates from localStorage with proper validation
     let startDate = '';
     let endDate = '';
     
     if (storageData?.dates) {
-      startDate = storageData.dates.startDate ? 
-        format(parse(storageData.dates.startDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
-      endDate = storageData.dates.endDate ? 
-        format(parse(storageData.dates.endDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
+      if (storageData.dates.startDate) {
+        try {
+          const parsedStartDate = parse(storageData.dates.startDate, 'yyyy-MM-dd', new Date());
+          if (isValid(parsedStartDate)) {
+            startDate = format(parsedStartDate, 'dd/MM/yyyy');
+          }
+        } catch (error) {
+          console.error('Error parsing start date:', error);
+        }
+      }
+      
+      if (storageData.dates.endDate) {
+        try {
+          const parsedEndDate = parse(storageData.dates.endDate, 'yyyy-MM-dd', new Date());
+          if (isValid(parsedEndDate)) {
+            endDate = format(parsedEndDate, 'dd/MM/yyyy');
+          }
+        } catch (error) {
+          console.error('Error parsing end date:', error);
+        }
+      }
     }
     
     // Get destination ID from localStorage
