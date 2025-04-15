@@ -88,6 +88,9 @@ export const useInsuranceQuotes = () => {
           });
           
           setApiQuotes(quotePlans);
+        } else {
+          // Handle empty response data properly
+          setApiQuotes([]);
         }
       } catch (error) {
         console.error('Error fetching quotes:', error);
@@ -98,6 +101,7 @@ export const useInsuranceQuotes = () => {
           variant: "destructive",
         });
       } finally {
+        // Ensure loading state is set to false after data is processed
         setIsLoading(false);
       }
     };

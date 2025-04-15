@@ -23,17 +23,37 @@ const PlansList: React.FC<PlansListProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
+  // First check if we're in a loading state
   if (isLoading) {
     return (
       <div className="w-full space-y-6 mb-20">
-        <div className="border border-gray-200 rounded-xl p-6 animate-pulse bg-gray-50 h-48"></div>
-        <div className="border border-gray-200 rounded-xl p-6 animate-pulse bg-gray-50 h-48"></div>
-        <div className="border border-gray-200 rounded-xl p-6 animate-pulse bg-gray-50 h-48"></div>
+        {[1, 2, 3].map((_, index) => (
+          <div key={index} className="border border-gray-200 rounded-xl p-6 shadow-sm bg-white">
+            <div className="flex items-start justify-between">
+              <div className="flex gap-4">
+                <Skeleton className="h-16 w-16 rounded-lg" />
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-40" />
+                  <Skeleton className="h-4 w-60" />
+                </div>
+              </div>
+              <Skeleton className="h-10 w-24" />
+            </div>
+            <div className="mt-4">
+              <Skeleton className="h-4 w-full" />
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
-  // Only render cards if we have API quotes and we're not in a loading state
+  // Only after loading is complete, check if we have quotes
   if (apiQuotes.length === 0) {
     return (
       <div className="w-full py-10 text-center">

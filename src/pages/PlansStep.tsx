@@ -29,7 +29,7 @@ const PlansStep = () => {
   } = useTravelForm();
   
   const isMobile = useIsMobile();
-  const { quotes, isLoading } = useInsuranceQuotes();
+  const { quotes, isLoading, error } = useInsuranceQuotes();
 
   const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
   const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
