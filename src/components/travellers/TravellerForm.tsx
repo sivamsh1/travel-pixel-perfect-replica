@@ -1,7 +1,9 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { DatePicker } from '@/components/DatePicker';
+import { usePincodeSearch } from '@/hooks/usePincodeSearch';
+import { Loader2 } from 'lucide-react';
 
 interface TravellerFormProps {
   traveller: TravellerDetails;
@@ -18,6 +20,37 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
   errors,
   handleDateChange
 }) => {
+  const { searchCityByPincode, isLoading } = usePincodeSearch();
+  const [autoFilled, setAutoFilled] = useState(false);
+  
+  // Handle pincode change with debounce
+  const handlePincodeBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const pincode = e.target.value;
+    if (pincode && pincode.length === 6) {
+      const locationData = await searchCityByPincode(pincode);
+      
+      if (locationData) {
+        // Update city field
+        updateTraveller(index, { 
+          city: locationData.cityName,
+          // Store location data
+          locationData: {
+            stateId: locationData.stateId,
+            districtId: locationData.districtId,
+            cityId: locationData.cityId,
+            cityName: locationData.cityName
+          }
+        });
+        setAutoFilled(true);
+        
+        // Reset auto-filled state after 3 seconds
+        setTimeout(() => {
+          setAutoFilled(false);
+        }, 3000);
+      }
+    }
+  };
+
   return (
     <div className="mb-12">
       <h3 className="text-xl font-medium mb-6">Traveller {index + 1} Details</h3>
@@ -71,26 +104,41 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
-          <input
-            type="text"
-            className={`w-full p-3 border ${errors[`traveller${index}Pincode`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
-            value={traveller.pincode || ''}
-            onChange={(e) => updateTraveller(index, { pincode: e.target.value })}
-            maxLength={6}
-          />
-          {errors[`traveller${index}Pincode`] && (
-            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Pincode`]}</p>
-          )}
+          <div className="relative">
+            <input
+              type="text"
+              className={`w-full p-3 border ${errors[`traveller${index}Pincode`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
+              value={traveller.pincode || ''}
+              onChange={(e) => updateTraveller(index, { pincode: e.target.value.slice(0, 6) })}
+              onBlur={handlePincodeBlur}
+              maxLength={6}
+            />
+            {isLoading && (
+              <div className="absolute right-3 top-3">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              </div>
+            )}
+            {errors[`traveller${index}Pincode`] && (
+              <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Pincode`]}</p>
+            )}
+          </div>
         </div>
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-          <input
-            type="text"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            value={traveller.city || ''}
-            onChange={(e) => updateTraveller(index, { city: e.target.value })}
-          />
+          <div className="relative">
+            <input
+              type="text"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              value={traveller.city || ''}
+              onChange={(e) => updateTraveller(index, { city: e.target.value })}
+            />
+            {autoFilled && (
+              <div className="absolute right-3 top-3 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">
+                Auto-filled
+              </div>
+            )}
+          </div>
         </div>
         
         <div>

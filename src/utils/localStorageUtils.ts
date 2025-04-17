@@ -11,6 +11,13 @@ interface DatesData {
   duration: number;
 }
 
+interface TravellerLocationData {
+  stateId: number;
+  districtId: number;
+  cityId: number;
+  cityName: string;
+}
+
 interface TravellerDetail {
   passportNumber?: string;
   name?: string;
@@ -22,6 +29,7 @@ interface TravellerDetail {
   mobileNo?: string;
   email?: string;
   hasPreExistingCondition?: boolean;
+  locationData?: TravellerLocationData; // Added location data
 }
 
 interface NomineeData {

@@ -1,6 +1,13 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
+export interface LocationData {
+  stateId: number;
+  districtId: number;
+  cityId: number;
+  cityName: string;
+}
+
 export interface TravellerDetails {
   dob?: string;
   age?: string;
@@ -12,6 +19,7 @@ export interface TravellerDetails {
   mobileNo?: string;
   email?: string;
   hasPreExistingCondition?: boolean;
+  locationData?: LocationData; // Added location data
 }
 
 export interface NomineeDetails {
