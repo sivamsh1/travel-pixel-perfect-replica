@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plane } from 'lucide-react';
@@ -36,7 +35,7 @@ const HeroSection = () => {
         </div>
       </div>
       
-      <div className="relative -mt-[200px] mt-[100px]">
+      <div className="relative -mt-[280px]">
         <div className="flex justify-between items-end">
           <div className="w-full md:w-1/3 mx-0 px-0">
             <img 
