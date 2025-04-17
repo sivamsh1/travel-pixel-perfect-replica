@@ -4,9 +4,7 @@ import Header from '@/components/landing/Header';
 import HeroSection from '@/components/landing/HeroSection';
 import CoverageSection from '@/components/landing/CoverageSection';
 import PolicyCoverageSection from '@/components/landing/PolicyCoverageSection';
-import ExclusionsSection from '@/components/landing/ExclusionsSection';
-import InfoSection from '@/components/landing/InfoSection';
-import TypesSection from '@/components/landing/TypesSection';
+import CoverageLimitsSection from '@/components/landing/CoverageLimitsSection';
 import Footer from '@/components/landing/Footer';
 
 const LandingPage = () => {
@@ -16,9 +14,7 @@ const LandingPage = () => {
       <HeroSection />
       <CoverageSection />
       <PolicyCoverageSection />
-      <ExclusionsSection />
-      <InfoSection />
-      <TypesSection />
+      <CoverageLimitsSection />
       <Footer />
     </div>
   );
