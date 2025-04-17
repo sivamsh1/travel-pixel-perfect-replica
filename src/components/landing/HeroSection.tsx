@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plane } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import ActionButton from '../ActionButton';
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -23,12 +24,12 @@ const HeroSection = () => {
         </h1>
         <p className="text-xl text-gray-600 mb-10">Instant setup. Global protection. Always by your side.</p>
         <div className="flex flex-col items-center">
-          <Button 
+          <ActionButton 
             onClick={handleGetQuote}
             className="bg-primary text-white px-8 py-6 rounded-md text-lg font-medium hover:bg-primary/90 transition-colors"
           >
             Get a Quote
-          </Button>
+          </ActionButton>
           <div className="flex items-center mt-6 text-sm text-gray-700">
             <Plane className="h-4 w-4 text-primary mr-2" />
             <span>Save 10% on your perfect travel plan!</span>
