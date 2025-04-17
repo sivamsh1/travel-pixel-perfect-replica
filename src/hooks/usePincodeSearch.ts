@@ -7,7 +7,6 @@ interface LocationData {
   districtId: number;
   cityId: number;
   cityName: string;
-  areaName: string;  // Added areaName to the interface
 }
 
 export const usePincodeSearch = () => {
@@ -39,8 +38,7 @@ export const usePincodeSearch = () => {
           stateId: firstResult.stateId,
           districtId: firstResult.districtId,
           cityId: firstResult.cityId,
-          cityName: firstResult.cityName,
-          areaName: firstResult.areaName  // Added areaName to the return object
+          cityName: firstResult.cityName
         };
       } else {
         toast({

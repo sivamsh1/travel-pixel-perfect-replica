@@ -30,9 +30,9 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
       const locationData = await searchCityByPincode(pincode);
       
       if (locationData) {
-        // Update city field with areaName
+        // Update city field
         updateTraveller(index, { 
-          city: locationData.areaName,  // Use areaName instead of cityName
+          city: locationData.cityName,
           // Store location data
           locationData: {
             stateId: locationData.stateId,
