@@ -117,9 +117,9 @@ export const useReviewPage = () => {
       }, 2000);
     } catch (error) {
       console.error('Payment processing error:', error);
-      // Error toast is already shown in the createQuote function
-    } finally {
+      // Set submitting to false to re-enable the button
       setIsSubmitting(false);
+      // Error toast is already shown in the createQuote function
     }
   };
 
