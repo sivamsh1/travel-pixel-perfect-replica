@@ -12,7 +12,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="bg-white py-16 md:py-24">
+    <section className="bg-white py-16 md:py-24 overflow-hidden">
       <div className="container mx-auto px-4 text-center">
         <h1 
           className="text-[90px] text-[#2C2C2C] font-medium leading-[120%] text-center"
@@ -36,29 +36,31 @@ const HeroSection = () => {
         </div>
       </div>
       
-      <div className="container mx-auto mt-12 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+      <div className="relative mt-16">
+        <div className="flex justify-between items-end">
           {/* Left illustration */}
-          <div className="flex justify-center md:justify-end">
+          <div className="w-full md:w-1/3">
             <img 
               src="https://i.ibb.co/twTZgrPM/hero-image-1.png" 
               alt="Students with luggage" 
-              className="h-auto max-h-40 w-auto object-contain"
+              className="h-auto w-full max-w-md object-contain"
+              style={{ maxHeight: "280px" }}
             />
           </div>
           
           {/* Center text */}
-          <div className="text-center py-4">
-            <p className="text-gray-700 font-medium text-lg">Trusted by thousands of students</p>
-            <p className="text-gray-500 text-sm">We've got your academic journey covered</p>
+          <div className="w-full md:w-1/3 text-center py-4">
+            <p className="text-primary text-2xl font-semibold">Trusted by thousands of students</p>
+            <p className="text-gray-600 text-base">We've got your academic journey covered</p>
           </div>
           
           {/* Right illustration */}
-          <div className="flex justify-center md:justify-start">
+          <div className="w-full md:w-1/3 flex justify-end">
             <img 
               src="https://i.ibb.co/H64Z3Ky/hero-image-2.png" 
               alt="Control tower and plane" 
-              className="h-auto max-h-40 w-auto object-contain"
+              className="h-auto w-full max-w-md object-contain"
+              style={{ maxHeight: "280px" }}
             />
           </div>
         </div>
