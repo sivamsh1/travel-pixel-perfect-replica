@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plane } from 'lucide-react';
@@ -36,9 +35,8 @@ const HeroSection = () => {
         </div>
       </div>
       
-      <div className="relative mt-16">
+      <div className="relative mt-16 -mt-[100px]">
         <div className="flex justify-between items-end">
-          {/* Left illustration */}
           <div className="w-full md:w-1/3">
             <img 
               src="https://i.ibb.co/3yg0DFDJ/hero-image-1.png" 
@@ -48,13 +46,11 @@ const HeroSection = () => {
             />
           </div>
           
-          {/* Center text */}
           <div className="w-full md:w-1/3 text-center py-4">
             <p className="text-primary text-2xl font-semibold">Trusted by thousands of students</p>
             <p className="text-gray-600 text-base">We've got your academic journey covered</p>
           </div>
           
-          {/* Right illustration */}
           <div className="w-full md:w-1/3 flex justify-end">
             <img 
               src="https://i.ibb.co/H64Z3Ky/hero-image-2.png" 
