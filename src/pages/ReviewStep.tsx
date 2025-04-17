@@ -10,6 +10,9 @@ import { useTravelForm } from '@/context/TravelFormContext';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getFromLocalStorage } from '@/utils/localStorageUtils';
 import { TravelFormData } from '@/utils/localStorageUtils';
+import { createQuote } from '@/utils/apiUtils';
+import { toast } from "@/components/ui/use-toast";
+import { Loader2 } from 'lucide-react';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -28,6 +31,7 @@ const ReviewStep = () => {
   } = useTravelForm();
 
   const [storedData, setStoredData] = useState<TravelFormData | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Format dates helper function
   const formatDate = (dateStr: string | undefined, defaultValue = ''): string => {
@@ -95,14 +99,47 @@ const ReviewStep = () => {
     setStoredData(data);
   }, []);
 
-  const handlePayNow = () => {
+  const handlePayNow = async () => {
     if (!agreeToTerms) {
-      alert('Please agree to the terms and conditions to proceed.');
+      toast({
+        title: "Terms & Conditions",
+        description: "Please agree to the terms and conditions to proceed.",
+        variant: "destructive"
+      });
       return;
     }
     
-    alert('Payment successful! Thank you for purchasing travel insurance.');
-    navigate('/');
+    if (!storedData) {
+      toast({
+        title: "Missing Data",
+        description: "Required travel information is missing. Please complete all previous steps.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Call the API to create a quote
+      const result = await createQuote(storedData);
+      
+      // Handle successful payment
+      toast({
+        title: "Success!",
+        description: "Payment successful! Thank you for purchasing travel insurance.",
+      });
+      
+      // Wait a moment for the toast to be visible, then navigate
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      console.error('Payment processing error:', error);
+      // Error toast is already shown in the createQuote function
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Prepare display data from localStorage
@@ -272,8 +309,15 @@ const ReviewStep = () => {
         </div>
         
         <div className="mt-8">
-          <ActionButton onClick={handlePayNow}>
-            Pay Now
+          <ActionButton onClick={handlePayNow} disabled={isSubmitting}>
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Processing...
+              </span>
+            ) : (
+              'Pay Now'
+            )}
           </ActionButton>
         </div>
       </div>
