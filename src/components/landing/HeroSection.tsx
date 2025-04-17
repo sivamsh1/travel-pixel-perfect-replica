@@ -36,7 +36,7 @@ const HeroSection = () => {
         </div>
       </div>
       
-      <div className="relative -mt-[300px]">
+      <div className="relative -mt-[200px] mt-[100px]">
         <div className="flex justify-between items-end">
           <div className="w-full md:w-1/3 mx-0 px-0">
             <img 
