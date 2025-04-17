@@ -3,6 +3,7 @@ import React from 'react';
 import Header from '@/components/landing/Header';
 import HeroSection from '@/components/landing/HeroSection';
 import CoverageSection from '@/components/landing/CoverageSection';
+import PolicyCoverageSection from '@/components/landing/PolicyCoverageSection';
 import ExclusionsSection from '@/components/landing/ExclusionsSection';
 import InfoSection from '@/components/landing/InfoSection';
 import TypesSection from '@/components/landing/TypesSection';
@@ -14,6 +15,7 @@ const LandingPage = () => {
       <Header />
       <HeroSection />
       <CoverageSection />
+      <PolicyCoverageSection />
       <ExclusionsSection />
       <InfoSection />
       <TypesSection />
