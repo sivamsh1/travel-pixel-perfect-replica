@@ -41,7 +41,7 @@ const HeroSection = () => {
           {/* Left illustration */}
           <div className="w-full md:w-1/3">
             <img 
-              src="https://i.ibb.co/twTZgrPM/hero-image-1.png" 
+              src="https://i.ibb.co/3yg0DFDJ/hero-image-1.png" 
               alt="Students with luggage" 
               className="h-auto w-full max-w-md object-contain"
               style={{ maxHeight: "280px" }}
