@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { AlertCircle, Pill, Heart, Scissors, Mountains, Ban } from 'lucide-react';
+import { AlertCircle, Pill, Heart, Scissors, Mountain, Ban } from 'lucide-react';
 
 type LimitItemProps = {
   icon: React.ReactNode;
@@ -40,7 +39,7 @@ const CoverageLimitsSection = () => {
       description: "Should you or any member of your family opt to undergo any cosmetic or obesity treatment during the course of the travel you've insured, such expenses remain uncovered."
     },
     {
-      icon: <Mountains className="h-6 w-6 text-primary" />,
+      icon: <Mountain className="h-6 w-6 text-primary" />,
       title: "Adventure Sports",
       description: "Any accident caused due to participation in an adventure sport remains uncovered in the travel insurance policy."
     },
