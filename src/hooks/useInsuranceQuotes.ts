@@ -110,6 +110,9 @@ export const useInsuranceQuotes = () => {
             
             const details = "Overseas Travel | Excluding USA and CANADA";
             
+            // Extract the netPremium value or set it to 0 if not available
+            const netPremium = value && typeof value.netPremium === 'number' ? value.netPremium : 0;
+            
             return {
               id: key,
               name: planName || key,
@@ -119,14 +122,15 @@ export const useInsuranceQuotes = () => {
                 : '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png',
               description: `${planName} Insurance Plan`,
               details: details,
-              price: `₹${value.netPremium || 0}`,
+              price: netPremium > 0 ? `₹${netPremium}` : '₹0',
               benefits: [
                 { icon: "✓", text: "Emergency Medical Assistance" },
                 { icon: "✓", text: "Lifestyle Assistance" },
                 { icon: "✓", text: "Domestic Roadside Assistance" }
               ],
               coveragePoints: ["$ 1000 Trip Cancellation", "$ 50000 Medical Expenses incl."],
-              travellersCount
+              travellersCount,
+              netPremium: netPremium
             };
           });
         }

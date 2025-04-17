@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -12,6 +12,7 @@ import PlanComparisonManager from '@/components/plans/PlanComparisonManager';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Progress } from "@/components/ui/progress";
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
+import { InsurancePlan } from '@/components/PlanCard';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -29,6 +30,10 @@ const PlansStep = () => {
     selectedPlan, 
     setSelectedPlan
   } = useTravelForm();
+  
+  // Filter state
+  const [selectedInsurer, setSelectedInsurer] = useState('all');
+  const [selectedPriceSort, setSelectedPriceSort] = useState('all');
   
   const isMobile = useIsMobile();
   const { quotes, isLoading, error } = useInsuranceQuotes();
@@ -65,6 +70,31 @@ const PlansStep = () => {
   } catch (error) {
     console.error('Error formatting end date:', error);
   }
+
+  // Apply filters to quotes
+  const filteredQuotes = useMemo(() => {
+    let filtered = [...quotes];
+    
+    // Filter by insurer
+    if (selectedInsurer !== 'all') {
+      filtered = filtered.filter(plan => plan.provider === selectedInsurer);
+    }
+    
+    // Sort by price
+    if (selectedPriceSort !== 'all') {
+      filtered = filtered.sort((a, b) => {
+        // Extract numeric values from price strings (e.g. "₹3998" -> 3998)
+        const priceA = parseFloat(a.price.replace(/[^0-9.]/g, '')) || 0;
+        const priceB = parseFloat(b.price.replace(/[^0-9.]/g, '')) || 0;
+        
+        return selectedPriceSort === 'lowToHigh' 
+          ? priceA - priceB 
+          : priceB - priceA;
+      });
+    }
+    
+    return filtered;
+  }, [quotes, selectedInsurer, selectedPriceSort]);
 
   const handleBuyNow = (planName: string) => {
     // Find the selected plan from quotes
@@ -106,13 +136,16 @@ const PlansStep = () => {
           travellersCount={travellersCount}
           formattedStartDate={formattedStartDate}
           formattedEndDate={formattedEndDate}
+          selectedInsurer={selectedInsurer}
+          selectedPriceSort={selectedPriceSort}
+          onInsurerChange={setSelectedInsurer}
+          onPriceSortChange={setSelectedPriceSort}
         />
         
-        {/* Always show skeleton while loading - this ensures a better UX during navigation */}
         <PlanComparisonManager>
           {({ isSelectedForComparison, togglePlanComparison }) => (
             <PlansList
-              apiQuotes={quotes}
+              apiQuotes={filteredQuotes}
               travellersCount={travellersCount}
               onBuyNow={handleBuyNow}
               isSelectedForComparison={isSelectedForComparison}

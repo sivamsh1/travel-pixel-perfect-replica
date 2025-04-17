@@ -10,6 +10,12 @@ import PlanCardCoveragePoints from './plans/PlanCardCoveragePoints';
 import PlanCardActions from './plans/PlanCardActions';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Benefit {
   icon: string;
@@ -27,6 +33,7 @@ export interface InsurancePlan {
   benefits: Benefit[];
   coveragePoints: string[];
   travellersCount?: number;
+  netPremium?: number | null;
 }
 
 interface PlanCardProps {
@@ -46,12 +53,17 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const { destination, startDate, endDate, travellers } = useTravelForm();
   const isMobile = useIsMobile();
   
+  // Check if netPremium is valid
+  const isPremiumValid = plan.netPremium !== null && plan.netPremium !== undefined && plan.netPremium > 0;
+  
   // Choose logo based on provider
   const logoUrl = plan.provider.toLowerCase() === 'godigit' 
     ? "/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png" 
     : "/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png";
   
   const handleBuyNow = () => {
+    if (!isPremiumValid) return; // Don't proceed if premium is invalid
+    
     // Store the selected plan details in localStorage
     const planData = {
       name: plan.name,
@@ -123,6 +135,40 @@ const PlanCard: React.FC<PlanCardProps> = ({
     navigate('/addons');
   };
   
+  // Create the Buy Now button with conditional rendering for disabled state
+  const renderBuyNowButton = () => {
+    const buttonClass = isPremiumValid 
+      ? "bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+      : "bg-gray-300 text-gray-500 cursor-not-allowed";
+    
+    const button = (
+      <button 
+        className={`py-2 px-6 rounded-full text-sm font-medium ${buttonClass}`}
+        onClick={isPremiumValid ? handleBuyNow : undefined}
+        disabled={!isPremiumValid}
+      >
+        Buy Now
+      </button>
+    );
+    
+    if (!isPremiumValid) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {button}
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Not Available</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    
+    return button;
+  };
+  
   return (
     <div className="border border-gray-200 rounded-xl p-6 relative hover:shadow-md transition-shadow">
       <div className="flex flex-col gap-6">
@@ -173,12 +219,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
             <label htmlFor={`compare-${plan.id}`} className="text-sm">Add to Compare</label>
           </div>
           
-          <button 
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-full text-sm font-medium transition-colors"
-            onClick={handleBuyNow}
-          >
-            Buy Now
-          </button>
+          {renderBuyNowButton()}
         </div>
       </div>
     </div>
