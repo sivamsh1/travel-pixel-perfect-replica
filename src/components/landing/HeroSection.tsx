@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plane } from 'lucide-react';
@@ -42,7 +43,7 @@ const HeroSection = () => {
               src="https://i.ibb.co/3yg0DFDJ/hero-image-1.png" 
               alt="Students with luggage" 
               className="h-auto w-full max-w-md object-contain"
-              style={{ maxHeight: "280px" }}
+              style={{ maxHeight: "320px" }}
             />
           </div>
           
@@ -51,12 +52,12 @@ const HeroSection = () => {
             <p className="text-gray-600 text-base">We've got your academic journey covered</p>
           </div>
           
-          <div className="w-full md:w-1/3 flex justify-end">
+          <div className="w-full md:w-1/3 flex justify-end mb-[-12px]">
             <img 
               src="https://i.ibb.co/H64Z3Ky/hero-image-2.png" 
               alt="Control tower and plane" 
               className="h-auto w-full max-w-md object-contain"
-              style={{ maxHeight: "280px" }}
+              style={{ maxHeight: "320px" }}
             />
           </div>
         </div>
@@ -66,3 +67,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
