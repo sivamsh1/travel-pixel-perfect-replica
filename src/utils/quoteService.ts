@@ -123,6 +123,13 @@ export const createQuote = async (formData: TravelFormData): Promise<QuoteRespon
     
     const data = await response.json();
     console.log('API Response:', data);
+    
+    // Handle successful response with URL redirection
+    if (data.url) {
+      // Redirect to the URL received from the API
+      window.location.href = data.url;
+    }
+    
     return data;
   } catch (error) {
     console.error('Error creating quote:', error);

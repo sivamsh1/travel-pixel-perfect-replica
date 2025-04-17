@@ -96,19 +96,32 @@ export const useReviewPage = () => {
     setIsSubmitting(true);
     
     try {
-      const result = await createQuote(storedData);
-      
       toast({
-        title: "Success!",
-        description: "Payment successful! Thank you for purchasing travel insurance.",
+        title: "Processing",
+        description: "Processing your payment...",
       });
       
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
+      const result = await createQuote(storedData);
+      
+      if (!result.url) {
+        toast({
+          title: "Success!",
+          description: "Payment successful! Thank you for purchasing travel insurance.",
+        });
+        
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      }
     } catch (error) {
       console.error('Payment processing error:', error);
       setIsSubmitting(false);
+      
+      toast({
+        title: "Payment Error",
+        description: "Failed to process your payment. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 

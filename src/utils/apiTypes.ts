@@ -74,7 +74,8 @@ export type QuotePayload = {
 };
 
 export type QuoteResponse = {
-  success: boolean;
-  data: any;
+  success?: boolean;
   message?: string;
+  url?: string;
+  data?: any;
 };
