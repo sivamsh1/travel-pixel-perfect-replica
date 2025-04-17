@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Building2, Luggage, Plane } from 'lucide-react';
+
 const PolicyCoverageSection = () => {
   const medicalCoverageItems = [{
     title: "Emergency Medical Expenses",
@@ -25,6 +27,7 @@ const PolicyCoverageSection = () => {
     title: "Permanent Disablement",
     description: "Under unfortunate circumstances, accidents can result in permanent disabilities. Should such a thing happen, we offer a lump sum compensation to ease the financial burden that may follow."
   }];
+
   const baggageCoverageItems = [{
     title: "Loss of Passport",
     description: "If you loses your baggage or important travel document like passport. it can spoil the trip completely. With individual travel insurance, the cost to get a duplicate passport is compensated ensuring complete peace of mind."
@@ -35,6 +38,7 @@ const PolicyCoverageSection = () => {
     title: "Delay of checked-in baggage",
     description: "If there is a delay in getting the baggage to you then the insurance will reimburse you for the essential required till the time you get your baggage."
   }];
+
   const journeyCoverageItems = [{
     title: "Personal liability",
     description: "If an accident causes damage to the third party, then the individual travel insurance will compensate for the same and keep you away from getting into any legal trouble."
@@ -45,14 +49,15 @@ const PolicyCoverageSection = () => {
     title: "Hijack Distress Allowance",
     description: "Tourist are easy victims to a robbery or theft in a foreign land. If the insured gets robbed, then the individual travel insurance will provide emergency cash."
   }];
-  return <section className="py-16 bg-[EFF0F0] bg-[#eff0f0]">
-      <div className="container mx-auto px-4">
+
+  return <section className="py-16 bg-white">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-10">
           <h2 className="text-5xl font-medium mb-4">Coverage That Goes the Distance</h2>
           <p className="text-xl text-gray-600">From medical emergencies to lost baggage—get the coverage you need for stress-free travel.</p>
         </div>
 
-        <div className="max-w-5xl mx-auto">
+        <div className="mx-auto">
           <Tabs defaultValue="medical" className="w-full">
             <TabsList className="grid grid-cols-3 w-full bg-white rounded-lg shadow-md p-2 mb-8 h-20">
               <TabsTrigger value="medical" className="flex items-center gap-2 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
@@ -71,11 +76,11 @@ const PolicyCoverageSection = () => {
 
             <TabsContent value="medical" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                {medicalCoverageItems.map((item, index) => <Card key={`medical-${index}`} className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[340px]">
-                    <CardHeader>
-                      <h3 className="text-xl font-medium">{item.title}</h3>
+                {medicalCoverageItems.map((item, index) => <Card key={`medical-${index}`} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[320px]">
+                    <CardHeader className="p-0 pb-3">
+                      <h3 className="text-xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">{item.title}</h3>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-0">
                       <p className="text-gray-600">{item.description}</p>
                     </CardContent>
                   </Card>)}
@@ -84,11 +89,11 @@ const PolicyCoverageSection = () => {
 
             <TabsContent value="baggage" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                {baggageCoverageItems.map((item, index) => <Card key={`baggage-${index}`} className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[340px]">
-                    <CardHeader>
-                      <h3 className="text-xl font-medium">{item.title}</h3>
+                {baggageCoverageItems.map((item, index) => <Card key={`baggage-${index}`} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[320px]">
+                    <CardHeader className="p-0 pb-3">
+                      <h3 className="text-xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">{item.title}</h3>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-0">
                       <p className="text-gray-600">{item.description}</p>
                     </CardContent>
                   </Card>)}
@@ -97,11 +102,11 @@ const PolicyCoverageSection = () => {
 
             <TabsContent value="journey" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                {journeyCoverageItems.map((item, index) => <Card key={`journey-${index}`} className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[340px]">
-                    <CardHeader>
-                      <h3 className="text-xl font-medium">{item.title}</h3>
+                {journeyCoverageItems.map((item, index) => <Card key={`journey-${index}`} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[320px]">
+                    <CardHeader className="p-0 pb-3">
+                      <h3 className="text-xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">{item.title}</h3>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-0">
                       <p className="text-gray-600">{item.description}</p>
                     </CardContent>
                   </Card>)}
@@ -112,4 +117,5 @@ const PolicyCoverageSection = () => {
       </div>
     </section>;
 };
+
 export default PolicyCoverageSection;
