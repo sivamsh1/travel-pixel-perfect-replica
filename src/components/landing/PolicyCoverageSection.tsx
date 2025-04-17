@@ -76,25 +76,34 @@ const PolicyCoverageSection = () => {
 
         <div className="max-w-4xl mx-auto">
           <Tabs defaultValue="medical" className="w-full">
-            <TabsList className="grid grid-cols-3 w-full bg-white rounded-lg shadow-md p-1 mb-8">
-              <TabsTrigger value="medical" className="flex items-center gap-2 py-3">
-                <Building2 className="h-5 w-5" />
-                <span>Medical Coverage</span>
+            <TabsList className="grid grid-cols-3 w-full bg-white rounded-lg shadow-md p-2 mb-8 h-20">
+              <TabsTrigger 
+                value="medical" 
+                className="flex items-center gap-2 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
+              >
+                <Building2 className="h-6 w-6" />
+                <span className="text-lg font-medium">Medical Coverage</span>
               </TabsTrigger>
-              <TabsTrigger value="baggage" className="flex items-center gap-2 py-3">
-                <Luggage className="h-5 w-5" />
-                <span>Baggage Related Coverage</span>
+              <TabsTrigger 
+                value="baggage" 
+                className="flex items-center gap-2 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
+              >
+                <Luggage className="h-6 w-6" />
+                <span className="text-lg font-medium">Baggage Related Coverage</span>
               </TabsTrigger>
-              <TabsTrigger value="journey" className="flex items-center gap-2 py-3">
-                <Plane className="h-5 w-5" />
-                <span>Journey Related Coverage</span>
+              <TabsTrigger 
+                value="journey" 
+                className="flex items-center gap-2 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
+              >
+                <Plane className="h-6 w-6" />
+                <span className="text-lg font-medium">Journey Related Coverage</span>
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="medical" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {medicalCoverageItems.map((item, index) => (
-                  <Card key={`medical-${index}`} className="shadow-md">
+                  <Card key={`medical-${index}`} className="shadow-md hover:shadow-lg transition-shadow">
                     <CardHeader>
                       <h3 className="text-xl font-medium">{item.title}</h3>
                     </CardHeader>
@@ -109,7 +118,7 @@ const PolicyCoverageSection = () => {
             <TabsContent value="baggage" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {baggageCoverageItems.map((item, index) => (
-                  <Card key={`baggage-${index}`} className="shadow-md">
+                  <Card key={`baggage-${index}`} className="shadow-md hover:shadow-lg transition-shadow">
                     <CardHeader>
                       <h3 className="text-xl font-medium">{item.title}</h3>
                     </CardHeader>
@@ -124,7 +133,7 @@ const PolicyCoverageSection = () => {
             <TabsContent value="journey" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {journeyCoverageItems.map((item, index) => (
-                  <Card key={`journey-${index}`} className="shadow-md">
+                  <Card key={`journey-${index}`} className="shadow-md hover:shadow-lg transition-shadow">
                     <CardHeader>
                       <h3 className="text-xl font-medium">{item.title}</h3>
                     </CardHeader>
