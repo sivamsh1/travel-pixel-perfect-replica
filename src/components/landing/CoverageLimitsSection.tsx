@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { AlertCircle, Pill, Heart, Scissors, Mountain, Ban } from 'lucide-react';
 
@@ -8,7 +9,7 @@ type LimitItemProps = {
 };
 
 const LimitItem = ({ icon, title, description }: LimitItemProps) => (
-  <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow">
+  <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[340px]">
     <div className="mb-4">
       <h3 className="text-xl font-medium mb-4">{title}</h3>
       <p className="text-gray-600">{description}</p>
@@ -51,14 +52,14 @@ const CoverageLimitsSection = () => {
   ];
   
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-5xl font-medium mb-4">Know the Limits of Your Coverage</h2>
           <p className="text-xl text-gray-600">Stay informed about what's excluded from your travel insurance</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
           {limitItems.map((item, index) => (
             <LimitItem 
               key={index}

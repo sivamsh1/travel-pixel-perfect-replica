@@ -67,14 +67,14 @@ const PolicyCoverageSection = () => {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-5xl font-medium mb-4">Coverage That Goes the Distance</h2>
           <p className="text-xl text-gray-600">From medical emergencies to lost baggage—get the coverage you need for stress-free travel.</p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <Tabs defaultValue="medical" className="w-full">
             <TabsList className="grid grid-cols-3 w-full bg-white rounded-lg shadow-md p-2 mb-8 h-20">
               <TabsTrigger 
@@ -101,9 +101,9 @@ const PolicyCoverageSection = () => {
             </TabsList>
 
             <TabsContent value="medical" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 {medicalCoverageItems.map((item, index) => (
-                  <Card key={`medical-${index}`} className="shadow-md hover:shadow-lg transition-shadow">
+                  <Card key={`medical-${index}`} className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[340px]">
                     <CardHeader>
                       <h3 className="text-xl font-medium">{item.title}</h3>
                     </CardHeader>
@@ -116,9 +116,9 @@ const PolicyCoverageSection = () => {
             </TabsContent>
 
             <TabsContent value="baggage" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 {baggageCoverageItems.map((item, index) => (
-                  <Card key={`baggage-${index}`} className="shadow-md hover:shadow-lg transition-shadow">
+                  <Card key={`baggage-${index}`} className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[340px]">
                     <CardHeader>
                       <h3 className="text-xl font-medium">{item.title}</h3>
                     </CardHeader>
@@ -131,9 +131,9 @@ const PolicyCoverageSection = () => {
             </TabsContent>
 
             <TabsContent value="journey" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 {journeyCoverageItems.map((item, index) => (
-                  <Card key={`journey-${index}`} className="shadow-md hover:shadow-lg transition-shadow">
+                  <Card key={`journey-${index}`} className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[340px]">
                     <CardHeader>
                       <h3 className="text-xl font-medium">{item.title}</h3>
                     </CardHeader>
