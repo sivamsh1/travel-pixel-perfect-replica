@@ -5,7 +5,7 @@ import { TravelFormData } from '@/utils/localStorageUtils';
 
 interface ReviewSummaryProps {
   location?: TravelFormData['location'];
-  dates?: TravelFormData['dates'];
+  dates?: TravelFormData['dates']; // Keep the dates prop even if we're not using it in this instance
   duration: number;
   formattedStartDate: string;
   formattedEndDate: string;

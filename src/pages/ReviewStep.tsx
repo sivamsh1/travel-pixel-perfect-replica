@@ -52,7 +52,7 @@ const ReviewStep = () => {
         
         <ReviewSummary
           location={location}
-          dates={travellers?.details?.length ? undefined : location}
+          dates={undefined} // Fix: Changed from location to undefined since we're providing formatted dates directly
           duration={duration}
           formattedStartDate={formattedStartDate}
           formattedEndDate={formattedEndDate}
