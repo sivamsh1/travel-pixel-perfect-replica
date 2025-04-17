@@ -41,8 +41,8 @@ const HeroSection = () => {
           {/* Left illustration */}
           <div className="flex justify-center md:justify-end">
             <img 
-              src="/lovable-uploads/4c5837a2-5a90-4288-9184-c2fea9fd8954.png" 
-              alt="Airport luggage illustration" 
+              src="https://i.ibb.co/twTZgrPM/hero-image-1.png" 
+              alt="Students with luggage" 
               className="h-auto max-h-40 w-auto object-contain"
             />
           </div>
@@ -50,13 +50,14 @@ const HeroSection = () => {
           {/* Center text */}
           <div className="text-center py-4">
             <p className="text-gray-700 font-medium text-lg">Trusted by thousands of students</p>
+            <p className="text-gray-500 text-sm">We've got your academic journey covered</p>
           </div>
           
           {/* Right illustration */}
           <div className="flex justify-center md:justify-start">
             <img 
-              src="/lovable-uploads/3eab3eca-6b52-47b7-b54f-8ad495524b22.png" 
-              alt="Control tower and plane illustration" 
+              src="https://i.ibb.co/H64Z3Ky/hero-image-2.png" 
+              alt="Control tower and plane" 
               className="h-auto max-h-40 w-auto object-contain"
             />
           </div>
