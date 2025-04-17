@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { getFromLocalStorage } from '@/utils/localStorageUtils';
 import { TravelFormData } from '@/utils/localStorageUtils';
-import { createQuote } from '@/utils/apiUtils';
+import { createQuote } from '@/utils/quoteService';
 import { toast } from "@/hooks/use-toast";
 
 export const useReviewPage = () => {
@@ -14,7 +13,6 @@ export const useReviewPage = () => {
   const [storedData, setStoredData] = useState<TravelFormData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Format dates helper function
   const formatDate = (dateStr: string | undefined, defaultValue = ''): string => {
     if (!dateStr) return defaultValue;
     
@@ -30,7 +28,6 @@ export const useReviewPage = () => {
     }
   };
   
-  // Calculate duration between two dates
   const calculateDuration = (startDate?: string, endDate?: string): number => {
     if (!startDate || !endDate) return 0;
     
@@ -40,18 +37,16 @@ export const useReviewPage = () => {
       
       if (!isValid(start) || !isValid(end)) return 0;
       
-      // Calculate the difference in days
       const diffTime = end.getTime() - start.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
-      return diffDays >= 0 ? diffDays + 1 : 0; // Include both start and end date
+      return diffDays >= 0 ? diffDays + 1 : 0;
     } catch (error) {
       console.error('Error calculating duration:', error);
       return 0;
     }
   };
   
-  // Format traveller age
   const formatTravellerAge = (dob?: string): string => {
     if (!dob) return '';
     
@@ -75,7 +70,6 @@ export const useReviewPage = () => {
   };
 
   useEffect(() => {
-    // Load data from localStorage
     const data = getFromLocalStorage();
     setStoredData(data);
   }, []);
@@ -102,39 +96,31 @@ export const useReviewPage = () => {
     setIsSubmitting(true);
     
     try {
-      // Call the API to create a quote
       const result = await createQuote(storedData);
       
-      // Handle successful payment
       toast({
         title: "Success!",
         description: "Payment successful! Thank you for purchasing travel insurance.",
       });
       
-      // Wait a moment for the toast to be visible, then navigate
       setTimeout(() => {
         navigate('/');
       }, 2000);
     } catch (error) {
       console.error('Payment processing error:', error);
-      // Set submitting to false to re-enable the button
       setIsSubmitting(false);
-      // Error toast is already shown in the createQuote function
     }
   };
 
-  // Prepare display data from localStorage
   const location = storedData?.location;
   const dates = storedData?.dates;
   const travellers = storedData?.travellers;
   const selectedPlan = storedData?.selectedPlan;
   
-  // Calculate actual duration or use stored duration
   const duration = dates ? 
     calculateDuration(dates.startDate, dates.endDate) || dates.duration : 
     0;
     
-  // Format date strings for display
   const formattedStartDate = formatDate(dates?.startDate, '17th April 2025');
   const formattedEndDate = formatDate(dates?.endDate, '19th April 2025');
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -7,6 +6,7 @@ import { PlanToCompare } from '@/components/ComparePopup';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { format, parse } from 'date-fns';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
+import { formatDateForAPI } from '@/utils/dateFormatUtils';
 
 interface PlanActionsProps {
   plans: PlanToCompare[];
