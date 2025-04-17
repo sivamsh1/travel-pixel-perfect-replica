@@ -35,9 +35,35 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+      
+      <div className="container mx-auto mt-12 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          {/* Left illustration */}
+          <div className="flex justify-center md:justify-end">
+            <img 
+              src="/lovable-uploads/4c5837a2-5a90-4288-9184-c2fea9fd8954.png" 
+              alt="Airport luggage illustration" 
+              className="h-auto max-h-40 w-auto object-contain"
+            />
+          </div>
+          
+          {/* Center text */}
+          <div className="text-center py-4">
+            <p className="text-gray-700 font-medium text-lg">Trusted by thousands of students</p>
+          </div>
+          
+          {/* Right illustration */}
+          <div className="flex justify-center md:justify-start">
+            <img 
+              src="/lovable-uploads/3eab3eca-6b52-47b7-b54f-8ad495524b22.png" 
+              alt="Control tower and plane illustration" 
+              className="h-auto max-h-40 w-auto object-contain"
+            />
+          </div>
+        </div>
+      </div>
     </section>
   );
 };
 
 export default HeroSection;
-
