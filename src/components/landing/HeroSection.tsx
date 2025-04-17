@@ -23,7 +23,7 @@ const HeroSection = () => {
           our coverage follows
         </h1>
         <p className="text-xl text-gray-600 mb-10">Instant setup. Global protection. Always by your side.</p>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center relative z-10">
           <ActionButton 
             onClick={handleGetQuote}
             className="bg-primary text-white px-8 py-6 rounded-md text-lg font-medium hover:bg-primary/90 transition-colors"
@@ -37,7 +37,7 @@ const HeroSection = () => {
         </div>
       </div>
       
-      <div className="relative -mt-[100px]">
+      <div className="relative mt-10">
         <div className="flex justify-between items-end">
           <div className="w-full md:w-1/3 mx-0 px-0">
             <img 
