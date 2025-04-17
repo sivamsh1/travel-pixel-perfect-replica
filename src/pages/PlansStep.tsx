@@ -73,6 +73,8 @@ const PlansStep = () => {
 
   // Apply filters to quotes
   const filteredQuotes = useMemo(() => {
+    if (!quotes || quotes.length === 0) return [];
+    
     let filtered = [...quotes];
     
     // Filter by insurer
@@ -80,16 +82,16 @@ const PlansStep = () => {
       filtered = filtered.filter(plan => plan.provider === selectedInsurer);
     }
     
-    // Sort by price
+    // Sort by price (netPremium)
     if (selectedPriceSort !== 'all') {
       filtered = filtered.sort((a, b) => {
-        // Extract numeric values from price strings (e.g. "₹3998" -> 3998)
-        const priceA = parseFloat(a.price.replace(/[^0-9.]/g, '')) || 0;
-        const priceB = parseFloat(b.price.replace(/[^0-9.]/g, '')) || 0;
+        // Ensure we're sorting by netPremium numeric values
+        const premiumA = a.netPremium || 0;
+        const premiumB = b.netPremium || 0;
         
         return selectedPriceSort === 'lowToHigh' 
-          ? priceA - priceB 
-          : priceB - priceA;
+          ? premiumA - premiumB 
+          : premiumB - premiumA;
       });
     }
     

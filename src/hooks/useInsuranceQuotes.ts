@@ -110,8 +110,16 @@ export const useInsuranceQuotes = () => {
             
             const details = "Overseas Travel | Excluding USA and CANADA";
             
-            // Extract the netPremium value or set it to 0 if not available
-            const netPremium = value && typeof value.netPremium === 'number' ? value.netPremium : 0;
+            // Extract the netPremium value and ensure it's a number
+            // Handle both string and number types for netPremium
+            let netPremium = 0;
+            
+            if (value && value.netPremium !== undefined && value.netPremium !== null) {
+              // Convert to number if it's a string
+              netPremium = typeof value.netPremium === 'string' 
+                ? parseFloat(value.netPremium)
+                : value.netPremium;
+            }
             
             return {
               id: key,
