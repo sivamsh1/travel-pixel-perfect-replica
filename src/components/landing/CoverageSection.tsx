@@ -1,91 +1,73 @@
 
 import React from 'react';
-import { Luggage, Plane } from 'lucide-react';
 
 type CoverageItemProps = {
-  icon: React.ReactNode;
+  image: string;
   title: string;
   description: string;
 };
 
 const CoverageItem = ({
-  icon,
+  image,
   title,
   description
 }: CoverageItemProps) => (
-  <div className="bg-white p-6 rounded-md shadow-sm">
-    <div className="flex items-center mb-4">
-      <div className="h-10 w-10 rounded-md bg-blue-50 flex items-center justify-center mr-3">
-        {icon}
-      </div>
-      <h3 className="text-lg font-semibold">{title}</h3>
+  <div className="flex flex-col items-center text-center">
+    <div className="bg-[#FAF8F6] rounded-full w-48 h-48 flex items-center justify-center mb-6">
+      <img src={image} alt={title} className="w-16 h-16 object-contain" />
     </div>
-    <p className="text-gray-600 text-sm">{description}</p>
+    <h3 className="text-xl font-semibold mb-2">{title}</h3>
+    <p className="text-gray-600 max-w-xs">{description}</p>
   </div>
 );
 
 const CoverageSection = () => {
   const coverageItems = [
     {
-      icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>,
-      title: "Emergency Medical Expenses",
-      description: "If there's a medical emergency, then the individual travel insurance will come to rescue and will cover for the medical expenses and care."
+      image: "https://i.ibb.co/3m1NZ9VJ/Emergency-medical-cover.png",
+      title: "Emergency medical cover",
+      description: "Covers sudden illness or injury during your stay"
     },
     {
-      icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>,
-      title: "Emergency dental expenses",
-      description: "The dental treatment in some of the foreign countries can put you out of pocket. If you get in an accident and require emergency dental care then you can rely on your travel insurance."
+      image: "https://i.ibb.co/vxYMv4zD/Lost-luggage-protection.png",
+      title: "Lost luggage protection",
+      description: "Replace essentials if bags are lost, stolen, or delayed"
     },
     {
-      icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>,
-      title: "Medical evacuation",
-      description: "When we said our travel insurance gets you out of trouble quickly, we didn't just mean it metaphorically. With emergency medical evacuation via air/land, we'll get you safely to the nearest hospital."
+      image: "https://i.ibb.co/PZbv8k6M/Hospitalization.png",
+      title: "Hospitalization",
+      description: "Covers hospital stays and medical bills abroad"
     },
     {
-      icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>,
-      title: "Hospital daily cash allowance",
-      description: "There are a lot of petty expenses that can eat your trip money. If you get hospitalized the medical expenses will be covered but you will also get hospital daily cash allowance to take care of petty expenses."
+      image: "https://i.ibb.co/JVvxzxq/Tuition-fee-protection.png",
+      title: "Tuition fee protection",
+      description: "Get reimbursed if studies stop due to emergencies"
     },
     {
-      icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>,
-      title: "Medical & Body Repatriation",
-      description: "We'll stand by you even, and especially, when the going gets tough. In case of a death, we'll bear the cost of transferring the mortal remains to the home country."
+      image: "https://i.ibb.co/zTJLBsVy/Sponsor-protection.png",
+      title: "Sponsor protection",
+      description: "Support if your sponsor can no longer fund you"
     },
     {
-      icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-          </svg>,
-      title: "Accidental death",
-      description: "We'll stand by you even, and especially, when the going gets tough. In case of a death, we'll bear the cost of transferring the mortal remains to the home country."
-    },
-    {
-      icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>,
-      title: "Permanent Disablement",
-      description: "Under unfortunate circumstances, accidents can result in permanent disabilities. Should such a thing happen, we offer a lump sum compensation to ease the financial burden that may follow."
+      image: "https://i.ibb.co/DPjw4Y36/247-student-assistance.png",
+      title: "24/7 student assistance",
+      description: "Round-the-clock help, wherever you are"
     }
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-medium text-center mb-12">Coverage Details</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-medium mb-4">Insurance That Travels With You</h2>
+          <p className="text-xl text-gray-600">Comprehensive student coverage that stays by your side from takeoff to graduation</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
           {coverageItems.map((item, index) => (
             <CoverageItem 
               key={index}
-              icon={item.icon}
+              image={item.image}
               title={item.title}
               description={item.description}
             />
