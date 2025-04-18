@@ -17,18 +17,25 @@ export const useInsuranceQuotes = () => {
   const requestPayload = useMemo(() => {
     const storageData = getFromLocalStorage();
     
-    // Get traveller DOBs from context with proper validation
-    const dob = travellers.map(traveller => {
-      if (!traveller.dob) return null;
-      
-      try {
-        const parsedDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
-        if (!isValid(parsedDate)) return null;
-        return format(parsedDate, 'dd/MM/yyyy');
-      } catch (error) {
-        console.error('Error parsing traveller DOB:', error);
-        return null;
+    // Get traveller DOBs from localStorage with proper validation
+    const dob = storageData?.travellers?.details?.map(traveller => {
+      // If DOB is already in DD/MM/YYYY format, use it directly
+      if (traveller.dob && /^\d{2}\/\d{2}\/\d{4}$/.test(traveller.dob)) {
+        return traveller.dob;
       }
+      
+      // If DOB is in ISO format, convert it
+      if (traveller.dob) {
+        try {
+          const parsedDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
+          if (isValid(parsedDate)) {
+            return format(parsedDate, 'dd/MM/yyyy');
+          }
+        } catch (error) {
+          console.error('Error parsing traveller DOB:', error);
+        }
+      }
+      return null;
     }).filter(Boolean); // Remove any null values
     
     // Get dates from localStorage with proper validation
@@ -63,10 +70,10 @@ export const useInsuranceQuotes = () => {
     const destinationId = storageData?.location?.destinationId || '679e707834ecd414eb0004de';
     
     return {
-      destination: destinationId, // Use the actual destination ID from localStorage
-      dob: dob.length ? dob : ["17/08/1997"], // Use traveller data or fallback
-      startDate: startDate || "19/06/2025", // Use actual dates or fallback
-      returnDate: endDate || "29/07/2025", // Use actual dates or fallback
+      destination: destinationId,
+      dob: dob.length ? dob : ["17/08/1997"], // Use stored DOB or fallback
+      startDate: startDate || "19/06/2025",
+      returnDate: endDate || "29/07/2025",
     };
   }, [travellers]);
 

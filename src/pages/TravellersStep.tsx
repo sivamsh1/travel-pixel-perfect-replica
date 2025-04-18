@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
@@ -8,6 +8,7 @@ import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
 import TravellerCount from '@/components/travellers/TravellerCount';
 import TravellerDateOfBirth from '@/components/travellers/TravellerDateOfBirth';
+import { saveToLocalStorage } from '@/utils/localStorageUtils';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -26,7 +27,6 @@ const TravellersStep = () => {
     updateTraveller
   } = useTravelForm();
   
-  // Validation state
   const [errors, setErrors] = useState<{ [key: number]: { dob?: string, age?: string } }>({});
 
   const handleDecrease = () => {
@@ -42,7 +42,6 @@ const TravellersStep = () => {
   };
 
   const handleNext = () => {
-    // Validate form fields
     const newErrors: { [key: number]: { dob?: string, age?: string } } = {};
     let hasErrors = false;
     
@@ -62,6 +61,16 @@ const TravellersStep = () => {
     setErrors(newErrors);
     
     if (!hasErrors) {
+      const formattedTravellers = travellers.map(traveller => ({
+        ...traveller,
+        dob: traveller.dob ? format(new Date(traveller.dob), 'dd/MM/yyyy') : undefined
+      }));
+      
+      saveToLocalStorage('travellers', {
+        count: travellersCount,
+        details: formattedTravellers
+      });
+      
       navigate('/contact');
     }
   };
@@ -70,7 +79,6 @@ const TravellersStep = () => {
     if (date) {
       updateTraveller(index, { dob: date.toISOString() });
       
-      // Calculate age from date of birth
       const today = new Date();
       let age = today.getFullYear() - date.getFullYear();
       const monthDiff = today.getMonth() - date.getMonth();
@@ -79,7 +87,6 @@ const TravellersStep = () => {
       }
       updateTraveller(index, { age: age.toString() });
       
-      // Clear error if exists
       if (errors[index]?.dob) {
         const newErrors = { ...errors };
         if (newErrors[index]) {
