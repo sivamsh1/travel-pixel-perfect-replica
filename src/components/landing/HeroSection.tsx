@@ -13,57 +13,57 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="bg-white py-16 md:py-24 overflow-hidden">
+    <section className="bg-white py-10 md:py-16 lg:py-24 overflow-hidden">
       <div className="container mx-auto px-4 text-center">
         <h1 
-          className="text-[90px] text-[#2C2C2C] font-medium leading-[120%] text-center"
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-[90px] text-[#2C2C2C] font-medium leading-[120%] text-center"
           style={{ fontFamily: 'Jost, sans-serif' }}
         >
           Wherever you go<br />
           our coverage follows
         </h1>
-        <p className="text-xl text-gray-600 mb-10">Instant setup. Global protection. Always by your side.</p>
+        <p className="text-base md:text-xl text-gray-600 mb-6 md:mb-10">Instant setup. Global protection. Always by your side.</p>
         <div className="flex flex-col items-center relative z-10">
           <ActionButton 
             onClick={handleGetQuote}
-            className="bg-primary text-white px-8 py-6 rounded-md text-lg font-medium hover:bg-primary/90 transition-colors"
+            className="bg-primary text-white px-6 py-4 md:px-8 md:py-6 rounded-md text-base md:text-lg font-medium hover:bg-primary/90 transition-colors w-full sm:w-auto"
           >
             Get a Quote
           </ActionButton>
-          <div className="flex items-center mt-6 text-sm text-gray-700">
-            <Plane className="h-4 w-4 text-primary mr-2" />
+          <div className="flex items-center mt-4 md:mt-6 text-xs md:text-sm text-gray-700">
+            <Plane className="h-3 w-3 md:h-4 md:w-4 text-primary mr-1 md:mr-2" />
             <span>Save 10% on your perfect travel plan!</span>
           </div>
         </div>
       </div>
       
-      <div className="relative mt-10">
-        <div className="flex justify-between items-end">
-          <div className="w-full md:w-1/3 mx-0 px-0">
+      <div className="relative mt-8 md:mt-10">
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-end">
+          <div className="w-full md:w-1/3 px-0 mb-6 md:mb-0">
             <img 
               src="https://i.ibb.co/3yg0DFDJ/hero-image-1.png" 
               alt="Students with luggage" 
               className="h-auto w-full object-contain"
               style={{ 
-                maxHeight: "350px",
+                maxHeight: "250px",
                 marginLeft: "0",
                 marginRight: "0"
               }}
             />
           </div>
           
-          <div className="w-full md:w-1/3 text-center py-4">
-            <p className="text-primary text-2xl font-semibold">Trusted by thousands of students</p>
-            <p className="text-gray-600 text-base">We've got your academic journey covered</p>
+          <div className="w-full md:w-1/3 text-center py-4 mb-6 md:mb-0">
+            <p className="text-primary text-xl md:text-2xl font-semibold">Trusted by thousands of students</p>
+            <p className="text-gray-600 text-sm md:text-base">We've got your academic journey covered</p>
           </div>
           
-          <div className="w-full md:w-1/3 flex justify-end mx-0 px-0">
+          <div className="w-full md:w-1/3 flex justify-center md:justify-end px-0">
             <img 
               src="https://i.ibb.co/H64Z3Ky/hero-image-2.png" 
               alt="Control tower and plane" 
               className="h-auto w-full object-contain"
               style={{ 
-                maxHeight: "350px",
+                maxHeight: "250px",
                 marginLeft: "0",
                 marginRight: "0",
                 marginBottom: "-12px"

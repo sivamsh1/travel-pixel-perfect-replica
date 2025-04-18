@@ -1,9 +1,13 @@
+
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Building2, Luggage, Plane } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const PolicyCoverageSection = () => {
+  const isMobile = useIsMobile();
+  
   const medicalCoverageItems = [{
     title: "Emergency Medical Expenses",
     description: "If there's a medical emergency, then the individual travel insurance will come to rescue and will cover for the medical expenses and care."
@@ -49,72 +53,62 @@ const PolicyCoverageSection = () => {
     description: "Tourist are easy victims to a robbery or theft in a foreign land. If the insured gets robbed, then the individual travel insurance will provide emergency cash."
   }];
 
-  return <section className="py-16">
+  const renderCards = (items, keyPrefix) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+      {items.map((item, index) => (
+        <Card key={`${keyPrefix}-${index}`} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100 hover:shadow-xl transition-shadow h-full">
+          <CardHeader className="p-0 pb-2 sm:pb-3">
+            <h3 className="text-base sm:text-lg md:text-xl font-medium">{item.title}</h3>
+          </CardHeader>
+          <CardContent className="p-0">
+            <p className="text-xs sm:text-sm md:text-base text-gray-600">{item.description}</p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+
+  return (
+    <section className="py-10 md:py-16">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="text-center mb-10">
-          <h2 className="text-5xl font-medium mb-4">Coverage That Goes the Distance</h2>
-          <p className="text-xl text-gray-600">From medical emergencies to lost baggage—get the coverage you need for stress-free travel.</p>
+        <div className="text-center mb-8 md:mb-10">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium mb-3 md:mb-4">Coverage That Goes the Distance</h2>
+          <p className="text-base md:text-xl text-gray-600">From medical emergencies to lost baggage—get the coverage you need for stress-free travel.</p>
         </div>
 
         <div className="mx-auto">
           <Tabs defaultValue="medical" className="w-full">
-            <TabsList className="grid grid-cols-3 w-full bg-white rounded-lg shadow-md p-2 mb-8 h-20">
-              <TabsTrigger value="medical" className="flex items-center gap-2 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                <Building2 className="h-6 w-6" />
-                <span className="text-lg font-medium">Medical Coverage</span>
+            <TabsList className={`grid grid-cols-1 sm:grid-cols-3 w-full bg-white rounded-lg shadow-md p-2 mb-6 md:mb-8 ${isMobile ? 'h-auto' : 'h-20'}`}>
+              <TabsTrigger value="medical" className={`flex items-center gap-2 py-3 md:py-4 ${isMobile ? 'justify-start px-4 mb-2' : ''} data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300`}>
+                <Building2 className="h-5 w-5 md:h-6 md:w-6" />
+                <span className="text-base md:text-lg font-medium">Medical Coverage</span>
               </TabsTrigger>
-              <TabsTrigger value="baggage" className="flex items-center gap-2 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                <Luggage className="h-6 w-6" />
-                <span className="text-lg font-medium">Baggage Related Coverage</span>
+              <TabsTrigger value="baggage" className={`flex items-center gap-2 py-3 md:py-4 ${isMobile ? 'justify-start px-4 mb-2' : ''} data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300`}>
+                <Luggage className="h-5 w-5 md:h-6 md:w-6" />
+                <span className="text-base md:text-lg font-medium">Baggage Coverage</span>
               </TabsTrigger>
-              <TabsTrigger value="journey" className="flex items-center gap-2 py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300">
-                <Plane className="h-6 w-6" />
-                <span className="text-lg font-medium">Journey Related Coverage</span>
+              <TabsTrigger value="journey" className={`flex items-center gap-2 py-3 md:py-4 ${isMobile ? 'justify-start px-4' : ''} data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300`}>
+                <Plane className="h-5 w-5 md:h-6 md:w-6" />
+                <span className="text-base md:text-lg font-medium">Journey Coverage</span>
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="medical" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                {medicalCoverageItems.map((item, index) => <Card key={`medical-${index}`} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[300px]">
-                    <CardHeader className="p-0 pb-3">
-                      <h3 className="text-xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">{item.title}</h3>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      <p className="text-gray-600">{item.description}</p>
-                    </CardContent>
-                  </Card>)}
-              </div>
+            <TabsContent value="medical" className="mt-4 md:mt-6">
+              {renderCards(medicalCoverageItems, 'medical')}
             </TabsContent>
 
-            <TabsContent value="baggage" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                {baggageCoverageItems.map((item, index) => <Card key={`baggage-${index}`} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[300px]">
-                    <CardHeader className="p-0 pb-3">
-                      <h3 className="text-xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">{item.title}</h3>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      <p className="text-gray-600">{item.description}</p>
-                    </CardContent>
-                  </Card>)}
-              </div>
+            <TabsContent value="baggage" className="mt-4 md:mt-6">
+              {renderCards(baggageCoverageItems, 'baggage')}
             </TabsContent>
 
-            <TabsContent value="journey" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                {journeyCoverageItems.map((item, index) => <Card key={`journey-${index}`} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow w-[360px] h-[300px]">
-                    <CardHeader className="p-0 pb-3">
-                      <h3 className="text-xl font-medium whitespace-nowrap overflow-hidden text-ellipsis">{item.title}</h3>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      <p className="text-gray-600">{item.description}</p>
-                    </CardContent>
-                  </Card>)}
-              </div>
+            <TabsContent value="journey" className="mt-4 md:mt-6">
+              {renderCards(journeyCoverageItems, 'journey')}
             </TabsContent>
           </Tabs>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
 
 export default PolicyCoverageSection;
