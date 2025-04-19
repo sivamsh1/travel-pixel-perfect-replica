@@ -16,7 +16,7 @@ const HeroSection = () => {
           Wherever you go<br />
           our coverage follows
         </h1>
-        <p className="text-base md:text-xl text-gray-600 mb-6 md:mb-10 py-[20px]">Instant setup. Global protection. Always by your side.</p>
+        <p className="text-base text-gray-600 mb-6 md:mb-10 py-[20px] md:text-xl">Instant setup. Global protection. Always by your side.</p>
         <div className="flex flex-col items-center relative z-10">
           <ActionButton onClick={handleGetQuote} className="bg-primary text-white px-6 py-4 md:px-8 md:py-6 rounded-md text-base md:text-lg font-medium hover:bg-primary/90 transition-colors w-full sm:w-auto">
             Get a Quote
