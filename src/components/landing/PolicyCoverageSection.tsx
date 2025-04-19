@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -56,7 +55,7 @@ const PolicyCoverageSection = () => {
   const renderCards = (items, keyPrefix) => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
       {items.map((item, index) => (
-        <Card key={`${keyPrefix}-${index}`} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100 hover:shadow-xl transition-shadow h-full">
+        <Card key={`${keyPrefix}-${index}`} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100 hover:shadow-xl transition-shadow h-[calc(100%+20px)] min-h-[200px]">
           <CardHeader className="p-0 pb-2 sm:pb-3">
             <h3 className="text-base sm:text-lg md:text-xl font-medium">{item.title}</h3>
           </CardHeader>
@@ -76,7 +75,7 @@ const PolicyCoverageSection = () => {
           <p className="text-base md:text-xl text-gray-600">From medical emergencies to lost baggage—get the coverage you need for stress-free travel.</p>
         </div>
 
-        <div className="mx-auto">
+        <div className="mx-auto px-10">
           <Tabs defaultValue="medical" className="w-full">
             <TabsList className={`grid grid-cols-1 sm:grid-cols-3 w-full bg-white rounded-lg shadow-md p-2 mb-6 md:mb-8 ${isMobile ? 'h-auto' : 'h-20'}`}>
               <TabsTrigger value="medical" className={`flex items-center gap-2 py-3 md:py-4 ${isMobile ? 'justify-start px-4 mb-2' : ''} data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300`}>
