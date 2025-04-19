@@ -15,9 +15,9 @@ const WhySection = () => {
       <img 
         src="https://i.ibb.co/Df1xRyqy/why.png"
         alt="Student with luggage"
-        className="w-full max-w-lg mx-auto mb-8"
+        className="w-full max-w-full mx-auto mb-0"  // Removed max-w-lg and changed mb-8 to mb-0
       />
-      <div className="bg-[#EFF0F0] py-16 md:py-20">
+      <div className="bg-[#EFF0F0] py-16 md:py-20 -mt-1">  // Added -mt-1 to remove any potential gap
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-6 md:mb-8">
             Why Student Travel Insurance Is a Must-Have
