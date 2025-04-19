@@ -1,22 +1,13 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-
 const WhySection = () => {
   const navigate = useNavigate();
-
   const handleGetQuote = () => {
     navigate('/quote');
   };
-
-  return (
-    <section className="relative">
-      <img 
-        src="https://i.ibb.co/Df1xRyqy/why.png"
-        alt="Student with luggage"
-        className="w-full max-w-lg mx-auto mb-8 relative top-6"  // Added relative top-6 to move down by 24px (6 * 4px = 24px in Tailwind)
-      />
+  return <section className="relative">
+      <img src="https://i.ibb.co/Df1xRyqy/why.png" alt="Student with luggage" className="w-full max-w-lg mx-auto mb-8 relative top-6 object-none" />
       <div className="bg-[#EFF0F0] py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-6 md:mb-8">
@@ -25,16 +16,11 @@ const WhySection = () => {
           <p className="text-gray-600 text-lg md:text-xl mb-8 md:mb-10 leading-relaxed">
             Travel insurance protects you from medical emergencies, lost baggage, flight delays, and unexpected interruptions during your studies. It's required for visas in 30+ countries and even covers repatriation in case of fatalities. Simple, smart, and essential for your journey abroad.
           </p>
-          <Button 
-            onClick={handleGetQuote}
-            className="bg-[#00B2FF] hover:bg-[#00B2FF]/90 text-white text-lg md:text-xl px-8 py-6 rounded-lg shadow-lg hover:shadow-xl transition-all"
-          >
+          <Button onClick={handleGetQuote} className="bg-[#00B2FF] hover:bg-[#00B2FF]/90 text-white text-lg md:text-xl px-8 py-6 rounded-lg shadow-lg hover:shadow-xl transition-all">
             Get a Quote
           </Button>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default WhySection;
