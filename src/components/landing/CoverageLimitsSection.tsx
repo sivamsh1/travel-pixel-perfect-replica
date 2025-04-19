@@ -51,7 +51,7 @@ const CoverageLimitsSection = () => {
           <p className="text-base md:text-xl text-gray-600">Stay informed about what's excluded from your travel insurance</p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mx-auto px-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-[60px] mx-auto px-10">
           {limitItems.map((item, index) => (
             <LimitItem 
               key={index}

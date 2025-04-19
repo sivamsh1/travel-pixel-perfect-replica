@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -50,7 +51,7 @@ const PolicyCoverageSection = () => {
   }];
 
   const renderCards = (items, keyPrefix) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-[60px]">
       {items.map((item, index) => (
         <Card key={`${keyPrefix}-${index}`} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100 hover:shadow-xl transition-shadow h-[calc(100%+20px)] min-h-[200px]">
           <CardHeader className="p-0 pb-2 sm:pb-3">
