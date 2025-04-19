@@ -82,21 +82,15 @@ const PolicyCoverageSection = () => {
             </TabsList>
 
             <TabsContent value="medical" className="mt-4 md:mt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                {renderCards(medicalCoverageItems, 'medical')}
-              </div>
+              {renderCards(medicalCoverageItems, 'medical')}
             </TabsContent>
 
             <TabsContent value="baggage" className="mt-4 md:mt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                {renderCards(baggageCoverageItems, 'baggage')}
-              </div>
+              {renderCards(baggageCoverageItems, 'baggage')}
             </TabsContent>
 
             <TabsContent value="journey" className="mt-4 md:mt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                {renderCards(journeyCoverageItems, 'journey')}
-              </div>
+              {renderCards(journeyCoverageItems, 'journey')}
             </TabsContent>
           </Tabs>
         </div>
