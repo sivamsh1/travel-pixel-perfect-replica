@@ -3,6 +3,7 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Building2, Luggage, Plane } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+
 const PolicyCoverageSection = () => {
   const isMobile = useIsMobile();
   const medicalCoverageItems = [{
@@ -47,17 +48,24 @@ const PolicyCoverageSection = () => {
     title: "Hijack Distress Allowance",
     description: "Tourist are easy victims to a robbery or theft in a foreign land. If the insured gets robbed, then the individual travel insurance will provide emergency cash."
   }];
-  const renderCards = (items, keyPrefix) => <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
-      {items.map((item, index) => <Card key={`${keyPrefix}-${index}`} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100 hover:shadow-xl transition-shadow h-[calc(100%+20px)] min-h-[200px]">
+
+  const renderCards = (items, keyPrefix) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      {items.map((item, index) => (
+        <Card key={`${keyPrefix}-${index}`} className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100 hover:shadow-xl transition-shadow h-[calc(100%+20px)] min-h-[200px]">
           <CardHeader className="p-0 pb-2 sm:pb-3">
             <h3 className="text-base sm:text-lg md:text-xl font-medium">{item.title}</h3>
           </CardHeader>
           <CardContent className="p-0">
             <p className="text-xs sm:text-sm md:text-base text-gray-600">{item.description}</p>
           </CardContent>
-        </Card>)}
-    </div>;
-  return <section className="py-10 md:py-16 bg-[EFF0F0] bg-[#eff0f0]">
+        </Card>
+      ))}
+    </div>
+  );
+
+  return (
+    <section className="py-10 md:py-16 bg-[EFF0F0] bg-[#eff0f0]">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-8 md:mb-10">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium mb-3 md:mb-4">Coverage That Goes the Distance</h2>
@@ -95,6 +103,8 @@ const PolicyCoverageSection = () => {
           </Tabs>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default PolicyCoverageSection;
