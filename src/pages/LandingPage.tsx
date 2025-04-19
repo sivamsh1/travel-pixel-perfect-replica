@@ -5,6 +5,7 @@ import HeroSection from '@/components/landing/HeroSection';
 import CoverageSection from '@/components/landing/CoverageSection';
 import PolicyCoverageSection from '@/components/landing/PolicyCoverageSection';
 import CoverageLimitsSection from '@/components/landing/CoverageLimitsSection';
+import WhySection from '@/components/landing/WhySection';
 import Footer from '@/components/landing/Footer';
 
 const LandingPage = () => {
@@ -15,6 +16,7 @@ const LandingPage = () => {
       <CoverageSection />
       <PolicyCoverageSection />
       <CoverageLimitsSection />
+      <WhySection />
       <Footer />
     </div>
   );
