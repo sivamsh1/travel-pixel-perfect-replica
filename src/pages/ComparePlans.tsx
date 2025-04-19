@@ -44,12 +44,6 @@ const ComparePlans = () => {
   const handleBack = () => {
     navigate('/plans');
   };
-  
-  // Function to handle buy now button click
-  const handleBuyNow = (planName: string) => {
-    // Navigate to the Addons page
-    navigate('/addons');
-  };
 
   const medicalBenefitsRows = [
     { label: "Medical Expense Coverage", values: ["$500", "$50,000"] },
@@ -130,7 +124,7 @@ const ComparePlans = () => {
                 rows={additionalFeaturesRows} 
               />
 
-              <PlanActions plans={plans} onBuyNow={handleBuyNow} />
+              <PlanActions plans={plans} />
             </TableBody>
           </Table>
         </div>
