@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plane } from 'lucide-react';
@@ -13,7 +14,7 @@ const HeroSection = () => {
   return (
     <section className="bg-white py-10 md:py-16 lg:py-24 overflow-hidden">
       <div className="container mx-auto px-4 text-center">
-        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[90px] text-[#2C2C2C] font-medium leading-[120%] text-center" style={{
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[90px] text-[#2C2C2C] font-medium leading-[150%] text-center" style={{
         fontFamily: 'Jost, sans-serif'
       }}>
           Wherever you go<br />
