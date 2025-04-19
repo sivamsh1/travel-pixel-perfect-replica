@@ -1,4 +1,3 @@
-
 /**
  * Validates an email address
  * @param email The email to validate
@@ -23,13 +22,13 @@ export const isValidPhone = (phone: string): boolean => {
 };
 
 /**
- * Validates a passport number (basic validation - at least 8 characters)
+ * Validates a passport number (exactly 10 characters)
  * @param passport The passport number to validate
  * @returns True if the passport number is valid, false otherwise
  */
 export const isValidPassport = (passport: string): boolean => {
-  // Basic validation - at least 8 characters
-  return passport.length >= 8;
+  // Check if exactly 10 characters (alphanumeric)
+  return /^[A-Za-z0-9]{10}$/.test(passport);
 };
 
 /**
