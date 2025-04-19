@@ -22,10 +22,10 @@ function Calendar({
 }: CalendarProps) {
   // Get current month and year when the calendar mounts or when selected date changes
   const [month, setMonth] = React.useState<number>(
-    props.selected instanceof Date ? props.selected.getMonth() : new Date().getMonth()
+    props.selected ? new Date(props.selected).getMonth() : new Date().getMonth()
   );
   const [year, setYear] = React.useState<number>(
-    props.selected instanceof Date ? props.selected.getFullYear() : new Date().getFullYear()
+    props.selected ? new Date(props.selected).getFullYear() : new Date().getFullYear()
   );
 
   // Generate years for selection (from current year to 5 years ahead)

@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import Layout from '@/components/Layout';
@@ -9,7 +8,7 @@ import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
 import TravellerCount from '@/components/travellers/TravellerCount';
 import TravellerDateOfBirth from '@/components/travellers/TravellerDateOfBirth';
-import { saveToLocalStorage, getFromLocalStorage } from '@/utils/localStorageUtils';
+import { saveToLocalStorage } from '@/utils/localStorageUtils';
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -28,19 +27,7 @@ const TravellersStep = () => {
     updateTraveller
   } = useTravelForm();
   
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  // Load saved data from localStorage on mount
-  useEffect(() => {
-    const savedData = getFromLocalStorage();
-    if (savedData?.travellers?.details) {
-      savedData.travellers.details.forEach((traveller, index) => {
-        if (index < travellers.length) {
-          updateTraveller(index, traveller);
-        }
-      });
-    }
-  }, []);
+  const [errors, setErrors] = useState<{ [key: number]: { dob?: string, age?: string } }>({});
 
   const handleDecrease = () => {
     if (travellersCount > 1) {
@@ -55,30 +42,33 @@ const TravellersStep = () => {
   };
 
   const handleNext = () => {
-    const newErrors: { [key: string]: string } = {};
+    const newErrors: { [key: number]: { dob?: string, age?: string } } = {};
     let hasErrors = false;
     
     travellers.forEach((traveller, index) => {
-      if (!traveller.name) {
-        newErrors[`traveller${index}`] = "Name is required";
+      const travellerErrors: { dob?: string, age?: string } = {};
+      
+      if (!traveller.dob) {
+        travellerErrors.dob = "Date of birth is required";
         hasErrors = true;
       }
-      if (!traveller.dob) {
-        newErrors[`traveller${index}`] = (newErrors[`traveller${index}`] || "") + " Date of birth is required";
-        hasErrors = true;
+      
+      if (Object.keys(travellerErrors).length > 0) {
+        newErrors[index] = travellerErrors;
       }
     });
     
     setErrors(newErrors);
     
     if (!hasErrors) {
-      // Save to localStorage before navigating
+      const formattedTravellers = travellers.map(traveller => ({
+        ...traveller,
+        dob: traveller.dob ? format(new Date(traveller.dob), 'dd/MM/yyyy') : undefined
+      }));
+      
       saveToLocalStorage('travellers', {
         count: travellersCount,
-        details: travellers.map(traveller => ({
-          ...traveller,
-          dob: traveller.dob ? format(new Date(traveller.dob), 'yyyy-MM-dd') : undefined
-        }))
+        details: formattedTravellers
       });
       
       navigate('/contact');
@@ -97,10 +87,14 @@ const TravellersStep = () => {
       }
       updateTraveller(index, { age: age.toString() });
       
-      // Clear error if exists
-      if (errors[`traveller${index}`]) {
+      if (errors[index]?.dob) {
         const newErrors = { ...errors };
-        delete newErrors[`traveller${index}`];
+        if (newErrors[index]) {
+          delete newErrors[index].dob;
+          if (Object.keys(newErrors[index]).length === 0) {
+            delete newErrors[index];
+          }
+        }
         setErrors(newErrors);
       }
     }
@@ -131,11 +125,10 @@ const TravellersStep = () => {
               key={index}
               index={index}
               dob={traveller.dob}
-              name={traveller.name}
               age={traveller.age}
               handleDateChange={handleDateChange}
               updateTraveller={updateTraveller}
-              error={errors[`traveller${index}`]}
+              error={errors[index]?.dob}
             />
           ))}
           
