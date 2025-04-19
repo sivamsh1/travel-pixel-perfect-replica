@@ -15,7 +15,7 @@ const WhySection = () => {
       <img 
         src="https://i.ibb.co/Df1xRyqy/why.png"
         alt="Student with luggage"
-        className="w-full max-w-lg mx-auto mb-8 relative top-6"  // Added relative top-6 to move down by 24px (6 * 4px = 24px in Tailwind)
+        className="w-full max-w-lg mx-auto mb-8 relative top-[12px]"  // Changed from top-6 to top-[12px]
       />
       <div className="bg-[#EFF0F0] py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-4xl text-center">
@@ -38,3 +38,4 @@ const WhySection = () => {
 };
 
 export default WhySection;
+
