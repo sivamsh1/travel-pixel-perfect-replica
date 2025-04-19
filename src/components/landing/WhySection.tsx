@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +14,7 @@ const WhySection = () => {
       <img 
         src="https://i.ibb.co/Df1xRyqy/why.png"
         alt="Student with luggage"
-        className="w-full max-w-lg mx-auto mb-8 relative top-[12px]"  // Changed from top-6 to top-[12px]
+        className="w-full max-w-lg mx-auto mb-8 relative -top-[6px]"  // Changed to move up by 6px
       />
       <div className="bg-[#EFF0F0] py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-4xl text-center">
@@ -38,4 +37,3 @@ const WhySection = () => {
 };
 
 export default WhySection;
-
