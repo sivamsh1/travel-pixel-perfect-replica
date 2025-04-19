@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -13,7 +14,7 @@ interface PlanActionsProps {
   onBuyNow: (planName: string) => void;
 }
 
-const PlanActions: React.FC<PlanActionsProps> = ({ plans, onBuyNow }) => {
+const PlanActions: React.FC<PlanActionsProps> = ({ plans }) => {
   const navigate = useNavigate();
   const { destination, startDate, endDate, travellers } = useTravelForm();
 
@@ -50,9 +51,6 @@ const PlanActions: React.FC<PlanActionsProps> = ({ plans, onBuyNow }) => {
     
     // Log the data as JSON
     console.log('Purchase data:', JSON.stringify(purchaseData, null, 2));
-    
-    // Call the original onBuyNow function
-    onBuyNow(planName);
     
     // Navigate to the next page
     navigate('/addons');
