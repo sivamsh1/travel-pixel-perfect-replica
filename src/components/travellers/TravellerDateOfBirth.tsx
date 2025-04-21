@@ -1,6 +1,11 @@
 
-import React from 'react';
-import { DatePicker } from '@/components/DatePicker';
+import React from "react";
+import { format, isValid } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 interface TravellerDateOfBirthProps {
   index: number;
@@ -19,17 +24,45 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
   updateTraveller,
   error
 }) => {
+  const dateValue = dob ? new Date(dob) : undefined;
+
   return (
     <div className="flex gap-4">
-      <div className="flex-1">
-        <DatePicker
-          value={dob ? new Date(dob) : undefined}
-          onChange={(date) => handleDateChange(index, date)}
-          placeholder={`Traveller ${index + 1} DOB`}
-          error={error}
-        />
+      <div className="flex-1 min-w-[240px] max-w-[320px]">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full text-left font-normal border border-primary bg-background px-4 py-3 h-12 rounded-md",
+                !dateValue && "text-muted-foreground",
+                error ? "border-destructive focus:ring-destructive" : ""
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4 opacity-60" />
+              {dateValue && isValid(dateValue)
+                ? format(dateValue, "PPP")
+                : <span>{`Traveller ${index + 1} DOB`}</span>
+              }
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start" sideOffset={8}>
+            <Calendar
+              mode="single"
+              selected={dateValue}
+              onSelect={(date) => handleDateChange(index, date)}
+              disabled={(date) =>
+                date > new Date() || date < new Date("1900-01-01")
+              }
+              initialFocus
+              className="p-3 pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+        {error && (
+          <p className="text-sm font-medium text-destructive mt-1">{error}</p>
+        )}
       </div>
-      
       <div className="w-1/3">
         <input
           type="text"
@@ -45,3 +78,4 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
 };
 
 export default TravellerDateOfBirth;
+
