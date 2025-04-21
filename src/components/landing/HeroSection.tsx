@@ -31,11 +31,11 @@ const HeroSection = () => {
       <div className="relative -mt-[40px]">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end">
           <div className="w-full md:w-1/3 px-0 mb-6 md:mb-0">
-            <img alt="Students with luggage" className="h-auto w-auto object-contain" style={{
+            <img alt="Students with luggage" style={{
             maxHeight: "250px",
             marginLeft: "0",
             marginRight: "0"
-          }} src="/lovable-uploads/e7261a77-698a-4ed6-9f14-9e1fcf87e111.png" />
+          }} src="/lovable-uploads/e7261a77-698a-4ed6-9f14-9e1fcf87e111.png" className="h-auto w-auto object-fill" />
           </div>
           
           <div className="w-full md:w-1/3 text-center py-4 mb-6 md:mb-0">
