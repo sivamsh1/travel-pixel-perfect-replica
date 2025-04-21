@@ -15,9 +15,10 @@ interface Country {
 interface CountrySearchProps {
   initialValue: string;
   onSelect: (country: string, countryId: string) => void;
+  excludeCountries?: string[]; // NEW
 }
 
-const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
+const CountrySearch = ({ initialValue, onSelect, excludeCountries = [] }: CountrySearchProps) => {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(initialValue);
   const [countries, setCountries] = useState<Country[]>([]);
@@ -52,8 +53,16 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
           throw new Error('Network response was not ok');
         }
         
-        const data = await response.json();
-        setCountries(data.result || []);
+        let data = await response.json();
+        let results: Country[] = data.result || [];
+        // Filter out excluded countries (case insensitive)
+        if (excludeCountries.length > 0) {
+          const exclusions = excludeCountries.map(e => e.trim().toLowerCase());
+          results = results.filter(
+            c => !exclusions.includes(c.name.trim().toLowerCase())
+          );
+        }
+        setCountries(results);
       } catch (error) {
         console.error("Error fetching countries:", error);
         setCountries([]);
@@ -68,7 +77,21 @@ const CountrySearch = ({ initialValue, onSelect }: CountrySearchProps) => {
     };
 
     fetchCountries();
-  }, [debouncedValue, toast]);
+  }, [debouncedValue, toast, excludeCountries]);
+
+  // If the selected country becomes excluded, clear it from the field
+  useEffect(() => {
+    if (
+      inputValue &&
+      excludeCountries.some(
+        ec => ec.trim().toLowerCase() === inputValue.trim().toLowerCase()
+      )
+    ) {
+      setInputValue('');
+      onSelect('', '');
+    }
+    // eslint-disable-next-line
+  }, [excludeCountries]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (!open || countries.length === 0) return;

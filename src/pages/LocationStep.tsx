@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -12,12 +12,35 @@ import { formSteps } from '@/constants/formSteps';
 import { toast } from "@/components/ui/use-toast";
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
 
+const EXCLUDE_COUNTRIES_FOR_REGION: Record<string, string[]> = {
+  "Student Overseas | Excluding USA and CANADA": ["United States", "Canada"],
+  // You can extend for other region rules if required...
+};
+
 const LocationStep = () => {
   const navigate = useNavigate();
   const { region, setRegion, destination, setDestination } = useTravelForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
   const [destinationId, setDestinationId] = useState<string>('');
+
+  // Determine excluded countries list
+  const excludedCountries: string[] = region && EXCLUDE_COUNTRIES_FOR_REGION[region] ? EXCLUDE_COUNTRIES_FOR_REGION[region] : [];
+
+  // If region changes, and the destination is no longer allowed, clear it
+  useEffect(() => {
+    if (
+      destination &&
+      excludedCountries.some(
+        ec => ec.trim().toLowerCase() === destination.trim().toLowerCase()
+      )
+    ) {
+      setDestination('');
+      setDestinationId('');
+      setFormError('');
+    }
+    // eslint-disable-next-line
+  }, [region]);
 
   const validateForm = () => {
     if (!region) {
@@ -27,6 +50,16 @@ const LocationStep = () => {
 
     if (!destination) {
       setFormError('Please select a destination');
+      return false;
+    }
+
+    // Also check that destination is not in the exclusion list
+    if (
+      excludedCountries.some(
+        ec => ec.trim().toLowerCase() === destination.trim().toLowerCase()
+      )
+    ) {
+      setFormError('This country is not allowed for the selected region.');
       return false;
     }
 
@@ -79,6 +112,9 @@ const LocationStep = () => {
             onChange={(value) => {
               setRegion(value);
               setFormError('');
+              // Optionally, if you want to immediately clear destination on region change:
+              // if (destination) setDestination('');
+              // setDestinationId('');
             }}
           />
           
@@ -89,6 +125,7 @@ const LocationStep = () => {
               setDestinationId(id);
               setFormError('');
             }}
+            excludeCountries={excludedCountries}
           />
           
           {formError && (
