@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -46,11 +47,12 @@ const TravellersStep = () => {
 
   const handleDateChange = (index: number, date: Date | undefined) => {
     if (date) {
-      // Always store DOB in dd/MM/yyyy format
+      // Store DOB in dd/MM/yyyy format - ensure we're using the correct date
+      // No offset needed as we're directly using the selected date object
       const formattedDOB = format(date, 'dd/MM/yyyy');
       updateTraveller(index, { dob: formattedDOB });
 
-      // Calculate age as before
+      // Calculate age based on the selected date
       const today = new Date();
       let age = today.getFullYear() - date.getFullYear();
       const monthDiff = today.getMonth() - date.getMonth();

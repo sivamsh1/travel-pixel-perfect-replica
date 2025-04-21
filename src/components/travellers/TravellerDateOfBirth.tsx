@@ -1,4 +1,3 @@
-
 import React from "react";
 import { format, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -24,7 +23,19 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
   updateTraveller,
   error
 }) => {
-  const dateValue = dob ? new Date(dob) : undefined;
+  const parseDOB = (dateString?: string): Date | undefined => {
+    if (!dateString) return undefined;
+    
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split('/').map(Number);
+      return new Date(year, month - 1, day);
+    }
+    
+    const date = new Date(dateString);
+    return !isNaN(date.getTime()) ? date : undefined;
+  };
+
+  const dateValue = parseDOB(dob);
 
   return (
     <div className="flex gap-4">
@@ -78,4 +89,3 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
 };
 
 export default TravellerDateOfBirth;
-
