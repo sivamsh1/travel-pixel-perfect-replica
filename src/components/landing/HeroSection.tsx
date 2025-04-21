@@ -49,7 +49,7 @@ const HeroSection = () => {
             marginLeft: "0",
             marginRight: "0",
             marginBottom: "-12px"
-          }} src="/lovable-uploads/8e7a56c3-4126-46d6-a11b-fe7cfc67f3e3.png" className="h-auto w-auto object-fill" />
+          }} className="h-auto w-auto object-fill" src="/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png" />
           </div>
         </div>
       </div>
