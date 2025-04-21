@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, X } from 'lucide-react';
 import Layout from '@/components/Layout';
@@ -13,14 +13,16 @@ import ComparisonRow from '@/components/comparison/ComparisonRow';
 import PlanHeaders from '@/components/comparison/PlanHeaders';
 import PlanActions from '@/components/comparison/PlanActions';
 import ComparisonCategory from '@/components/comparison/ComparisonCategory';
+import { getComparisonPlans } from '@/utils/comparisonStorageUtils';
 
-// Default example plans to show when no plans are selected
+// Default example plans if no comparison plans present
 const defaultPlans: PlanToCompare[] = [
   {
     id: "icon-plan",
     name: "Icon Plan",
     provider: "Reliance General Insurance",
     logo: "https://via.placeholder.com/100x50",
+    price: '₹3998',
     description: "Reliance General Insurance",
   },
   {
@@ -28,6 +30,7 @@ const defaultPlans: PlanToCompare[] = [
     name: "Magna Plan",
     provider: "Future Generali",
     logo: "https://via.placeholder.com/100x50",
+    price: '₹2500',
     description: "Future Generali",
   }
 ];
@@ -35,11 +38,20 @@ const defaultPlans: PlanToCompare[] = [
 const ComparePlans = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // Use default plans if location.state is null or plans array is missing/empty
-  const plans = location.state?.plans && location.state.plans.length >= 2
-    ? location.state.plans
-    : defaultPlans;
+
+  const [comparedPlans, setComparedPlans] = useState<PlanToCompare[]>(defaultPlans);
+
+  useEffect(() => {
+    // Use localStorage comparison plans if available
+    const localPlans = getComparisonPlans();
+    if (localPlans && localPlans.length >= 2) {
+      setComparedPlans(localPlans);
+    } else if (location.state?.plans && location.state.plans.length >= 2) {
+      setComparedPlans(location.state.plans);
+    } else {
+      setComparedPlans(defaultPlans);
+    }
+  }, [location.state?.plans]);
 
   const handleBack = () => {
     navigate('/plans');
@@ -101,7 +113,7 @@ const ComparePlans = () => {
         <div className="overflow-x-auto pb-10">
           <Table className="border">
             <TableHeader>
-              <PlanHeaders plans={plans} />
+              <PlanHeaders plans={comparedPlans} />
             </TableHeader>
             <TableBody>
               <ComparisonCategory 
@@ -123,8 +135,7 @@ const ComparePlans = () => {
                 title="Additional Features" 
                 rows={additionalFeaturesRows} 
               />
-
-              <PlanActions plans={plans} />
+              <PlanActions plans={comparedPlans} />
             </TableBody>
           </Table>
         </div>

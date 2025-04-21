@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ComparePopup, { PlanToCompare } from '@/components/ComparePopup';
 import { InsurancePlan } from '@/components/PlanCard';
+import { saveComparisonPlans, getComparisonPlans, clearComparisonPlans as clearPlansStorage } from '@/utils/comparisonStorageUtils';
 
 interface PlanComparisonManagerProps {
   children: (comparisonProps: {
@@ -13,37 +14,53 @@ interface PlanComparisonManagerProps {
 const PlanComparisonManager: React.FC<PlanComparisonManagerProps> = ({ children }) => {
   const [plansToCompare, setPlansToCompare] = useState<PlanToCompare[]>([]);
 
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedPlans = getComparisonPlans();
+    setPlansToCompare(savedPlans);
+  }, []);
+
+  // Save to localStorage whenever plansToCompare changes
+  useEffect(() => {
+    saveComparisonPlans(plansToCompare);
+  }, [plansToCompare]);
+
   const togglePlanComparison = (plan: InsurancePlan) => {
     setPlansToCompare(prev => {
-      // If plan is already in the comparison list, remove it
       const alreadyAdded = prev.some(p => p.id === plan.id);
-      
+
+      let nextPlans;
       if (alreadyAdded) {
-        return prev.filter(p => p.id !== plan.id);
+        nextPlans = prev.filter(p => p.id !== plan.id);
+      } else if (prev.length >= 2) {
+        nextPlans = prev;
+      } else {
+        nextPlans = [
+          ...prev, 
+          {
+            id: plan.id,
+            name: plan.name,
+            provider: plan.provider,
+            logo: plan.logo,
+            price: plan.price,
+            description: plan.details || plan.description || ''
+          }
+        ];
       }
-      
-      // Don't add more than 2 plans to compare
-      if (prev.length >= 2) {
-        return prev;
-      }
-      
-      // Add plan to comparison list
-      return [...prev, {
-        id: plan.id,
-        name: plan.name,
-        provider: plan.provider,
-        logo: plan.logo,
-        description: plan.description
-      }];
+      saveComparisonPlans(nextPlans);
+      return nextPlans;
     });
   };
 
   const clearComparison = () => {
     setPlansToCompare([]);
+    clearPlansStorage();
   };
 
   const removePlanFromComparison = (planId: string) => {
-    setPlansToCompare(prev => prev.filter(p => p.id !== planId));
+    const next = plansToCompare.filter(p => p.id !== planId);
+    setPlansToCompare(next);
+    saveComparisonPlans(next);
   };
 
   const isSelectedForComparison = (planId: string) => {

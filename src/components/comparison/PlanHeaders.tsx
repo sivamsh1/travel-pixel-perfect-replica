@@ -18,10 +18,10 @@ const PlanHeaders: React.FC<PlanHeadersProps> = ({ plans }) => {
         >
           <div className={`rounded-md p-2 text-center ${index === 0 ? 'bg-[#143d7a]' : 'bg-[#FF6B35]'}`}>
             <div className="text-white font-bold">{plan.name}</div>
-            <div className="text-white text-xs">{index === 0 ? 'AIG Multi Trip with Add-On' : 'HDFC Single Trip (Standard)'}</div>
+            <div className="text-white text-xs">{plan.description}</div>
           </div>
           <div className="mt-3 font-bold text-center text-lg">
-            {index === 0 ? '₹ 3998' : '₹ 2500'}
+            {plan.price || (index === 0 ? '₹ 3998' : '₹ 2500')}
           </div>
         </TableHead>
       ))}
