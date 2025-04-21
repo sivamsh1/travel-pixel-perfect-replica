@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import ComparePopup, { PlanToCompare } from '@/components/ComparePopup';
 import { InsurancePlan } from '@/components/PlanCard';
-import { saveComparisonPlans, getComparisonPlans, clearComparisonPlans as clearPlansStorage } from '@/utils/comparisonStorageUtils';
+import { saveComparisonPlans, getComparisonPlans, clearComparisonPlans as clearPlansStorage, ComparisonPlan } from '@/utils/comparisonStorageUtils';
 
 interface PlanComparisonManagerProps {
   children: (comparisonProps: {
@@ -17,12 +17,12 @@ const PlanComparisonManager: React.FC<PlanComparisonManagerProps> = ({ children 
   // Load from localStorage on mount
   useEffect(() => {
     const savedPlans = getComparisonPlans();
-    setPlansToCompare(savedPlans);
+    setPlansToCompare(savedPlans as PlanToCompare[]);
   }, []);
 
   // Save to localStorage whenever plansToCompare changes
   useEffect(() => {
-    saveComparisonPlans(plansToCompare);
+    saveComparisonPlans(plansToCompare as ComparisonPlan[]);
   }, [plansToCompare]);
 
   const togglePlanComparison = (plan: InsurancePlan) => {
@@ -47,7 +47,7 @@ const PlanComparisonManager: React.FC<PlanComparisonManagerProps> = ({ children 
           }
         ];
       }
-      saveComparisonPlans(nextPlans);
+      saveComparisonPlans(nextPlans as ComparisonPlan[]);
       return nextPlans;
     });
   };
@@ -60,7 +60,7 @@ const PlanComparisonManager: React.FC<PlanComparisonManagerProps> = ({ children 
   const removePlanFromComparison = (planId: string) => {
     const next = plansToCompare.filter(p => p.id !== planId);
     setPlansToCompare(next);
-    saveComparisonPlans(next);
+    saveComparisonPlans(next as ComparisonPlan[]);
   };
 
   const isSelectedForComparison = (planId: string) => {

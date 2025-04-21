@@ -10,6 +10,7 @@ export interface PlanToCompare {
   name: string;
   provider: string;
   logo: string;
+  price: string; // Added price property to fix type errors
   description: string;
 }
 
