@@ -21,16 +21,13 @@ function Calendar({
   ...props
 }: CalendarProps) {
   // Get current month and year when the calendar mounts or when selected date changes
-  const [month, setMonth] = React.useState<number>(
-    props.selected ? new Date(props.selected).getMonth() : new Date().getMonth()
-  );
-  const [year, setYear] = React.useState<number>(
-    props.selected ? new Date(props.selected).getFullYear() : new Date().getFullYear()
+  const [currentMonth, setCurrentMonth] = React.useState<Date>(
+    props.selected instanceof Date ? new Date(props.selected) : new Date()
   );
 
-  // Generate years for selection (from current year to 5 years ahead)
+  // Generate years for selection (100 years back from current year)
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 6 }, (_, i) => currentYear + i);
+  const years = Array.from({ length: 121 }, (_, i) => currentYear - i + 20);
 
   // Generate months for selection
   const months = [
@@ -41,11 +38,15 @@ function Calendar({
   // Update calendar view when month/year selectors change
   const handleMonthChange = (newMonth: string) => {
     const monthIndex = months.findIndex(m => m === newMonth);
-    setMonth(monthIndex);
+    const newDate = new Date(currentMonth);
+    newDate.setMonth(monthIndex);
+    setCurrentMonth(newDate);
   };
 
   const handleYearChange = (newYear: string) => {
-    setYear(parseInt(newYear));
+    const newDate = new Date(currentMonth);
+    newDate.setFullYear(parseInt(newYear));
+    setCurrentMonth(newDate);
   };
 
   return (
@@ -88,7 +89,7 @@ function Calendar({
         Caption: () => (
           <div className="flex gap-2 justify-center items-center py-2">
             <Select 
-              value={months[month]} 
+              value={months[currentMonth.getMonth()]} 
               onValueChange={handleMonthChange}
             >
               <SelectTrigger className="w-[140px]">
@@ -104,7 +105,7 @@ function Calendar({
             </Select>
             
             <Select 
-              value={year.toString()} 
+              value={currentMonth.getFullYear().toString()} 
               onValueChange={handleYearChange}
             >
               <SelectTrigger className="w-[100px]">
@@ -121,7 +122,7 @@ function Calendar({
           </div>
         ),
       }}
-      month={new Date(year, month)}
+      month={currentMonth}
       {...props}
     />
   );
