@@ -1,18 +1,14 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plane } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ActionButton from '../ActionButton';
-
 const HeroSection = () => {
   const navigate = useNavigate();
   const handleGetQuote = () => {
     navigate('/quote');
   };
-
-  return (
-    <section className="bg-white py-10 md:py-16 lg:py-24 overflow-hidden">
+  return <section className="bg-white py-10 md:py-16 lg:py-24 overflow-hidden">
       <div className="container mx-auto px-4 text-center">
         <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[90px] text-[#2C2C2C] font-medium leading-[150%] text-center" style={{
         fontFamily: 'Jost, sans-serif'
@@ -35,16 +31,11 @@ const HeroSection = () => {
       <div className="relative -mt-[40px]">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-end">
           <div className="w-full md:w-1/3 px-0 mb-6 md:mb-0">
-            <img 
-              src="https://i.ibb.co/3yg0DFDJ/hero-image-1.png" 
-              alt="Students with luggage" 
-              className="h-auto w-auto object-contain" 
-              style={{
-                maxHeight: "250px",
-                marginLeft: "0",
-                marginRight: "0"
-              }} 
-            />
+            <img alt="Students with luggage" className="h-auto w-auto object-contain" style={{
+            maxHeight: "250px",
+            marginLeft: "0",
+            marginRight: "0"
+          }} src="/lovable-uploads/e7261a77-698a-4ed6-9f14-9e1fcf87e111.png" />
           </div>
           
           <div className="w-full md:w-1/3 text-center py-4 mb-6 md:mb-0">
@@ -53,22 +44,15 @@ const HeroSection = () => {
           </div>
           
           <div className="w-full md:w-1/3 flex justify-center md:justify-end px-0">
-            <img 
-              src="https://i.ibb.co/H64Z3Ky/hero-image-2.png" 
-              alt="Control tower and plane" 
-              className="h-auto w-auto object-contain" 
-              style={{
-                maxHeight: "250px",
-                marginLeft: "0",
-                marginRight: "0",
-                marginBottom: "-12px"
-              }} 
-            />
+            <img src="https://i.ibb.co/H64Z3Ky/hero-image-2.png" alt="Control tower and plane" className="h-auto w-auto object-contain" style={{
+            maxHeight: "250px",
+            marginLeft: "0",
+            marginRight: "0",
+            marginBottom: "-12px"
+          }} />
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default HeroSection;
