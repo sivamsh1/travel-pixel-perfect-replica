@@ -54,7 +54,12 @@ const PlansList: React.FC<PlansListProps> = ({
   }
 
   // Only after loading is complete, check if we have quotes
-  if (apiQuotes.length === 0) {
+  // Filter out plans with netPremium <= 0 or invalid
+  const nonZeroPlans = apiQuotes.filter(
+    (plan) => plan.netPremium !== null && plan.netPremium !== undefined && plan.netPremium > 0
+  );
+
+  if (nonZeroPlans.length === 0) {
     return (
       <div className="w-full py-10 text-center">
         <p className="text-gray-500">No plans available. Please try again later.</p>
@@ -64,7 +69,7 @@ const PlansList: React.FC<PlansListProps> = ({
 
   return (
     <div className="w-full space-y-6 mb-20">
-      {apiQuotes.map((plan) => (
+      {nonZeroPlans.map((plan) => (
         <PlanCard
           key={plan.id}
           plan={plan}
@@ -78,3 +83,4 @@ const PlansList: React.FC<PlansListProps> = ({
 };
 
 export default PlansList;
+
