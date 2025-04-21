@@ -44,12 +44,12 @@ const HeroSection = () => {
           </div>
           
           <div className="w-full md:w-1/3 flex justify-center md:justify-end px-0">
-            <img src="https://i.ibb.co/H64Z3Ky/hero-image-2.png" alt="Control tower and plane" className="h-auto w-auto object-contain" style={{
+            <img alt="Control tower and plane" className="h-auto w-auto object-contain" style={{
             maxHeight: "250px",
             marginLeft: "0",
             marginRight: "0",
             marginBottom: "-12px"
-          }} />
+          }} src="/lovable-uploads/8e7a56c3-4126-46d6-a11b-fe7cfc67f3e3.png" />
           </div>
         </div>
       </div>
