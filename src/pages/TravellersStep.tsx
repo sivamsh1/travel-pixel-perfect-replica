@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -27,7 +28,7 @@ const TravellersStep = () => {
     updateTraveller
   } = useTravelForm();
   
-  const [errors, setErrors] = useState<{ [key: number]: { dob?: string, age?: string } }>({});
+  const [errors, setErrors] = useState<{ [key: number]: { dob?: string; name?: string; age?: string } }>({});
 
   const handleDecrease = () => {
     if (travellersCount > 1) {
@@ -42,12 +43,16 @@ const TravellersStep = () => {
   };
 
   const handleNext = () => {
-    const newErrors: { [key: number]: { dob?: string, age?: string } } = {};
+    const newErrors: { [key: number]: { dob?: string; name?: string; age?: string } } = {};
     let hasErrors = false;
     
     travellers.forEach((traveller, index) => {
-      const travellerErrors: { dob?: string, age?: string } = {};
+      const travellerErrors: { dob?: string; name?: string; age?: string } = {};
       
+      if (!traveller.name || traveller.name.trim() === "") {
+        travellerErrors.name = "Name is required";
+        hasErrors = true;
+      }
       if (!traveller.dob) {
         travellerErrors.dob = "Date of birth is required";
         hasErrors = true;
@@ -61,6 +66,7 @@ const TravellersStep = () => {
     setErrors(newErrors);
     
     if (!hasErrors) {
+      // Format DOB as dd/MM/yyyy for storage
       const formattedTravellers = travellers.map(traveller => ({
         ...traveller,
         dob: traveller.dob ? format(new Date(traveller.dob), 'dd/MM/yyyy') : undefined
@@ -86,17 +92,32 @@ const TravellersStep = () => {
         age--;
       }
       updateTraveller(index, { age: age.toString() });
-      
-      if (errors[index]?.dob) {
+
+      if (errors[index]?.dob || errors[index]?.age) {
         const newErrors = { ...errors };
         if (newErrors[index]) {
           delete newErrors[index].dob;
+          delete newErrors[index].age;
           if (Object.keys(newErrors[index]).length === 0) {
             delete newErrors[index];
           }
         }
         setErrors(newErrors);
       }
+    }
+  };
+
+  const handleNameChange = (index: number, value: string) => {
+    updateTraveller(index, { name: value });
+    if (errors[index]?.name) {
+      const newErrors = { ...errors };
+      if (newErrors[index]) {
+        delete newErrors[index].name;
+        if (Object.keys(newErrors[index]).length === 0) {
+          delete newErrors[index];
+        }
+      }
+      setErrors(newErrors);
     }
   };
 
@@ -125,10 +146,15 @@ const TravellersStep = () => {
               key={index}
               index={index}
               dob={traveller.dob}
+              name={traveller.name}
               age={traveller.age}
               handleDateChange={handleDateChange}
-              updateTraveller={updateTraveller}
+              updateTraveller={(i, details) => {
+                if ("name" in details) handleNameChange(i, details.name!);
+                else updateTraveller(i, details);
+              }}
               error={errors[index]?.dob}
+              nameError={errors[index]?.name}
             />
           ))}
           

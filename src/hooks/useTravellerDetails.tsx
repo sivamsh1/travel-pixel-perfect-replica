@@ -39,7 +39,17 @@ export const useTravellerDetails = () => {
     if (storageData?.travellers?.details) {
       storageData.travellers.details.forEach((storedTraveller, index) => {
         if (index < travellers.length) {
-          updateTraveller(index, storedTraveller);
+          // Autofill both DOB and name!
+          updateTraveller(index, {
+            ...storedTraveller,
+            // Try to parse/convert dd/MM/yyyy DOB if stored in older format
+            dob: storedTraveller.dob
+              ? /^\d{2}\/\d{2}\/\d{4}$/.test(storedTraveller.dob)
+                ? new Date(storedTraveller.dob.split('/').reverse().join('-')).toISOString()
+                : storedTraveller.dob
+              : undefined,
+            name: storedTraveller.name,
+          });
         }
       });
       
@@ -65,6 +75,7 @@ export const useTravellerDetails = () => {
       // Update the first traveller with the contact data
       updateTraveller(0, updatedTraveller);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDateChange = (index: number, date: Date | undefined) => {
