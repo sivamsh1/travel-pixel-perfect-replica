@@ -7,7 +7,7 @@ const WhySection = () => {
     navigate('/quote');
   };
   return <section className="relative">
-      <img src="https://i.ibb.co/Df1xRyqy/why.png" alt="Student with luggage" className="w-full max-w-lg mx-auto mb-8 relative top-6 object-none" />
+      <img alt="Student with luggage" src="/lovable-uploads/96d47b4c-2f12-45d9-8469-9a27169311bc.png" className="w-full max-w-lg mx-auto mb-8 relative top-6 object-fill" />
       <div className="bg-[#EFF0F0] py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-6 md:mb-8">
