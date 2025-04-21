@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
@@ -24,7 +23,6 @@ export const useTravellerDetails = () => {
     updateNominee
   } = useTravelForm();
 
-  // Format dates for display
   const formattedStartDate = startDate ? 
     format(new Date(startDate), 'do MMM') : 
     '1st Jan';
@@ -33,10 +31,8 @@ export const useTravellerDetails = () => {
     format(new Date(endDate), 'do MMM') : 
     '10th Jan';
 
-  // Validation state
   const [errors, setErrors] = useState<ValidationErrors>({});
 
-  // Effect to populate fields from localStorage on mount
   useEffect(() => {
     const storageData = getFromLocalStorage();
     
@@ -69,10 +65,9 @@ export const useTravellerDetails = () => {
 
   const handleDateChange = (index: number, date: Date | undefined) => {
     if (date) {
-      // Save dob as dd/mm/yyyy directly in localStorage & context
-      const formattedDOB = formatDOBtoDDMMYYYY(date);
+      const formattedDOB = format(date, 'dd/MM/yyyy');
       updateTraveller(index, { dob: formattedDOB });
-      
+
       if (errors[`traveller${index}Dob`]) {
         const newErrors = { ...errors };
         delete newErrors[`traveller${index}Dob`];

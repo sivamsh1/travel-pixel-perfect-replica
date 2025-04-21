@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -45,44 +44,13 @@ const TravellersStep = () => {
 
   const handleDialogClose = () => setIsDialogOpen(false);
 
-  const handleNext = () => {
-    const newErrors: { [key: number]: { dob?: string, age?: string } } = {};
-    let hasErrors = false;
-    
-    travellers.forEach((traveller, index) => {
-      const travellerErrors: { dob?: string, age?: string } = {};
-      
-      if (!traveller.dob) {
-        travellerErrors.dob = "Date of birth is required";
-        hasErrors = true;
-      }
-      
-      if (Object.keys(travellerErrors).length > 0) {
-        newErrors[index] = travellerErrors;
-      }
-    });
-    
-    setErrors(newErrors);
-    
-    if (!hasErrors) {
-      const formattedTravellers = travellers.map(traveller => ({
-        ...traveller,
-        dob: traveller.dob ? format(new Date(traveller.dob), 'dd/MM/yyyy') : undefined
-      }));
-      
-      saveToLocalStorage('travellers', {
-        count: travellersCount,
-        details: formattedTravellers
-      });
-      
-      navigate('/contact');
-    }
-  };
-
   const handleDateChange = (index: number, date: Date | undefined) => {
     if (date) {
-      updateTraveller(index, { dob: date.toISOString() });
-      
+      // Always store DOB in dd/MM/yyyy format
+      const formattedDOB = format(date, 'dd/MM/yyyy');
+      updateTraveller(index, { dob: formattedDOB });
+
+      // Calculate age as before
       const today = new Date();
       let age = today.getFullYear() - date.getFullYear();
       const monthDiff = today.getMonth() - date.getMonth();
@@ -90,7 +58,7 @@ const TravellersStep = () => {
         age--;
       }
       updateTraveller(index, { age: age.toString() });
-      
+
       if (errors[index]?.dob) {
         const newErrors = { ...errors };
         if (newErrors[index]) {
@@ -101,6 +69,35 @@ const TravellersStep = () => {
         }
         setErrors(newErrors);
       }
+    }
+  };
+
+  const handleNext = () => {
+    const newErrors: { [key: number]: { dob?: string, age?: string } } = {};
+    let hasErrors = false;
+    
+    travellers.forEach((traveller, index) => {
+      const travellerErrors: { dob?: string, age?: string } = {};
+
+      if (!traveller.dob) {
+        travellerErrors.dob = "Date of birth is required";
+        hasErrors = true;
+      }
+
+      if (Object.keys(travellerErrors).length > 0) {
+        newErrors[index] = travellerErrors;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (!hasErrors) {
+      // Travellers already have dob in dd/MM/yyyy format, so just save as is
+      saveToLocalStorage('travellers', {
+        count: travellersCount,
+        details: travellers
+      });
+      navigate('/contact');
     }
   };
 

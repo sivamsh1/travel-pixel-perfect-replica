@@ -18,6 +18,20 @@ const TravellerDetails: React.FC<TravellerDetailsProps> = ({
     return null;
   }
   
+  // Helper to display DOB as dd/MM/yyyy even if not
+  const displayDOB = (dob?: string) => {
+    if (!dob) return 'Unknown';
+    // If already in dd/MM/yyyy, return as is
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) return dob;
+    try {
+      const asDate = new Date(dob);
+      if (!isNaN(asDate.getTime())) {
+        return format(asDate, 'dd/MM/yyyy');
+      }
+    } catch {}
+    return dob;
+  };
+
   return (
     <>
       {travellers.details.map((traveller, index) => (
@@ -30,7 +44,7 @@ const TravellerDetails: React.FC<TravellerDetailsProps> = ({
             <div>
               <span className="text-gray-500">Date of Birth: </span>
               <span>
-                {formatDate(traveller.dob, '17th April 2000')} {formatTravellerAge(traveller.dob) || '(25)'}
+                {displayDOB(traveller.dob)} {formatTravellerAge(traveller.dob) || '(25)'}
               </span>
             </div>
             
@@ -79,3 +93,4 @@ const TravellerDetails: React.FC<TravellerDetailsProps> = ({
 };
 
 export default TravellerDetails;
+

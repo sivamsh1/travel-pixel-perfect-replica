@@ -1,6 +1,5 @@
-
 import { toast } from "@/hooks/use-toast";
-import { formatDateForAPI } from './dateFormatUtils';
+import { formatDateForAPI, formatDOBForAPI } from './dateFormatUtils';
 import { splitName, extractPlanType, createAddressPayload } from './dataTransformUtils';
 import { TravelFormData } from './localStorageUtils';
 import { QuotePayload, QuoteResponse } from './apiTypes';
@@ -17,8 +16,8 @@ export const createQuotePayload = (formData: TravelFormData): QuotePayload => {
   const returnDate = formatDateForAPI(formData.dates?.endDate);
   const { firstName, lastName } = splitName(traveller.name);
 
-  // Use dob as is from localStorage (should already be dd/mm/yyyy format)
-  let dob = traveller.dob || '01/01/1990';
+  // Use formatDOBForAPI to make sure DOB is dd/MM/yyyy (even though now it should already be good)
+  let dob = formatDOBForAPI(traveller.dob) || '01/01/1990';
 
   const productName = extractPlanType(formData.selectedPlan?.name);
   const address = createAddressPayload(traveller);
