@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -26,6 +26,16 @@ const AddonsStep = () => {
 
   const formattedStartDate = startDate ? format(parse(startDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
   const formattedEndDate = endDate ? format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : '';
+
+  // Currently, no add-ons available
+  const addonsAvailable = false;
+
+  useEffect(() => {
+    // If no add-ons are available, redirect to the next step
+    if (!addonsAvailable) {
+      navigate('/traveller-details', { replace: true });
+    }
+  }, [addonsAvailable, navigate]);
 
   const handleNext = () => {
     navigate('/traveller-details');
