@@ -18,6 +18,8 @@ const TravellerCount: React.FC<TravellerCountProps> = ({
       <button 
         className="p-4 hover:bg-gray-100 flex items-center justify-center"
         onClick={handleDecrease}
+        aria-label="decrement"
+        type="button"
       >
         <Minus className="h-4 w-4" />
       </button>
@@ -27,6 +29,8 @@ const TravellerCount: React.FC<TravellerCountProps> = ({
       <button 
         className="p-4 hover:bg-gray-100 flex items-center justify-center"
         onClick={handleIncrease}
+        aria-label="increment"
+        type="button"
       >
         <Plus className="h-4 w-4" />
       </button>

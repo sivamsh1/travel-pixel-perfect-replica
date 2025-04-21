@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -9,6 +10,7 @@ import { useTravelForm } from '@/context/TravelFormContext';
 import TravellerCount from '@/components/travellers/TravellerCount';
 import TravellerDateOfBirth from '@/components/travellers/TravellerDateOfBirth';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -28,6 +30,7 @@ const TravellersStep = () => {
   } = useTravelForm();
   
   const [errors, setErrors] = useState<{ [key: number]: { dob?: string, age?: string } }>({});
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDecrease = () => {
     if (travellersCount > 1) {
@@ -35,11 +38,12 @@ const TravellersStep = () => {
     }
   };
 
+  // Instead of incrementing, open a dialog
   const handleIncrease = () => {
-    if (travellersCount < 10) {
-      setTravellersCount(travellersCount + 1);
-    }
+    setIsDialogOpen(true);
   };
+
+  const handleDialogClose = () => setIsDialogOpen(false);
 
   const handleNext = () => {
     const newErrors: { [key: number]: { dob?: string, age?: string } } = {};
@@ -142,6 +146,25 @@ const TravellersStep = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-xs p-4">
+          <DialogHeader>
+            <DialogTitle className="text-center text-base font-semibold text-blue-500">
+              Hey there!
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4 text-center text-black font-medium">
+            For student travellers, only 1 passenger is allowed at the moment.
+          </div>
+          <button
+            onClick={handleDialogClose}
+            className="w-full mt-2 bg-blue-500 text-white rounded-md py-2 font-medium hover:bg-blue-600 transition-colors"
+          >
+            OK
+          </button>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
