@@ -11,30 +11,19 @@ import { QuotePayload, QuoteResponse } from './apiTypes';
  * @returns Formatted payload for the createQuote API
  */
 export const createQuotePayload = (formData: TravelFormData): QuotePayload => {
-  // Extract traveller data
   const traveller = formData.travellers?.details?.[0] || {};
   const nominee = formData.travellers?.nominee || {};
-  
-  // Format dates
   const startDate = formatDateForAPI(formData.dates?.startDate);
   const returnDate = formatDateForAPI(formData.dates?.endDate);
-  
-  // Format name
   const { firstName, lastName } = splitName(traveller.name);
-  
-  // Format DOB
-  let dob = formatDateForAPI(traveller.dob) || '01/01/1990';
-  
-  // Extract plan type (Basic, Silver, Gold, Platinum)
+
+  // Use dob as is from localStorage (should already be dd/mm/yyyy format)
+  let dob = traveller.dob || '01/01/1990';
+
   const productName = extractPlanType(formData.selectedPlan?.name);
-  
-  // Build address object with default values to ensure none are empty
   const address = createAddressPayload(traveller);
-  
-  // Default phone number if not provided
   const mobileNo = traveller.mobileNo || "9876543210";
 
-  // Build the complete payload with no empty fields
   return {
     productName,
     startDate: startDate || "17/04/2025",
@@ -124,9 +113,7 @@ export const createQuote = async (formData: TravelFormData): Promise<QuoteRespon
     const data = await response.json();
     console.log('API Response:', data);
     
-    // Handle successful response with URL redirection
     if (data.url) {
-      // Redirect to the URL received from the API
       window.location.href = data.url;
     }
     

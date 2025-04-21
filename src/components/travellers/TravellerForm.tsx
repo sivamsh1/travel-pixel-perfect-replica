@@ -29,10 +29,9 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
       const locationData = await searchCityByPincode(pincode);
 
       if (locationData) {
-        // Update city field
+        // Update city and store location data (districtId, stateId, cityId)
         updateTraveller(index, {
           city: locationData.cityName,
-          // Store location data
           locationData: {
             stateId: locationData.stateId,
             districtId: locationData.districtId,
@@ -42,7 +41,6 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         });
         setAutoFilled(true);
 
-        // Reset auto-filled state after 3 seconds
         setTimeout(() => {
           setAutoFilled(false);
         }, 3000);
@@ -87,7 +85,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
           <input
             type="text"
             className="w-full p-3 border border-gray-300 bg-gray-100 rounded-md text-gray-500 cursor-not-allowed"
-            value={traveller.dob ? (new Date(traveller.dob)).toLocaleDateString() : ''}
+            value={traveller.dob || ''}
             readOnly
             disabled
           />
@@ -171,4 +169,3 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
 };
 
 export default TravellerForm;
-

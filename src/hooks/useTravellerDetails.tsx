@@ -3,11 +3,16 @@ import { useState, useEffect } from 'react';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 
 interface ValidationErrors {
   [key: string]: string;
 }
+
+const formatDOBtoDDMMYYYY = (date?: Date) => {
+  if (!date) return '';
+  return format(date, 'dd/MM/yyyy');
+};
 
 export const useTravellerDetails = () => {
   const { 
@@ -21,11 +26,11 @@ export const useTravellerDetails = () => {
 
   // Format dates for display
   const formattedStartDate = startDate ? 
-    format(parse(startDate, 'yyyy-MM-dd', new Date()), 'do MMM') : 
+    format(new Date(startDate), 'do MMM') : 
     '1st Jan';
   
   const formattedEndDate = endDate ? 
-    format(parse(endDate, 'yyyy-MM-dd', new Date()), 'do MMM') : 
+    format(new Date(endDate), 'do MMM') : 
     '10th Jan';
 
   // Validation state
@@ -35,25 +40,21 @@ export const useTravellerDetails = () => {
   useEffect(() => {
     const storageData = getFromLocalStorage();
     
-    // Load traveller details if available in localStorage
     if (storageData?.travellers?.details) {
       storageData.travellers.details.forEach((storedTraveller, index) => {
         if (index < travellers.length) {
           updateTraveller(index, storedTraveller);
         }
       });
-      
-      // Load nominee details if available
+
       if (storageData.travellers.nominee) {
         updateNominee(storageData.travellers.nominee);
       }
     }
-    
-    // Auto-fill traveller fields if we have contact data
+
     if (storageData?.contact && travellers.length > 0 && (!travellers[0].email || !travellers[0].mobileNo)) {
       const updatedTraveller = { ...travellers[0] };
       
-      // Only update if the field is empty
       if (!updatedTraveller.email && storageData.contact.email) {
         updatedTraveller.email = storageData.contact.email;
       }
@@ -62,16 +63,16 @@ export const useTravellerDetails = () => {
         updatedTraveller.mobileNo = storageData.contact.phone;
       }
       
-      // Update the first traveller with the contact data
       updateTraveller(0, updatedTraveller);
     }
   }, []);
 
   const handleDateChange = (index: number, date: Date | undefined) => {
     if (date) {
-      updateTraveller(index, { dob: date.toISOString() });
+      // Save dob as dd/mm/yyyy directly in localStorage & context
+      const formattedDOB = formatDOBtoDDMMYYYY(date);
+      updateTraveller(index, { dob: formattedDOB });
       
-      // Clear error if exists
       if (errors[`traveller${index}Dob`]) {
         const newErrors = { ...errors };
         delete newErrors[`traveller${index}Dob`];
@@ -84,7 +85,6 @@ export const useTravellerDetails = () => {
     const newErrors: ValidationErrors = {};
     
     travellers.forEach((traveller, index) => {
-      // Required fields validation
       if (!traveller.passportNumber) {
         newErrors[`traveller${index}Passport`] = "Passport number is required";
       } else if (traveller.passportNumber.length < 8) {
@@ -101,7 +101,6 @@ export const useTravellerDetails = () => {
         newErrors[`traveller${index}Dob`] = "Date of birth is required";
       }
       
-      // Optional fields format validation
       if (traveller.mobileNo && !isValidPhone(traveller.mobileNo)) {
         newErrors[`traveller${index}Mobile`] = "Please enter a valid 10-digit phone number";
       }
@@ -120,7 +119,6 @@ export const useTravellerDetails = () => {
   };
 
   const saveTravellersToLocalStorage = () => {
-    // Save travellers data to localStorage
     saveToLocalStorage('travellers', {
       count: travellers.length,
       details: travellers,
