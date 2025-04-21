@@ -1,7 +1,6 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
-import { DatePicker } from '@/components/DatePicker';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
 import { Loader2 } from 'lucide-react';
 
@@ -22,16 +21,16 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
 }) => {
   const { searchCityByPincode, isLoading } = usePincodeSearch();
   const [autoFilled, setAutoFilled] = useState(false);
-  
+
   // Handle pincode change with debounce
   const handlePincodeBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
     const pincode = e.target.value;
     if (pincode && pincode.length === 6) {
       const locationData = await searchCityByPincode(pincode);
-      
+
       if (locationData) {
         // Update city field
-        updateTraveller(index, { 
+        updateTraveller(index, {
           city: locationData.cityName,
           // Store location data
           locationData: {
@@ -42,7 +41,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
           }
         });
         setAutoFilled(true);
-        
+
         // Reset auto-filled state after 3 seconds
         setTimeout(() => {
           setAutoFilled(false);
@@ -54,7 +53,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
   return (
     <div className="mb-12">
       <h3 className="text-xl font-medium mb-6">Traveller {index + 1} Details</h3>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number<span className="text-red-500">*</span></label>
@@ -68,7 +67,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
             <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Passport`]}</p>
           )}
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Name<span className="text-red-500">*</span></label>
           <input
@@ -81,17 +80,19 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
             <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Name`]}</p>
           )}
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth<span className="text-red-500">*</span></label>
-          <DatePicker
-            value={traveller.dob ? new Date(traveller.dob) : undefined}
-            onChange={(date) => handleDateChange(index, date)}
-            placeholder="Select Date of Birth"
-            error={errors[`traveller${index}Dob`]}
+          {/* Render DOB as a read-only input */}
+          <input
+            type="text"
+            className="w-full p-3 border border-gray-300 bg-gray-100 rounded-md text-gray-500 cursor-not-allowed"
+            value={traveller.dob ? (new Date(traveller.dob)).toLocaleDateString() : ''}
+            readOnly
+            disabled
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
           <input
@@ -101,7 +102,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
             onChange={(e) => updateTraveller(index, { address: e.target.value })}
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
           <div className="relative">
@@ -123,24 +124,21 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
             )}
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
           <div className="relative">
             <input
               type="text"
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full p-3 border border-gray-300 bg-gray-100 text-gray-500 rounded-md cursor-not-allowed"
               value={traveller.city || ''}
-              onChange={(e) => updateTraveller(index, { city: e.target.value })}
+              readOnly
+              disabled
             />
-            {autoFilled && (
-              <div className="absolute right-3 top-3 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">
-                Auto-filled
-              </div>
-            )}
+            {/* Show auto-filled only briefly if wanted, but now always disabled */}
           </div>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Mobile No.</label>
           <input
@@ -154,7 +152,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
             <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Mobile`]}</p>
           )}
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
@@ -173,3 +171,4 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
 };
 
 export default TravellerForm;
+
