@@ -21,15 +21,23 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
 }) => {
   const { searchCityByPincode, isLoading } = usePincodeSearch();
   const [autoFilled, setAutoFilled] = useState(false);
+  const [lastFetchedPincode, setLastFetchedPincode] = useState<string | null>(null);
 
-  // Handle pincode change with debounce
-  const handlePincodeBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
-    const pincode = e.target.value;
-    if (pincode && pincode.length === 6) {
+  // Refactored: Fetch city when pincode reaches 6 digits in the input handler
+  const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const pincode = e.target.value.slice(0, 6);
+    updateTraveller(index, { pincode });
+
+    // Fire only if pincode is 6 digits, and not recently fetched to prevent duplicate fetches as you type 6
+    if (
+      pincode.length === 6 &&
+      pincode !== lastFetchedPincode
+    ) {
+      setLastFetchedPincode(pincode);
       const locationData = await searchCityByPincode(pincode);
 
       if (locationData) {
-        // Update city and store location data (districtId, stateId, cityId)
+        // Auto-fill city and store location data
         updateTraveller(index, {
           city: locationData.cityName,
           locationData: {
@@ -40,10 +48,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
           }
         });
         setAutoFilled(true);
-
-        setTimeout(() => {
-          setAutoFilled(false);
-        }, 3000);
+        setTimeout(() => setAutoFilled(false), 3000);
       }
     }
   };
@@ -108,13 +113,14 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
               type="text"
               className={`w-full p-3 border ${errors[`traveller${index}Pincode`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
               value={traveller.pincode || ''}
-              onChange={(e) => updateTraveller(index, { pincode: e.target.value.slice(0, 6) })}
-              onBlur={handlePincodeBlur}
+              onChange={handlePincodeChange}
               maxLength={6}
             />
             {isLoading && (
               <div className="absolute right-3 top-3">
-                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <span>
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                </span>
               </div>
             )}
             {errors[`traveller${index}Pincode`] && (
@@ -167,5 +173,4 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
     </div>
   );
 };
-
 export default TravellerForm;
