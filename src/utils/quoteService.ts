@@ -15,10 +15,7 @@ export const createQuotePayload = (formData: TravelFormData): QuotePayload => {
   const startDate = formatDateForAPI(formData.dates?.startDate);
   const returnDate = formatDateForAPI(formData.dates?.endDate);
   const { firstName, lastName } = splitName(traveller.name);
-
-  // Use formatDOBForAPI to make sure DOB is dd/MM/yyyy (even though now it should already be good)
   let dob = formatDOBForAPI(traveller.dob) || '01/01/1990';
-
   const productName = extractPlanType(formData.selectedPlan?.name);
   const address = createAddressPayload(traveller);
   const mobileNo = traveller.mobileNo || "9876543210";
@@ -86,11 +83,157 @@ export const createQuotePayload = (formData: TravelFormData): QuotePayload => {
 };
 
 /**
+ * Convert app's form data to GoDigit format
+ * @param formData Travel form data from localStorage
+ * @returns GoDigit-formatted payload object
+ */
+const createGoDigitPayload = (formData: TravelFormData): any => {
+  const traveller = formData.travellers?.details?.[0] || {};
+  const nominee = formData.travellers?.nominee || {};
+  const address = createAddressPayload(traveller);
+  const startDate = formatDateForAPI(formData.dates?.startDate) || "20/05/2025";
+  const returnDate = formatDateForAPI(formData.dates?.endDate) || "20/06/2025";
+  const destination = formData.location?.destinationId || "679e707934ecd414eb0004f1";
+  const mobileNo = traveller.mobileNo || "8281182477";
+  const email = traveller.email || "libin@policyinsure.com";
+  const { firstName, lastName } = splitName(traveller.name);
+  const productName = "RS2";
+  const amount = (typeof formData.selectedPlan?.price === "number") 
+    ? formData.selectedPlan?.price 
+    : 2790.7;
+  const nomineeName = nominee.name || "DD";
+  const nomineeRelation = nominee.relationship?.toLowerCase() || "father";
+  const sponsorName = "SAFAS";
+  const sponsorRelationship = "brother";
+  const sponsorDob = "01/01/1997";
+  const university = "DD";
+  const universityAddress = "asd,ccc,asdsa";
+  const courseName = "MBA";
+  const courseDuration = 3;
+  const passportNo = traveller.passportNumber || "C5580445";
+  const district = address.district;
+  const state = address.state;
+  const city = address.city;
+
+  return {
+    productName,
+    amount,
+    startDate,
+    returnDate,
+    destination,
+    bodyCount: formData.travellers?.count ?? 1,
+    kycDetails: {
+      kycDoc: "passport",
+      docuin: passportNo
+    },
+    clientDetails: {
+      salutation: "Mr",
+      firstName,
+      lastName,
+      dob: formatDOBForAPI(traveller.dob) || "28/03/2002",
+      gender: "Male",
+      mobileNo,
+      email,
+      communicationAddress: {
+        flatNumber: "12",
+        streetNumber: address.streetNumber,
+        street: address.street,
+        district,
+        state,
+        city,
+        country: "India",
+        pincode: address.pincode
+      }
+    },
+    insurePersonDetails: [
+      {
+        salutation: "Mr",
+        firstName,
+        lastName,
+        dob: formatDOBForAPI(traveller.dob) || "17/08/1997",
+        gender: "Male",
+        email,
+        mobileNo,
+        passportNo,
+        nomineeName,
+        nomineeRelation,
+        university,
+        universityAddress,
+        courseName,
+        courseDuration,
+        communicationAddress: {
+          flatNumber: "12",
+          streetNumber: address.streetNumber,
+          street: address.street,
+          district,
+          state,
+          city,
+          country: "India",
+          pincode: address.pincode
+        },
+        sponsorName,
+        sponsorRelationship,
+        sponsorDob,
+        ped: []
+      }
+    ]
+  };
+};
+
+/**
  * Submit the quote to create a policy
  * @param formData Travel form data from localStorage
  * @returns Promise that resolves to the API response
  */
 export const createQuote = async (formData: TravelFormData): Promise<QuoteResponse> => {
+  const insurer = formData.selectedPlan?.provider?.toLowerCase() || "";
+  if (insurer === "godigit" || insurer === "go digit") {
+    const payload = createGoDigitPayload(formData);
+    console.log('GoDigit Request payload:', payload);
+
+    try {
+      const response = await fetch('https://gyaantree.com/api/travel/v1/quickQuote/createQuote/godigit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('GoDigit API error:', errorText);
+        throw new Error(`GoDigit API request failed with status ${response.status}: ${errorText}`);
+      }
+      
+      const data = await response.json();
+      console.log('GoDigit API Response:', data);
+
+      if (
+        data.message === "succesfully done" &&
+        data.result?.paymentUrl
+      ) {
+        window.location.href = data.result.paymentUrl;
+        return data;
+      }
+
+      toast({
+        title: "GoDigit Error",
+        description: data.message || "GoDigit API error. Please try again.",
+        variant: "destructive",
+      });
+      throw new Error(data.message || "GoDigit API error");
+    } catch (error) {
+      console.error('Error creating GoDigit quote:', error);
+      toast({
+        title: "Payment Error",
+        description: "Failed to process your payment. Please try again.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  }
+
   const payload = createQuotePayload(formData);
   console.log('Request payload:', payload);
   
