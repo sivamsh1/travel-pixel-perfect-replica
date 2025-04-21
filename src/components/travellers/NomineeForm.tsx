@@ -42,7 +42,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
           <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Name</label>
           <input
             type="text"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary h-12"
             value={nominee.name || ''}
             onChange={(e) => updateNominee({ name: e.target.value })}
           />
@@ -53,7 +53,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
             value={nominee.relationship || ""}
             onValueChange={(val) => updateNominee({ relationship: val })}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white text-base">
               <SelectValue placeholder="Select relationship" />
             </SelectTrigger>
             <SelectContent>
