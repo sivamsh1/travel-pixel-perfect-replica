@@ -117,7 +117,7 @@ const ContactStep = () => {
       </div>
       
       <div className="flex flex-1 flex-col items-center px-6">
-        <h2 className="text-3xl font-bold mb-4">Our representatives to contact you via</h2>
+        <h2 className="text-3xl font-bold mb-4">We ensure you receive our best offers & services </h2>
         
         <div className="w-full max-w-md space-y-6 mt-6">
           <div className="space-y-1">
