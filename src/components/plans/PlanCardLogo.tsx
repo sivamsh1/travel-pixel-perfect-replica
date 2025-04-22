@@ -19,8 +19,9 @@ const PlanCardLogo: React.FC<PlanCardLogoProps> = ({ logo, provider }) => {
       <img 
         src={hasError ? '/placeholder.svg' : logo}
         alt={`${provider} logo`} 
-        className="h-10 w-auto object-contain max-w-[100px]"
+        className="h-8 w-auto object-contain max-w-[120px]"
         onError={handleError}
+        loading="lazy"
       />
     </div>
   );

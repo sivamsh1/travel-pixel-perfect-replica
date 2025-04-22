@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
-import { InsurancePlan } from '@/components/PlanCard';
 import { toast } from "@/components/ui/use-toast";
 import { useQuery } from '@tanstack/react-query';
 import { getFromLocalStorage } from '@/utils/localStorageUtils';
@@ -9,7 +8,7 @@ import { getFromLocalStorage } from '@/utils/localStorageUtils';
 const LOGO_PATHS = {
   reliance: '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png',
   godigit: '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png',
-  bajaj: new URL('../assets/bajajLogo.png', import.meta.url).href
+  bajaj: '/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png'
 } as const;
 
 type LogoPath = typeof LOGO_PATHS[keyof typeof LOGO_PATHS];
@@ -18,7 +17,6 @@ const getInsurerFromKey = (key: string): keyof typeof LOGO_PATHS | null => {
   const keyLower = key.toLowerCase();
   console.log('Processing key:', key, 'Lowercase:', keyLower);
   
-  // Check if the key contains any of our insurer names
   for (const insurer of Object.keys(LOGO_PATHS)) {
     if (keyLower.includes(insurer)) {
       console.log('Found matching insurer:', insurer);
@@ -122,9 +120,9 @@ export const useInsuranceQuotes = () => {
             const insurer = getInsurerFromKey(key);
             console.log('Key:', key, 'Detected insurer:', insurer);
             
-            let logo: LogoPath = LOGO_PATHS.reliance; // Default to Reliance logo
+            let logo = LOGO_PATHS.reliance; // Default to Reliance logo
             
-            if (insurer) {
+            if (insurer && LOGO_PATHS[insurer]) {
               logo = LOGO_PATHS[insurer];
               console.log('Using logo path:', logo, 'for insurer:', insurer);
             }
