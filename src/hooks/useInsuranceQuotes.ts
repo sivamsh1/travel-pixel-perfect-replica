@@ -9,7 +9,7 @@ import { getFromLocalStorage } from '@/utils/localStorageUtils';
 const LOGO_PATHS = {
   reliance: '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png',
   godigit: '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png',
-  bajaj: '/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png'
+  bajaj: '/lovable-uploads/Bajaj.png.png'
 } as const;
 
 // Fix: Change the type definition to include all possible logo path values
