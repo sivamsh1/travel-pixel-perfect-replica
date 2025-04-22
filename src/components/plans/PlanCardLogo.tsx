@@ -7,15 +7,24 @@ interface PlanCardLogoProps {
 }
 
 const PlanCardLogo: React.FC<PlanCardLogoProps> = ({ logo, provider }) => {
+  const [hasError, setHasError] = React.useState(false);
+
+  const handleError = () => {
+    console.error(`Failed to load logo for provider: ${provider}, path: ${logo}`);
+    setHasError(true);
+  };
+
   return (
     <div className="p-2 rounded-lg border border-gray-100 flex items-center justify-center bg-white shadow-sm">
       <img 
-        src={logo} 
+        src={hasError ? '/placeholder.svg' : logo}
         alt={`${provider} logo`} 
         className="h-10 w-auto object-contain" 
+        onError={handleError}
       />
     </div>
   );
 };
 
 export default PlanCardLogo;
+

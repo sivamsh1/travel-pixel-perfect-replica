@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -16,10 +15,18 @@ const LOGO_PATHS = {
 type LogoPath = typeof LOGO_PATHS[keyof typeof LOGO_PATHS];
 
 const getInsurerFromKey = (key: string): keyof typeof LOGO_PATHS | null => {
-  const prefix = key.split('_')[0].toLowerCase();
-  if (Object.keys(LOGO_PATHS).includes(prefix)) {
-    return prefix as keyof typeof LOGO_PATHS;
+  const keyLower = key.toLowerCase();
+  console.log('Processing key:', key, 'Lowercase:', keyLower);
+  
+  // Check if the key contains any of our insurer names
+  for (const insurer of Object.keys(LOGO_PATHS)) {
+    if (keyLower.includes(insurer)) {
+      console.log('Found matching insurer:', insurer);
+      return insurer as keyof typeof LOGO_PATHS;
+    }
   }
+  
+  console.log('No matching insurer found for key:', key);
   return null;
 };
 
@@ -113,10 +120,13 @@ export const useInsuranceQuotes = () => {
             let provider = value.companyName || 'Reliance';
             
             const insurer = getInsurerFromKey(key);
+            console.log('Key:', key, 'Detected insurer:', insurer);
+            
             let logo: LogoPath = LOGO_PATHS.reliance; // Default to Reliance logo
             
             if (insurer) {
               logo = LOGO_PATHS[insurer];
+              console.log('Using logo path:', logo, 'for insurer:', insurer);
             }
 
             const planName = value.planName || '';
