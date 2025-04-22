@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -5,6 +6,20 @@ import { InsurancePlan } from '@/components/PlanCard';
 import { toast } from "@/components/ui/use-toast";
 import { useQuery } from '@tanstack/react-query';
 import { getFromLocalStorage } from '@/utils/localStorageUtils';
+
+const LOGO_PATHS = {
+  reliance: '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png',
+  godigit: '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png',
+  bajaj: '/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png'
+} as const;
+
+const getInsurerFromKey = (key: string): keyof typeof LOGO_PATHS | null => {
+  const prefix = key.split('_')[0].toLowerCase();
+  if (Object.keys(LOGO_PATHS).includes(prefix)) {
+    return prefix as keyof typeof LOGO_PATHS;
+  }
+  return null;
+};
 
 export const useInsuranceQuotes = () => {
   const { 
@@ -95,11 +110,12 @@ export const useInsuranceQuotes = () => {
           return Object.entries(data.result).map(([key, value]: [string, any]) => {
             let provider = value.companyName || 'Reliance';
             
-            let logo = '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png';
-            if (provider.toLowerCase() === 'godigit') {
-              logo = '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png';
-            } else if (key.toLowerCase().startsWith('bajaj') || provider.toLowerCase() === 'bajaj') {
-              logo = '/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png';
+            // Determine logo based on the key prefix
+            const insurer = getInsurerFromKey(key);
+            let logo = LOGO_PATHS.reliance; // Default to Reliance logo
+            
+            if (insurer) {
+              logo = LOGO_PATHS[insurer];
             }
 
             const planName = value.planName || '';
