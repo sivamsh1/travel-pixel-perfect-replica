@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTravelForm } from '@/context/TravelFormContext';
 import Layout from '@/components/Layout';
@@ -6,7 +7,7 @@ import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import CountrySearch from '@/components/CountrySearch';
 import { useToast } from '@/hooks/use-toast';
-import ProgressButton from '@/components/ProgressButton';
+import { Button } from '@/components/ui/button'; // Replaced ProgressButton with Button
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -25,7 +26,7 @@ const LocationStep = () => {
     if (!destination) {
       toast({
         title: "Validation Error",
-        description: "Please select a country", // Changed from "destination" to "country"
+        description: "Please select a country", 
         variant: "destructive"
       });
       return false;
@@ -54,13 +55,16 @@ const LocationStep = () => {
         </p>
 
         <div className="w-full max-w-md">
-          <CountrySearch onCountrySelect={(country) => setDestination(country)} />
+          <CountrySearch 
+            initialValue=""
+            onSelect={(countryName, countryId) => setDestination(countryName)} 
+          />
         </div>
 
         <div className="mt-8 w-full max-w-md">
-          <ProgressButton onClick={handleNext}>
+          <Button onClick={handleNext} className="w-full">
             NEXT
-          </ProgressButton>
+          </Button>
         </div>
       </div>
     </Layout>
@@ -68,3 +72,4 @@ const LocationStep = () => {
 };
 
 export default LocationStep;
+
