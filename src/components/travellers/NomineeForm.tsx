@@ -59,7 +59,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
             <SelectContent>
               {RELATIONSHIP_OPTIONS.map((relation) => (
                 <SelectItem key={relation} value={relation}>
-                  {relation}
+                     {relation.charAt(0).toUpperCase() + relation.slice(1)}
                 </SelectItem>
               ))}
             </SelectContent>
