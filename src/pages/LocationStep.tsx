@@ -72,4 +72,3 @@ const LocationStep = () => {
 };
 
 export default LocationStep;
-
