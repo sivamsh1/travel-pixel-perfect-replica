@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -102,27 +101,25 @@ export const useInsuranceQuotes = () => {
         if (data && data.result) {
           // Convert API response to InsurancePlan format
           return Object.entries(data.result).map(([key, value]: [string, any]) => {
-            // Determine the provider based on the key prefix
-            let provider = 'Reliance'; // Default provider
-            
-            if (key.toLowerCase().startsWith('godigit')) {
-              provider = 'GoDigit';
-            } else if (key.toLowerCase().startsWith('reliance')) {
-              provider = 'Reliance';
+            // Determine the provider based on the companyName from API
+            const provider = value.companyName || 'Reliance';
+
+            // Select logo based on provider
+            let logo = '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png'; // Default Reliance logo
+            if (provider.toLowerCase() === 'godigit') {
+              logo = '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png';
+            } else if (provider.toLowerCase() === 'bajaj') {
+              logo = '/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png';
             }
-            
-            // Format the plan name from the key (e.g., reliance_Student_Basic -> Student Basic)
-            const planNameParts = key.split('_');
-            const planName = planNameParts.slice(1).join(' ');
+
+            // Use planName directly from the API response
+            const planName = value.planName || '';
             
             const details = "Overseas Travel | Excluding USA and CANADA";
             
-            // Extract the netPremium value and ensure it's a number
-            // Handle both string and number types for netPremium
+            // Extract and format the net premium
             let netPremium = 0;
-            
             if (value && value.netPremium !== undefined && value.netPremium !== null) {
-              // Convert to number if it's a string
               netPremium = typeof value.netPremium === 'string' 
                 ? parseFloat(value.netPremium)
                 : value.netPremium;
@@ -130,11 +127,9 @@ export const useInsuranceQuotes = () => {
             
             return {
               id: key,
-              name: planName || key,
+              name: planName,
               provider: provider,
-              logo: provider === 'GoDigit' 
-                ? '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png'
-                : '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png',
+              logo: logo,
               description: `${planName} Insurance Plan`,
               details: details,
               price: netPremium > 0 ? `₹${netPremium}` : '₹0',
