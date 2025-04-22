@@ -35,7 +35,7 @@ const HeroSection = () => {
             maxHeight: "250px",
             marginLeft: "0",
             marginRight: "0"
-          }} src="/lovable-uploads/e7261a77-698a-4ed6-9f14-9e1fcf87e111.png" className="h-auto w-auto object-contain" />
+          }} src="/lovable-uploads/e7261a77-698a-4ed6-9f14-9e1fcf87e111.png" className="h-auto w-auto object-fill" />
           </div>
           
           <div className="w-full md:w-1/3 text-center py-4 mb-6 md:mb-0">
