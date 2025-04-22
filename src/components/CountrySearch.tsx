@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { Search, Loader2 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -27,15 +26,12 @@ const CountrySearch = ({ initialValue, onSelect, excludeCountries = [] }: Countr
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
-  // Debounce search input to avoid excessive API calls
   const debouncedValue = useDebounce<string>(inputValue, 300);
 
-  // Reset active index when countries list changes
   useEffect(() => {
     setActiveIndex(-1);
   }, [countries]);
 
-  // Fetch countries when input changes
   useEffect(() => {
     const fetchCountries = async () => {
       if (debouncedValue.length < 2) {
@@ -55,7 +51,6 @@ const CountrySearch = ({ initialValue, onSelect, excludeCountries = [] }: Countr
         
         let data = await response.json();
         let results: Country[] = data.result || [];
-        // Filter out excluded countries (case insensitive)
         if (excludeCountries.length > 0) {
           const exclusions = excludeCountries.map(e => e.trim().toLowerCase());
           results = results.filter(
@@ -79,7 +74,6 @@ const CountrySearch = ({ initialValue, onSelect, excludeCountries = [] }: Countr
     fetchCountries();
   }, [debouncedValue, toast, excludeCountries]);
 
-  // If the selected country becomes excluded, clear it from the field
   useEffect(() => {
     if (
       inputValue &&
@@ -132,7 +126,7 @@ const CountrySearch = ({ initialValue, onSelect, excludeCountries = [] }: Countr
           "w-full rounded-md focus:outline-none focus:ring-2 pr-10",
           inputValue ? "border-primary focus:ring-primary" : "border-primary border-opacity-50 focus:ring-primary"
         )}
-        placeholder="Destination*"
+        placeholder="Country*"
         value={inputValue}
         onChange={(e) => {
           setInputValue(e.target.value);
