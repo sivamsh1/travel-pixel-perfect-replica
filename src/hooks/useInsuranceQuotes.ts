@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -11,7 +12,9 @@ const LOGO_PATHS = {
   bajaj: '/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png'
 } as const;
 
+// Fix: Change the type definition to include all possible logo path values
 type LogoPath = typeof LOGO_PATHS[keyof typeof LOGO_PATHS];
+// This creates a union type of all the string literals in LOGO_PATHS
 
 const getInsurerFromKey = (key: string): keyof typeof LOGO_PATHS | null => {
   const keyLower = key.toLowerCase();
@@ -120,7 +123,8 @@ export const useInsuranceQuotes = () => {
             const insurer = getInsurerFromKey(key);
             console.log('Key:', key, 'Detected insurer:', insurer);
             
-            let logo = LOGO_PATHS.reliance; // Default to Reliance logo
+            // Fix: Define the logo variable with the correct union type
+            let logo: LogoPath = LOGO_PATHS.reliance; // Default to Reliance logo
             
             if (insurer && LOGO_PATHS[insurer]) {
               logo = LOGO_PATHS[insurer];
