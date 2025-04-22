@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -6,12 +5,11 @@ import { InsurancePlan } from '@/components/PlanCard';
 import { toast } from "@/components/ui/use-toast";
 import { useQuery } from '@tanstack/react-query';
 import { getFromLocalStorage } from '@/utils/localStorageUtils';
-import bajajLogo from '@/assets/bajajLogo.png';
 
 const LOGO_PATHS = {
   reliance: '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png',
   godigit: '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png',
-  bajaj: bajajLogo
+  bajaj: new URL('../assets/bajajLogo.png', import.meta.url).href
 } as const;
 
 type LogoPath = typeof LOGO_PATHS[keyof typeof LOGO_PATHS];
