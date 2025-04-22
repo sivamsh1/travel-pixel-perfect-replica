@@ -47,6 +47,7 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="GoDigit">GoDigit</SelectItem>
               <SelectItem value="Reliance">Reliance</SelectItem>
+              <SelectItem value="Bajaj">Bajaj</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -12,18 +12,14 @@ export const useInsuranceQuotes = () => {
     travellers
   } = useTravelForm();
 
-  // Create the request payload from localStorage data
   const requestPayload = useMemo(() => {
     const storageData = getFromLocalStorage();
     
-    // Get traveller DOBs from localStorage with proper validation
     const dob = storageData?.travellers?.details?.map(traveller => {
-      // If DOB is already in DD/MM/YYYY format, use it directly
       if (traveller.dob && /^\d{2}\/\d{2}\/\d{4}$/.test(traveller.dob)) {
         return traveller.dob;
       }
       
-      // If DOB is in ISO format, convert it
       if (traveller.dob) {
         try {
           const parsedDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
@@ -35,9 +31,8 @@ export const useInsuranceQuotes = () => {
         }
       }
       return null;
-    }).filter(Boolean); // Remove any null values
+    }).filter(Boolean);
     
-    // Get dates from localStorage with proper validation
     let startDate = '';
     let endDate = '';
     
@@ -65,18 +60,16 @@ export const useInsuranceQuotes = () => {
       }
     }
     
-    // Get destination ID from localStorage
     const destinationId = storageData?.location?.destinationId || '679e707834ecd414eb0004de';
     
     return {
       destination: destinationId,
-      dob: dob.length ? dob : ["17/08/1997"], // Use stored DOB or fallback
+      dob: dob.length ? dob : ["17/08/1997"],
       startDate: startDate || "19/06/2025",
       returnDate: endDate || "29/07/2025",
     };
   }, [travellers]);
 
-  // Fetch quotes using React Query
   const { data: apiQuotes, isLoading, error } = useQuery({
     queryKey: ['insuranceQuotes', requestPayload],
     queryFn: async () => {
@@ -99,25 +92,20 @@ export const useInsuranceQuotes = () => {
         console.log('API Response:', data);
         
         if (data && data.result) {
-          // Convert API response to InsurancePlan format
           return Object.entries(data.result).map(([key, value]: [string, any]) => {
-            // Determine the provider based on the companyName from API
-            const provider = value.companyName || 'Reliance';
-
-            // Select logo based on provider
-            let logo = '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png'; // Default Reliance logo
+            let provider = value.companyName || 'Reliance';
+            
+            let logo = '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png';
             if (provider.toLowerCase() === 'godigit') {
               logo = '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png';
-            } else if (provider.toLowerCase() === 'bajaj') {
+            } else if (key.toLowerCase().startsWith('bajaj') || provider.toLowerCase() === 'bajaj') {
               logo = '/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png';
             }
 
-            // Use planName directly from the API response
             const planName = value.planName || '';
             
             const details = "Overseas Travel | Excluding USA and CANADA";
             
-            // Extract and format the net premium
             let netPremium = 0;
             if (value && value.netPremium !== undefined && value.netPremium !== null) {
               netPremium = typeof value.netPremium === 'string' 
@@ -145,7 +133,7 @@ export const useInsuranceQuotes = () => {
           });
         }
         
-        return []; // Return empty array if no results
+        return [];
       } catch (error) {
         console.error('Error fetching quotes:', error);
         toast({
@@ -153,16 +141,16 @@ export const useInsuranceQuotes = () => {
           description: "Failed to fetch insurance quotes. Please try again.",
           variant: "destructive",
         });
-        throw error; // Re-throw to let React Query handle it
+        throw error;
       }
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     retry: 1,
   });
 
   return {
-    quotes: apiQuotes || [], // Provide fallback empty array
+    quotes: apiQuotes || [],
     isLoading,
     error: error instanceof Error ? error.message : null
   };
