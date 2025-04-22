@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -12,6 +11,8 @@ const LOGO_PATHS = {
   godigit: '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png',
   bajaj: '/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png'
 } as const;
+
+type LogoPath = typeof LOGO_PATHS[keyof typeof LOGO_PATHS];
 
 const getInsurerFromKey = (key: string): keyof typeof LOGO_PATHS | null => {
   const prefix = key.split('_')[0].toLowerCase();
@@ -110,9 +111,8 @@ export const useInsuranceQuotes = () => {
           return Object.entries(data.result).map(([key, value]: [string, any]) => {
             let provider = value.companyName || 'Reliance';
             
-            // Determine logo based on the key prefix
             const insurer = getInsurerFromKey(key);
-            let logo = LOGO_PATHS.reliance; // Default to Reliance logo
+            let logo: LogoPath = LOGO_PATHS.reliance; // Default to Reliance logo
             
             if (insurer) {
               logo = LOGO_PATHS[insurer];
