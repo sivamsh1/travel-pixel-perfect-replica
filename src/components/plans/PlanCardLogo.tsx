@@ -27,4 +27,3 @@ const PlanCardLogo: React.FC<PlanCardLogoProps> = ({ logo, provider }) => {
 };
 
 export default PlanCardLogo;
-
