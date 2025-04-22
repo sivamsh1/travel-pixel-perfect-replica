@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -9,7 +10,7 @@ import { getFromLocalStorage } from '@/utils/localStorageUtils';
 const LOGO_PATHS = {
   reliance: '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png',
   godigit: '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png',
-  bajaj: '/lovable-uploads/dad2c164-0b3a-480e-8ae0-8f92d9e6e912.png'
+  bajaj: '/lovable-uploads/456a6309-36b7-4d84-96f9-925d0652a0c8.png'
 } as const;
 
 type LogoPath = typeof LOGO_PATHS[keyof typeof LOGO_PATHS];
