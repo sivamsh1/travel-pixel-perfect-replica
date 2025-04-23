@@ -145,7 +145,9 @@ const PlanCard: React.FC<PlanCardProps> = ({
           <div className="flex items-center gap-4">
             <PlanCardLogo logo={plan.logo} provider={plan.provider} />
             <div>
-              <h3 className="font-bold text-xl text-[#FF6B35]">{plan.name}</h3>
+              <h3 className="font-bold text-xl text-[#FF6B35]">
+                {plan.name.replace(/_/g, ' ')}
+              </h3>
               <p className="text-gray-600 text-sm">{plan.details}</p>
             </div>
           </div>

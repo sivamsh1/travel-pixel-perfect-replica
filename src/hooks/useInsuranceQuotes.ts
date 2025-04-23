@@ -105,6 +105,9 @@ export const useInsuranceQuotes = () => {
         
         if (data && data.result) {
           return Object.entries(data.result).map(([key, value]: [string, any]) => {
+            let planName = value.planName || key;
+            planName = planName.replace(/_/g, ' ');
+
             let provider = value.companyName || 'Reliance';
             const insurer = getInsurerFromKey(key);
             
@@ -112,7 +115,6 @@ export const useInsuranceQuotes = () => {
             if (insurer && LOGO_PATHS[insurer]) {
               logo = LOGO_PATHS[insurer];
             }
-            const planName = value.planName || '';
             const details = "Overseas Travel | Excluding USA and CANADA";
             let netPremium = 0;
             if (value && value.netPremium !== undefined && value.netPremium !== null) {
