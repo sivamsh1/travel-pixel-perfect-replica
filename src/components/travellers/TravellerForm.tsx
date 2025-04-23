@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
@@ -23,12 +22,10 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
   const [autoFilled, setAutoFilled] = useState(false);
   const [lastFetchedPincode, setLastFetchedPincode] = useState<string | null>(null);
 
-  // Refactored: Fetch city when pincode reaches 6 digits in the input handler
   const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const pincode = e.target.value.slice(0, 6);
     updateTraveller(index, { pincode });
 
-    // Fire only if pincode is 6 digits, and not recently fetched to prevent duplicate fetches as you type 6
     if (
       pincode.length === 6 &&
       pincode !== lastFetchedPincode
@@ -37,7 +34,6 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
       const locationData = await searchCityByPincode(pincode);
 
       if (locationData) {
-        // Auto-fill city and store location data
         updateTraveller(index, {
           city: locationData.cityName,
           locationData: {
@@ -64,7 +60,8 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
             type="text"
             className={`w-full p-3 border ${errors[`traveller${index}Passport`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
             value={traveller.passportNumber || ''}
-            onChange={(e) => updateTraveller(index, { passportNumber: e.target.value })}
+            onChange={(e) => updateTraveller(index, { passportNumber: e.target.value.slice(0, 10) })}
+            maxLength={10}
           />
           {errors[`traveller${index}Passport`] && (
             <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Passport`]}</p>
@@ -86,7 +83,6 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth<span className="text-red-500">*</span></label>
-          {/* Render DOB as a read-only input */}
           <input
             type="text"
             className="w-full p-3 border border-gray-300 bg-gray-100 rounded-md text-gray-500 cursor-not-allowed"
@@ -139,7 +135,6 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
               readOnly
               disabled
             />
-            {/* Show auto-filled only briefly if wanted, but now always disabled */}
           </div>
         </div>
 
@@ -173,4 +168,5 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
     </div>
   );
 };
+
 export default TravellerForm;

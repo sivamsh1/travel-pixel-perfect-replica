@@ -82,8 +82,8 @@ export const useTravellerDetails = () => {
     travellers.forEach((traveller, index) => {
       if (!traveller.passportNumber) {
         newErrors[`traveller${index}Passport`] = "Passport number is required";
-      } else if (traveller.passportNumber.length < 8) {
-        newErrors[`traveller${index}Passport`] = "Passport number should be at least 8 characters";
+      } else if (traveller.passportNumber.length !== 10) {
+        newErrors[`traveller${index}Passport`] = "Passport number must be exactly 10 characters";
       }
       
       if (!traveller.name) {
