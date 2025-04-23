@@ -1,5 +1,4 @@
 
-// Sample insurance plans data
 export const insurancePlans = [
   {
     id: "icon-plan",
@@ -15,8 +14,8 @@ export const insurancePlans = [
       { icon: "🚗", text: "Domestic Roadside Assistance" }
     ],
     coveragePoints: [
-      "$ 5000 Trip Cancellation",
-      "$ 50000 Medical Expenses incl"
+      "₹ 5000 Trip Cancellation",
+      "₹ 50000 Medical Expenses incl"
     ]
   },
   {
@@ -33,8 +32,8 @@ export const insurancePlans = [
       { icon: "🚗", text: "Domestic Roadside Assistance" }
     ],
     coveragePoints: [
-      "$ 5000 Trip Cancellation",
-      "$ 50000 Medical Expenses incl"
+      "₹ 5000 Trip Cancellation", 
+      "₹ 50000 Medical Expenses incl"
     ]
   }
 ];

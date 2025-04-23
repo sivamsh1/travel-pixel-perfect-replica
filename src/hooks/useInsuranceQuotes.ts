@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -12,7 +11,6 @@ const LOGO_PATHS = {
   bajaj: '/lovable-uploads/Bajaj.png.png'
 } as const;
 
-// Use string for LogoPath to resolve assignment error
 type LogoPath = string;
 
 const getInsurerFromKey = (key: string): keyof typeof LOGO_PATHS | null => {
@@ -123,19 +121,16 @@ export const useInsuranceQuotes = () => {
                 : value.netPremium;
             }
 
-            // Extract covers array
             const covers: any[] = Array.isArray(value.covers) ? value.covers : [];
 
-            // Take top 3 covers as benefits, using coverName as text
             const benefits = covers.slice(0, 3).map((cover) => ({
               icon: "✓",
               text: cover.coverName,
               amount: cover.coverAmount
             }));
 
-            // For coveragePoints, map all covers with "coverName: amount" format
             const coveragePoints = covers.map(
-              (cover) => `${cover.coverName}: $${cover.coverAmount}`
+              (cover) => `${cover.coverName}: ₹${cover.coverAmount}`
             );
 
             return {
@@ -146,8 +141,8 @@ export const useInsuranceQuotes = () => {
               description: `${planName} Insurance Plan`,
               details: details,
               price: netPremium > 0 ? `₹${netPremium}` : '₹0',
-              benefits: benefits, // now from actual covers, not dummy data
-              coveragePoints: coveragePoints, // now from all covers
+              benefits: benefits,
+              coveragePoints: coveragePoints,
               travellersCount,
               netPremium: netPremium
             };
