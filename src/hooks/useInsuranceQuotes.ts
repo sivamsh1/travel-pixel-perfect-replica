@@ -12,22 +12,16 @@ const LOGO_PATHS = {
   bajaj: '/lovable-uploads/Bajaj.png.png'
 } as const;
 
-// Fix: Change the type definition to include all possible logo path values
-type LogoPath = typeof LOGO_PATHS[keyof typeof LOGO_PATHS];
-// This creates a union type of all the string literals in LOGO_PATHS
+// Use string for LogoPath to resolve assignment error
+type LogoPath = string;
 
 const getInsurerFromKey = (key: string): keyof typeof LOGO_PATHS | null => {
   const keyLower = key.toLowerCase();
-  console.log('Processing key:', key, 'Lowercase:', keyLower);
-  
   for (const insurer of Object.keys(LOGO_PATHS)) {
     if (keyLower.includes(insurer)) {
-      console.log('Found matching insurer:', insurer);
       return insurer as keyof typeof LOGO_PATHS;
     }
   }
-  
-  console.log('No matching insurer found for key:', key);
   return null;
 };
 
@@ -44,7 +38,6 @@ export const useInsuranceQuotes = () => {
       if (traveller.dob && /^\d{2}\/\d{2}\/\d{4}$/.test(traveller.dob)) {
         return traveller.dob;
       }
-      
       if (traveller.dob) {
         try {
           const parsedDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
@@ -72,7 +65,6 @@ export const useInsuranceQuotes = () => {
           console.error('Error parsing start date:', error);
         }
       }
-      
       if (storageData.dates.endDate) {
         try {
           const parsedEndDate = parse(storageData.dates.endDate, 'yyyy-MM-dd', new Date());
@@ -98,8 +90,6 @@ export const useInsuranceQuotes = () => {
   const { data: apiQuotes, isLoading, error } = useQuery({
     queryKey: ['insuranceQuotes', requestPayload],
     queryFn: async () => {
-      console.log('Fetching quotes with payload:', requestPayload);
-      
       try {
         const response = await fetch('https://gyaantree.com/api/travel/v1/quickQuote/fetch-quotes', {
           method: 'POST',
@@ -114,34 +104,40 @@ export const useInsuranceQuotes = () => {
         }
         
         const data = await response.json();
-        console.log('API Response:', data);
         
         if (data && data.result) {
           return Object.entries(data.result).map(([key, value]: [string, any]) => {
             let provider = value.companyName || 'Reliance';
-            
             const insurer = getInsurerFromKey(key);
-            console.log('Key:', key, 'Detected insurer:', insurer);
             
-            // Fix: Define the logo variable with the correct union type
             let logo: LogoPath = LOGO_PATHS.reliance; // Default to Reliance logo
-            
             if (insurer && LOGO_PATHS[insurer]) {
               logo = LOGO_PATHS[insurer];
-              console.log('Using logo path:', logo, 'for insurer:', insurer);
             }
-
             const planName = value.planName || '';
-            
             const details = "Overseas Travel | Excluding USA and CANADA";
-            
             let netPremium = 0;
             if (value && value.netPremium !== undefined && value.netPremium !== null) {
               netPremium = typeof value.netPremium === 'string' 
                 ? parseFloat(value.netPremium)
                 : value.netPremium;
             }
-            
+
+            // Extract covers array
+            const covers: any[] = Array.isArray(value.covers) ? value.covers : [];
+
+            // Take top 3 covers as benefits, using coverName as text
+            const benefits = covers.slice(0, 3).map((cover) => ({
+              icon: "✓",
+              text: cover.coverName,
+              amount: cover.coverAmount
+            }));
+
+            // For coveragePoints, map all covers with "coverName: amount" format
+            const coveragePoints = covers.map(
+              (cover) => `${cover.coverName}: $${cover.coverAmount}`
+            );
+
             return {
               id: key,
               name: planName,
@@ -150,18 +146,13 @@ export const useInsuranceQuotes = () => {
               description: `${planName} Insurance Plan`,
               details: details,
               price: netPremium > 0 ? `₹${netPremium}` : '₹0',
-              benefits: [
-                { icon: "✓", text: "Emergency Medical Assistance" },
-                { icon: "✓", text: "Lifestyle Assistance" },
-                { icon: "✓", text: "Domestic Roadside Assistance" }
-              ],
-              coveragePoints: ["$ 1000 Trip Cancellation", "$ 50000 Medical Expenses incl."],
+              benefits: benefits, // now from actual covers, not dummy data
+              coveragePoints: coveragePoints, // now from all covers
               travellersCount,
               netPremium: netPremium
             };
           });
         }
-        
         return [];
       } catch (error) {
         console.error('Error fetching quotes:', error);
