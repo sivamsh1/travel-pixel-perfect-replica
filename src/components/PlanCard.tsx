@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -14,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 interface Benefit {
   icon: string;
   text: string;
+  amount: string;
 }
 
 export interface InsurancePlan {
