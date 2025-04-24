@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import ComparePopup, { PlanToCompare } from '@/components/ComparePopup';
-import { InsurancePlan } from '@/components/PlanCard';
+import { InsurancePlan } from '@/types/insurance';
 import { saveComparisonPlans, getComparisonPlans, clearComparisonPlans as clearPlansStorage, ComparisonPlan } from '@/utils/comparisonStorageUtils';
 
 interface PlanComparisonManagerProps {
