@@ -9,9 +9,9 @@ export const insurancePlans = [
     details: "Overseas Travel | Excluding USA and CANADA",
     price: "₹ 969",
     benefits: [
-      { icon: "📞", text: "Emergency Medical Assistance", amount: "₹50000" },
-      { icon: "🧳", text: "Luggage Assistance", amount: "₹20000" },
-      { icon: "🚗", text: "Domestic Roadside Assistance", amount: "₹10000" }
+      { icon: "📞", text: "Emergency Medical Assistance" },
+      { icon: "🧳", text: "Luggage Assistance" },
+      { icon: "🚗", text: "Domestic Roadside Assistance" }
     ],
     coveragePoints: [
       "₹ 5000 Trip Cancellation",
@@ -27,9 +27,9 @@ export const insurancePlans = [
     details: "Overseas Travel | Excluding USA and CANADA",
     price: "₹ 969",
     benefits: [
-      { icon: "📞", text: "Emergency Medical Assistance", amount: "₹50000" },
-      { icon: "🧳", text: "Luggage Assistance", amount: "₹20000" },
-      { icon: "🚗", text: "Domestic Roadside Assistance", amount: "₹10000" }
+      { icon: "📞", text: "Emergency Medical Assistance" },
+      { icon: "🧳", text: "Luggage Assistance" },
+      { icon: "🚗", text: "Domestic Roadside Assistance" }
     ],
     coveragePoints: [
       "₹ 5000 Trip Cancellation", 

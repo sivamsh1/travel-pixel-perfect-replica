@@ -125,7 +125,7 @@ export const useInsuranceQuotes = () => {
 
             const covers: any[] = Array.isArray(value.covers) ? value.covers : [];
 
-            const benefits = covers.map((cover) => ({
+            const benefits = covers.slice(0, 3).map((cover) => ({
               icon: "✓",
               text: cover.coverName,
               amount: cover.coverAmount

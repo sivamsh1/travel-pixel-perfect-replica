@@ -1,11 +1,10 @@
 
 import React from 'react';
-import CoverageExpander from './CoverageExpander';
+import { Check } from 'lucide-react';
 
 interface Benefit {
   icon: string;
   text: string;
-  amount: string;
 }
 
 interface PlanCardBenefitsProps {
@@ -14,11 +13,15 @@ interface PlanCardBenefitsProps {
 
 const PlanCardBenefits: React.FC<PlanCardBenefitsProps> = ({ benefits }) => {
   return (
-    <div className="space-y-4">
-      <div className="text-white text-sm px-4 py-1.5 rounded-full bg-[#0fb1f6] w-fit">
-        Plan Benefits
-      </div>
-      <CoverageExpander coveragePoints={benefits} />
+    <div className="flex flex-wrap gap-8 text-sm">
+      {benefits.map((benefit, index) => (
+        <div key={index} className="flex items-center gap-2 text-gray-700">
+          <span className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
+            <Check className="w-3.5 h-3.5 text-blue-500" />
+          </span>
+          <span>{benefit.text}</span>
+        </div>
+      ))}
     </div>
   );
 };

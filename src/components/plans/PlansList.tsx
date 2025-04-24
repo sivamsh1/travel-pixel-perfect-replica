@@ -1,7 +1,6 @@
 
 import React from 'react';
-import PlanCard from '@/components/PlanCard';
-import { InsurancePlan } from '@/types/insurance';
+import PlanCard, { InsurancePlan } from '@/components/PlanCard';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 

@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import Layout from '@/components/Layout';
@@ -11,7 +12,7 @@ import PlanComparisonManager from '@/components/plans/PlanComparisonManager';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Progress } from "@/components/ui/progress";
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
-import { InsurancePlan } from '@/types/insurance';
+import { InsurancePlan } from '@/components/PlanCard';
 
 const steps = [
   { id: 1, name: "Trip Details" },
