@@ -36,6 +36,9 @@ const ReviewStep = () => {
     handlePayNow
   } = useReviewPage();
 
+  // Get provider from selected plan
+  const provider = selectedPlan?.provider || 'Reliance';
+
   return (
     <Layout>
       <div className="px-6 md:px-12">
@@ -52,7 +55,7 @@ const ReviewStep = () => {
         
         <ReviewSummary
           location={location}
-          dates={undefined} // Fix: Changed from location to undefined since we're providing formatted dates directly
+          dates={undefined}
           duration={duration}
           formattedStartDate={formattedStartDate}
           formattedEndDate={formattedEndDate}
@@ -85,6 +88,7 @@ const ReviewStep = () => {
           setAgreeToTerms={setAgreeToTerms}
           handlePayNow={handlePayNow}
           isSubmitting={isSubmitting}
+          provider={provider}
         />
       </div>
     </Layout>

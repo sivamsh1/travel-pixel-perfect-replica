@@ -9,13 +9,15 @@ interface TermsAndPaymentProps {
   setAgreeToTerms: (value: boolean) => void;
   handlePayNow: () => void;
   isSubmitting: boolean;
+  provider?: string;
 }
 
 const TermsAndPayment: React.FC<TermsAndPaymentProps> = ({
   agreeToTerms,
   setAgreeToTerms,
   handlePayNow,
-  isSubmitting
+  isSubmitting,
+  provider = 'Reliance'
 }) => {
   return (
     <>
@@ -28,6 +30,10 @@ const TermsAndPayment: React.FC<TermsAndPaymentProps> = ({
         <label htmlFor="terms-conditions" className="text-sm">
           I have read and agree to the <span className="text-primary">Terms & Conditions</span> to avail Travel Assistance with Insurance.
         </label>
+      </div>
+      
+      <div className="mt-4 text-center text-xs text-gray-500">
+        Your payment will be processed through {provider} payment gateway
       </div>
       
       <div className="mt-8">

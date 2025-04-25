@@ -12,6 +12,8 @@ export type Address = {
   pincode: string;
 };
 
+export type InsuranceProvider = 'Reliance' | 'GoDigit' | 'Bajaj' | 'Care';
+
 export type QuotePayload = {
   productName: string;
   startDate: string;
@@ -73,9 +75,54 @@ export type QuotePayload = {
   };
 };
 
+export type GoDigitQuotePayload = {
+  productName: string;
+  amount: number;
+  startDate: string;
+  returnDate: string;
+  destination: string;
+  bodyCount: number;
+  kycDetails: {
+    kycDoc: string;
+    docuin: string;
+  };
+  clientDetails: {
+    salutation: string;
+    firstName: string;
+    lastName: string;
+    dob: string;
+    gender: string;
+    mobileNo: string;
+    email: string;
+    communicationAddress: Address;
+  };
+  insurePersonDetails: Array<{
+    salutation: string;
+    firstName: string;
+    lastName: string;
+    dob: string;
+    gender: string;
+    email: string;
+    mobileNo: string;
+    passportNo: string;
+    nomineeName: string;
+    nomineeRelation: string;
+    university: string;
+    universityAddress: string;
+    courseName: string;
+    courseDuration: number;
+    communicationAddress: Address;
+    sponsorName: string;
+    sponsorRelationship: string;
+    sponsorDob: string;
+    ped: Array<any>;
+  }>;
+};
+
 export type QuoteResponse = {
   success?: boolean;
   message?: string;
   url?: string;
   data?: any;
 };
+
