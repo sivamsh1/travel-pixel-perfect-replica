@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 import { formatDateForAPI, formatDOBForAPI } from './dateFormatUtils';
 import { splitName, extractPlanType, createAddressPayload } from './dataTransformUtils';
@@ -121,7 +120,6 @@ export const createGoDigitQuotePayload = (formData: TravelFormData): GoDigitQuot
   const returnDate = formatDateForAPI(formData.dates?.endDate);
   const { firstName, lastName } = splitName(traveller.name);
   
-  // Format DOB correctly
   let dob = formatDOBForAPI(traveller.dob) || '01/01/1990';
   
   const address = createAddressPayload(traveller);
@@ -129,18 +127,24 @@ export const createGoDigitQuotePayload = (formData: TravelFormData): GoDigitQuot
   const email = traveller.email || "user@example.com";
   const destination = formData.location?.destinationId || "679e707834ecd414eb0004f1";
   
-  // Extract price from selectedPlan
-  let amount = 2790.7; // Default fallback amount
+  let amount = 2790.7;
   if (formData.selectedPlan?.price) {
-    // Try to extract numeric value from price string (e.g. "₹ 2790.7" -> 2790.7)
     const priceMatch = formData.selectedPlan.price.match(/[\d.]+/);
     if (priceMatch && priceMatch[0]) {
       amount = parseFloat(priceMatch[0]);
     }
   }
   
+  // Default university address that fits within 30 chars
+  const defaultUniversityAddress = "DU Main Campus";
+  
+  // Ensure university address is within 30 chars
+  const universityAddress = traveller.universityAddress ? 
+    traveller.universityAddress.substring(0, 30) : 
+    defaultUniversityAddress;
+  
   return {
-    productName: "RS2", // Default product code for GoDigit
+    productName: "RS2",
     amount: amount,
     startDate: startDate || "20/05/2025",
     returnDate: returnDate || "20/06/2025",
@@ -172,12 +176,12 @@ export const createGoDigitQuotePayload = (formData: TravelFormData): GoDigitQuot
         passportNo: traveller.passportNumber || "AB1234567",
         nomineeName: nominee.name || "John Doe",
         nomineeRelation: nominee.relationship?.toLowerCase() || "father",
-        university: "Dummy University",
-        universityAddress: "University Address, City, Country",
+        university: traveller.university || "DU",
+        universityAddress: universityAddress,
         courseName: "MBA",
         courseDuration: 3,
         communicationAddress: { ...address },
-        sponsorName: "Dummy Sponsor",
+        sponsorName: "Default Sponsor",
         sponsorRelationship: "brother",
         sponsorDob: "01/01/1997",
         ped: []
