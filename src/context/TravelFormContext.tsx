@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface LocationData {
@@ -19,6 +18,7 @@ export interface TravellerDetails {
   mobileNo?: string;
   email?: string;
   hasPreExistingCondition?: boolean;
+  medicalCondition?: string;
   locationData?: LocationData; // Added location data
 }
 
