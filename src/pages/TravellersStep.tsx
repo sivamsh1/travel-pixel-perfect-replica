@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
+import { format, differenceInYears } from 'date-fns';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
@@ -11,6 +10,7 @@ import TravellerCount from '@/components/travellers/TravellerCount';
 import TravellerDateOfBirth from '@/components/travellers/TravellerDateOfBirth';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "@/components/ui/use-toast";
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -38,7 +38,6 @@ const TravellersStep = () => {
     }
   };
 
-  // Instead of incrementing, open a dialog
   const handleIncrease = () => {
     setIsDialogOpen(true);
   };
@@ -47,28 +46,38 @@ const TravellersStep = () => {
 
   const handleDateChange = (index: number, date: Date | undefined) => {
     if (date) {
-      // Store DOB in dd/MM/yyyy format - ensure we're using the correct date
-      // No offset needed as we're directly using the selected date object
       const formattedDOB = format(date, 'dd/MM/yyyy');
-      updateTraveller(index, { dob: formattedDOB });
-
-      // Calculate age based on the selected date
+      
       const today = new Date();
-      let age = today.getFullYear() - date.getFullYear();
-      const monthDiff = today.getMonth() - date.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
-        age--;
-      }
-      updateTraveller(index, { age: age.toString() });
+      const age = differenceInYears(today, date);
 
-      if (errors[index]?.dob) {
-        const newErrors = { ...errors };
-        if (newErrors[index]) {
-          delete newErrors[index].dob;
-          if (Object.keys(newErrors[index]).length === 0) {
-            delete newErrors[index];
+      if (age < 16) {
+        setErrors(prev => ({
+          ...prev,
+          [index]: {
+            ...prev[index],
+            age: "Proposer must be at least 16 years old",
+            dob: "Age requirement not met"
           }
-        }
+        }));
+        
+        toast({
+          title: "Age Restriction",
+          description: "Proposer must be at least 16 years old",
+          variant: "destructive"
+        });
+        
+        return;
+      }
+
+      updateTraveller(index, { 
+        dob: formattedDOB,
+        age: age.toString()
+      });
+
+      if (errors[index]?.dob || errors[index]?.age) {
+        const newErrors = { ...errors };
+        delete newErrors[index];
         setErrors(newErrors);
       }
     }
@@ -84,6 +93,21 @@ const TravellersStep = () => {
       if (!traveller.dob) {
         travellerErrors.dob = "Date of birth is required";
         hasErrors = true;
+      } else {
+        try {
+          const [day, month, year] = traveller.dob.split('/').map(Number);
+          const dobDate = new Date(year, month - 1, day);
+          const age = differenceInYears(new Date(), dobDate);
+          
+          if (age < 16) {
+            travellerErrors.age = "Proposer must be at least 16 years old";
+            travellerErrors.dob = "Age requirement not met";
+            hasErrors = true;
+          }
+        } catch (error) {
+          travellerErrors.dob = "Invalid date format";
+          hasErrors = true;
+        }
       }
 
       if (Object.keys(travellerErrors).length > 0) {
@@ -94,7 +118,6 @@ const TravellersStep = () => {
     setErrors(newErrors);
 
     if (!hasErrors) {
-      // Travellers already have dob in dd/MM/yyyy format, so just save as is
       saveToLocalStorage('travellers', {
         count: travellersCount,
         details: travellers

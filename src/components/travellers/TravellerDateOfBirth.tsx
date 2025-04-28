@@ -1,5 +1,5 @@
 import React from "react";
-import { format, isValid } from "date-fns";
+import { format, isValid, addYears, subYears } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
   dob,
   age,
   handleDateChange,
-  updateTraveller,
   error
 }) => {
   const parseDOB = (dateString?: string): Date | undefined => {
@@ -36,6 +35,8 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
   };
 
   const dateValue = parseDOB(dob);
+  const minDate = subYears(new Date(), 100); // Max age 100 years
+  const maxDate = subYears(new Date(), 16); // Min age 16 years
 
   return (
     <div className="flex gap-4">
@@ -63,7 +64,7 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
               selected={dateValue}
               onSelect={(date) => handleDateChange(index, date)}
               disabled={(date) =>
-                date > new Date() || date < new Date("1900-01-01")
+                date > maxDate || date < minDate
               }
               initialFocus
               className="p-3 pointer-events-auto"
@@ -80,7 +81,6 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           placeholder={`T ${index + 1} Age`}
           value={age || ''}
-          onChange={(e) => updateTraveller(index, { age: e.target.value })}
           readOnly
         />
       </div>
