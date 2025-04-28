@@ -67,6 +67,12 @@ const MedicalConditionSelector: React.FC<MedicalConditionSelectorProps> = ({
               ))}
             </SelectContent>
           </Select>
+          
+          {traveller.medicalCondition && (
+            <div className="text-destructive text-sm mt-2">
+              Sorry, travellers with selected medical conditions are not eligible to continue.
+            </div>
+          )}
         </div>
       )}
     </div>

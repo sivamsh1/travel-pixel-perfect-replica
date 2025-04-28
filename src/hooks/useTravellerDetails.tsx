@@ -3,6 +3,7 @@ import { useTravelForm } from '@/context/TravelFormContext';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
 import { format } from 'date-fns';
+import { toast } from 'react-toastify';
 
 interface ValidationErrors {
   [key: string]: string;
@@ -78,12 +79,24 @@ export const useTravellerDetails = () => {
 
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {};
+    let hasErrors = false;
     
     travellers.forEach((traveller, index) => {
+      if (traveller.hasPreExistingCondition && traveller.medicalCondition) {
+        toast({
+          title: "Medical Condition Restriction",
+          description: "Sorry, travellers with selected medical conditions are not eligible to continue.",
+          variant: "destructive"
+        });
+        return false;
+      }
+
       if (!traveller.passportNumber) {
         newErrors[`traveller${index}Passport`] = "Passport number is required";
+        hasErrors = true;
       } else if (traveller.passportNumber.length !== 10) {
         newErrors[`traveller${index}Passport`] = "Passport number must be exactly 10 characters";
+        hasErrors = true;
       }
       
       if (!traveller.name) {
@@ -110,7 +123,7 @@ export const useTravellerDetails = () => {
     });
     
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return !hasErrors;
   };
 
   const saveTravellersToLocalStorage = () => {

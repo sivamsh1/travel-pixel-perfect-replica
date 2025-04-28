@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -18,11 +17,25 @@ const steps = [
 
 const TravellersDetailsStep = () => {
   const navigate = useNavigate();
-  const { validateForm, saveTravellersToLocalStorage } = useTravellerDetails();
+  const { validateForm, saveTravellersToLocalStorage, travellers } = useTravellerDetails();
 
   const handleContinue = () => {
     // Validate required fields
     if (validateForm()) {
+      // Check for medical conditions
+      const hasMedicalCondition = travellers.some(
+        traveller => traveller.hasPreExistingCondition && traveller.medicalCondition
+      );
+
+      if (hasMedicalCondition) {
+        toast({
+          title: "Medical Condition Restriction",
+          description: "Sorry, travellers with selected medical conditions are not eligible to continue.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       // Save traveller details to localStorage before navigating
       saveTravellersToLocalStorage();
       
