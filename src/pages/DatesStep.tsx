@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -6,9 +7,10 @@ import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { Calendar as CalendarIcon } from 'lucide-react';
-import { format, differenceInDays, parse } from 'date-fns';
+import { format, differenceInDays, addDays, isBefore, isAfter } from 'date-fns';
 import { formSteps } from '@/constants/formSteps';
 import { Calendar } from "@/components/ui/calendar";
+import { toast } from "@/hooks/use-toast";
 import {
   Popover,
   PopoverContent,
@@ -20,29 +22,40 @@ import { saveToLocalStorage } from '@/utils/localStorageUtils';
 const DatesStep = () => {
   const navigate = useNavigate();
   const { startDate, setStartDate, endDate, setEndDate, setDuration, duration } = useTravelForm();
+  const [dateError, setDateError] = useState<string>('');
   
   // State for calendar date objects
   const [startDateObj, setStartDateObj] = useState<Date | undefined>(
-    startDate ? parse(startDate, 'yyyy-MM-dd', new Date()) : undefined
+    startDate ? new Date(startDate) : undefined
   );
   const [endDateObj, setEndDateObj] = useState<Date | undefined>(
-    endDate ? parse(endDate, 'yyyy-MM-dd', new Date()) : undefined
+    endDate ? new Date(endDate) : undefined
   );
   
   const handleStartDateSelect = (date: Date | undefined) => {
     setStartDateObj(date);
+    setDateError('');
     
     if (date) {
       const formattedDate = format(date, 'yyyy-MM-dd');
       setStartDate(formattedDate);
       
-      if (endDateObj && date > endDateObj) {
-        setEndDateObj(undefined);
-        setEndDate('');
-        setDuration(0);
-      } else if (endDateObj) {
-        const days = differenceInDays(endDateObj, date);
-        setDuration(days);
+      if (endDateObj) {
+        if (isAfter(date, endDateObj)) {
+          setEndDateObj(undefined);
+          setEndDate('');
+          setDuration(0);
+        } else {
+          const days = differenceInDays(endDateObj, date) + 1;
+          if (days > 730) {
+            setEndDateObj(undefined);
+            setEndDate('');
+            setDuration(0);
+            setDateError('Trip duration cannot exceed 730 days');
+          } else {
+            setDuration(days);
+          }
+        }
       }
     } else {
       setStartDate('');
@@ -52,18 +65,30 @@ const DatesStep = () => {
   
   const handleEndDateSelect = (date: Date | undefined) => {
     setEndDateObj(date);
+    setDateError('');
     
-    if (date) {
+    if (date && startDateObj) {
       const formattedDate = format(date, 'yyyy-MM-dd');
-      setEndDate(formattedDate);
+      const days = differenceInDays(date, startDateObj) + 1;
       
-      if (startDateObj) {
-        if (date < startDateObj) {
-          return;
-        }
-        const days = differenceInDays(date, startDateObj);
-        setDuration(days);
+      if (days > 730) {
+        setDateError('Trip duration cannot exceed 730 days');
+        setEndDateObj(undefined);
+        setEndDate('');
+        setDuration(0);
+        return;
       }
+      
+      if (days < 1) {
+        setDateError('End date must be on or after start date');
+        setEndDateObj(undefined);
+        setEndDate('');
+        setDuration(0);
+        return;
+      }
+      
+      setEndDate(formattedDate);
+      setDuration(days);
     } else {
       setEndDate('');
       setDuration(0);
@@ -71,20 +96,36 @@ const DatesStep = () => {
   };
 
   const handleNext = () => {
-    // Save dates to localStorage
-    if (startDate && endDate) {
-      saveToLocalStorage('dates', {
-        startDate,
-        endDate,
-        duration
+    if (!startDate || !endDate) {
+      toast({
+        title: "Required Dates",
+        description: "Please select both start and end dates",
+        variant: "destructive"
       });
+      return;
     }
+
+    if (dateError) {
+      toast({
+        title: "Invalid Duration",
+        description: dateError,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Save dates to localStorage
+    saveToLocalStorage('dates', {
+      startDate,
+      endDate,
+      duration
+    });
     
     navigate('/travellers');
   };
 
   const today = new Date();
-  const disabledDays = { before: today };
+  const maxEndDate = startDateObj ? addDays(startDateObj, 730) : undefined;
 
   return (
     <Layout>
@@ -125,7 +166,7 @@ const DatesStep = () => {
                     mode="single"
                     selected={startDateObj}
                     onSelect={handleStartDateSelect}
-                    disabled={disabledDays}
+                    disabled={{ before: today }}
                     initialFocus
                     className={cn("p-3 pointer-events-auto")}
                   />
@@ -141,7 +182,8 @@ const DatesStep = () => {
                   <button
                     className={cn(
                       "flex h-12 items-center justify-between rounded-md border border-primary bg-background px-3 py-2 text-sm w-full",
-                      !endDateObj && "text-muted-foreground"
+                      !endDateObj && "text-muted-foreground",
+                      dateError && "border-destructive"
                     )}
                   >
                     {endDateObj ? (
@@ -158,13 +200,17 @@ const DatesStep = () => {
                     selected={endDateObj}
                     onSelect={handleEndDateSelect}
                     disabled={{
-                      before: startDateObj || today
+                      before: startDateObj || today,
+                      after: maxEndDate
                     }}
                     initialFocus
                     className={cn("p-3 pointer-events-auto")}
                   />
                 </PopoverContent>
               </Popover>
+              {dateError && (
+                <span className="text-sm text-destructive mt-1">{dateError}</span>
+              )}
             </div>
           </div>
           
@@ -178,7 +224,7 @@ const DatesStep = () => {
             <ActionButton
               onClick={handleNext}
               className="w-full"
-              disabled={!startDate || !endDate}
+              disabled={!startDate || !endDate || !!dateError}
             >
               NEXT
             </ActionButton>
