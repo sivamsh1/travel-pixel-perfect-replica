@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
 import { format } from 'date-fns';
-import { toast } from 'react-toastify';
+import { toast } from "@/components/ui/use-toast";
 
 interface ValidationErrors {
   [key: string]: string;
