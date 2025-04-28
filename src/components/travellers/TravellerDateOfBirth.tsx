@@ -1,3 +1,4 @@
+
 import React from "react";
 import { format, isValid, addYears, subYears } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -5,6 +6,8 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { differenceInYears } from "date-fns";
+import { toast } from "@/components/ui/use-toast";
 
 interface TravellerDateOfBirthProps {
   index: number;
@@ -34,8 +37,34 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
     return !isNaN(date.getTime()) ? date : undefined;
   };
 
+  const handleSelect = (date: Date | undefined) => {
+    if (date) {
+      const age = differenceInYears(new Date(), date);
+      
+      if (age < 16) {
+        toast({
+          title: "Age Restriction",
+          description: "Proposer must be at least 16 years old",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (age > 35) {
+        toast({
+          title: "Age Restriction",
+          description: "Proposer cannot be more than 35 years old",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+    
+    handleDateChange(index, date);
+  };
+
   const dateValue = parseDOB(dob);
-  const minDate = subYears(new Date(), 100); // Max age 100 years
+  const minDate = subYears(new Date(), 35); // Max age 35 years
   const maxDate = subYears(new Date(), 16); // Min age 16 years
 
   return (
@@ -62,7 +91,7 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
             <Calendar
               mode="single"
               selected={dateValue}
-              onSelect={(date) => handleDateChange(index, date)}
+              onSelect={handleSelect}
               disabled={(date) =>
                 date > maxDate || date < minDate
               }
