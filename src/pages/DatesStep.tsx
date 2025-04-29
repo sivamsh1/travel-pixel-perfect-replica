@@ -50,11 +50,9 @@ const DatesStep = () => {
           setDuration(0);
         } else {
           const days = differenceInDays(endDateObj, date) + 1;
-          if (days > 730) {
-            setEndDateObj(undefined);
-            setEndDate('');
-            setDuration(0);
-            setDateError('Trip duration cannot exceed 730 days');
+          if (days > 365) {
+            setDateError('Trip duration cannot exceed 365 days');
+            setDuration(days);
           } else {
             setDuration(days);
           }
@@ -72,11 +70,10 @@ const DatesStep = () => {
     if (date && startDateObj) {
       const formattedDate = format(date, 'yyyy-MM-dd');
       const days = differenceInDays(date, startDateObj) + 1;
-      if (days > 730) {
-        setDateError('Trip duration cannot exceed 730 days');
-        setEndDateObj(undefined);
-        setEndDate('');
-        setDuration(0);
+      if (days > 365) {
+        setDateError('Trip duration cannot exceed 365 days');
+        setEndDate(formattedDate);
+        setDuration(days);
         return;
       }
       if (days < 1) {
@@ -148,7 +145,6 @@ const DatesStep = () => {
   };
   
   const today = new Date();
-  const maxEndDate = startDateObj ? addDays(startDateObj, 730) : undefined;
   
   return (
     <Layout>
@@ -180,7 +176,6 @@ const DatesStep = () => {
               selectedDate={endDateObj}
               onDateSelect={handleEndDateSelect}
               minDate={startDateObj || today}
-              maxDate={maxEndDate}
               error={dateError}
             />
           </div>
