@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
-import { Loader2 } from 'lucide-react';
+import { Loader2, User } from 'lucide-react';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface TravellerFormProps {
   traveller: TravellerDetails;
@@ -54,6 +63,51 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
       <h3 className="text-xl font-medium mb-6">Traveller {index + 1} Details</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Salutation dropdown */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Salutation<span className="text-red-500">*</span></label>
+          <Select
+            value={traveller.salutation}
+            onValueChange={(value) => updateTraveller(index, { salutation: value })}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select salutation" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Mr">Mr</SelectItem>
+              <SelectItem value="Mrs">Mrs</SelectItem>
+              <SelectItem value="Ms">Ms</SelectItem>
+              <SelectItem value="Dr">Dr</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors[`traveller${index}Salutation`] && (
+            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Salutation`]}</p>
+          )}
+        </div>
+
+        {/* Gender radio group */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Gender<span className="text-red-500">*</span></label>
+          <RadioGroup
+            value={traveller.gender}
+            onValueChange={(value) => updateTraveller(index, { gender: value })}
+            className="flex space-x-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="male" id={`gender-male-${index}`} />
+              <Label htmlFor={`gender-male-${index}`}>Male</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="female" id={`gender-female-${index}`} />
+              <Label htmlFor={`gender-female-${index}`}>Female</Label>
+            </div>
+          </RadioGroup>
+          {errors[`traveller${index}Gender`] && (
+            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Gender`]}</p>
+          )}
+        </div>
+
+        {/* Keep the original first field and move it to the third position */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number<span className="text-red-500">*</span></label>
           <input
