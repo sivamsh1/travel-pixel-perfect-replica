@@ -110,6 +110,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
             placeholder="Select date"
             error={dobError}
             className="w-full h-12"
+            isNomineeField={true}
           />
         </div>
       </div>
