@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, differenceInYears } from 'date-fns';
@@ -10,7 +11,7 @@ import TravellerCount from '@/components/travellers/TravellerCount';
 import TravellerDateOfBirth from '@/components/travellers/TravellerDateOfBirth';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -51,6 +52,13 @@ const TravellersStep = () => {
       const today = new Date();
       const age = differenceInYears(today, date);
 
+      // Update traveller with DOB and age
+      updateTraveller(index, { 
+        dob: formattedDOB,
+        age: age.toString()
+      });
+
+      // Validate age range
       if (age < 16) {
         setErrors(prev => ({
           ...prev,
@@ -66,19 +74,30 @@ const TravellersStep = () => {
           description: "Proposer must be at least 16 years old",
           variant: "destructive"
         });
+      } 
+      else if (age > 35) {
+        setErrors(prev => ({
+          ...prev,
+          [index]: {
+            ...prev[index],
+            age: "Proposer cannot be more than 35 years old",
+            dob: "Age requirement not met"
+          }
+        }));
         
-        return;
+        toast({
+          title: "Age Restriction",
+          description: "Proposer cannot be more than 35 years old",
+          variant: "destructive"
+        });
       }
-
-      updateTraveller(index, { 
-        dob: formattedDOB,
-        age: age.toString()
-      });
-
-      if (errors[index]?.dob || errors[index]?.age) {
-        const newErrors = { ...errors };
-        delete newErrors[index];
-        setErrors(newErrors);
+      else {
+        // Clear any existing errors if age is valid
+        if (errors[index]?.dob || errors[index]?.age) {
+          const newErrors = { ...errors };
+          delete newErrors[index];
+          setErrors(newErrors);
+        }
       }
     }
   };
@@ -103,6 +122,10 @@ const TravellersStep = () => {
             travellerErrors.age = "Proposer must be at least 16 years old";
             travellerErrors.dob = "Age requirement not met";
             hasErrors = true;
+          } else if (age > 35) {
+            travellerErrors.age = "Proposer cannot be more than 35 years old";
+            travellerErrors.dob = "Age requirement not met";
+            hasErrors = true;
           }
         } catch (error) {
           travellerErrors.dob = "Invalid date format";
@@ -125,6 +148,9 @@ const TravellersStep = () => {
       navigate('/contact');
     }
   };
+
+  // Check if any traveller has errors to determine if Next button should be disabled
+  const hasAnyErrors = Object.keys(errors).length > 0;
 
   return (
     <Layout>
@@ -162,6 +188,7 @@ const TravellersStep = () => {
             <ActionButton
               onClick={handleNext}
               className="w-full"
+              disabled={hasAnyErrors || travellers.some(t => !t.dob)}
             >
               NEXT
             </ActionButton>
