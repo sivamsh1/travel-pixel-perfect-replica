@@ -170,13 +170,13 @@ const DatesStep = () => {
               error=""
             />
             
-            {/* End Date Picker */}
+            {/* End Date Picker - Removed error prop since we're handling the error in TripDurationDisplay */}
             <TravelDatePicker
               label="End Date"
               selectedDate={endDateObj}
               onDateSelect={handleEndDateSelect}
               minDate={startDateObj || today}
-              error={dateError}
+              error=""
             />
           </div>
           
