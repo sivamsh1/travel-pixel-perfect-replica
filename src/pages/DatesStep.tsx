@@ -13,7 +13,8 @@ import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
-import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 const DatesStep = () => {
   const navigate = useNavigate();
   const {
@@ -31,6 +32,7 @@ const DatesStep = () => {
   // State for calendar date objects
   const [startDateObj, setStartDateObj] = useState<Date | undefined>(startDate ? new Date(startDate) : undefined);
   const [endDateObj, setEndDateObj] = useState<Date | undefined>(endDate ? new Date(endDate) : undefined);
+  
   const handleStartDateSelect = (date: Date | undefined) => {
     setStartDateObj(date);
     setDateError('');
@@ -86,11 +88,12 @@ const DatesStep = () => {
       setDuration(0);
     }
   };
-  const handleCitizenshipChange = (checked: boolean | "indeterminate") => {
-    if (checked === "indeterminate") return;
-    setIsIndianCitizen(checked);
+  const handleCitizenshipChange = (value: string) => {
+    const isCitizen = value === 'yes';
+    setIsIndianCitizen(isCitizen);
     setEligibilityError('');
-    if (!checked) {
+    
+    if (!isCitizen) {
       setEligibilityError('This travel insurance policy is only available to Indian citizens currently in India. NRI, OCI or non-OCI individuals are not eligible.');
     }
   };
@@ -138,6 +141,7 @@ const DatesStep = () => {
   };
   const today = new Date();
   const maxEndDate = startDateObj ? addDays(startDateObj, 730) : undefined;
+  
   return <Layout>
       <div className="px-6 md:px-12">
         <BackButton />
@@ -197,14 +201,33 @@ const DatesStep = () => {
             </span>
           </div>
           
-          {/* Citizenship Confirmation Checkbox */}
-          <div className="flex items-start space-x-3 p-4 rounded-md border border-gray-200 shadow-sm bg-white">
-            <Checkbox id="citizenship" className="mt-1" checked={isIndianCitizen || false} onCheckedChange={handleCitizenshipChange} />
-            <div className="space-y-1">
-              <label htmlFor="citizenship" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          {/* Citizenship Confirmation Radio Group */}
+          <div className="p-4 rounded-md border border-gray-200 shadow-sm bg-white">
+            <div className="space-y-3">
+              <label className="text-sm font-medium leading-none">
                 Is the Traveller an Indian Citizen and currently in India whilst taking the policy?
               </label>
-              {eligibilityError && <p className="text-sm text-destructive">{eligibilityError}</p>}
+              
+              <RadioGroup 
+                value={isIndianCitizen === true ? 'yes' : isIndianCitizen === false ? 'no' : ''} 
+                onValueChange={handleCitizenshipChange}
+                className="flex gap-4 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="yes" id="citizenship-yes" />
+                  <label htmlFor="citizenship-yes" className="text-sm font-medium leading-none cursor-pointer">
+                    Yes
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="no" id="citizenship-no" />
+                  <label htmlFor="citizenship-no" className="text-sm font-medium leading-none cursor-pointer">
+                    No
+                  </label>
+                </div>
+              </RadioGroup>
+              
+              {eligibilityError && <p className="text-sm text-destructive mt-1">{eligibilityError}</p>}
             </div>
           </div>
           
@@ -217,4 +240,5 @@ const DatesStep = () => {
       </div>
     </Layout>;
 };
+
 export default DatesStep;
