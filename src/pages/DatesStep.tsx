@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -14,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
 import { Checkbox } from "@/components/ui/checkbox";
+
 const DatesStep = () => {
   const navigate = useNavigate();
   const {
@@ -31,6 +33,7 @@ const DatesStep = () => {
   // State for calendar date objects
   const [startDateObj, setStartDateObj] = useState<Date | undefined>(startDate ? new Date(startDate) : undefined);
   const [endDateObj, setEndDateObj] = useState<Date | undefined>(endDate ? new Date(endDate) : undefined);
+
   const handleStartDateSelect = (date: Date | undefined) => {
     setStartDateObj(date);
     setDateError('');
@@ -44,11 +47,11 @@ const DatesStep = () => {
           setDuration(0);
         } else {
           const days = differenceInDays(endDateObj, date) + 1;
-          if (days > 730) {
+          if (days > 365) {
             setEndDateObj(undefined);
             setEndDate('');
             setDuration(0);
-            setDateError('Trip duration cannot exceed 730 days');
+            setDateError('Trip duration cannot exceed 365 days');
           } else {
             setDuration(days);
           }
@@ -59,14 +62,15 @@ const DatesStep = () => {
       setDuration(0);
     }
   };
+
   const handleEndDateSelect = (date: Date | undefined) => {
     setEndDateObj(date);
     setDateError('');
     if (date && startDateObj) {
       const formattedDate = format(date, 'yyyy-MM-dd');
       const days = differenceInDays(date, startDateObj) + 1;
-      if (days > 730) {
-        setDateError('Trip duration cannot exceed 730 days');
+      if (days > 365) {
+        setDateError('Trip duration cannot exceed 365 days');
         setEndDateObj(undefined);
         setEndDate('');
         setDuration(0);
@@ -86,6 +90,7 @@ const DatesStep = () => {
       setDuration(0);
     }
   };
+
   const handleCitizenshipChange = (checked: boolean | "indeterminate") => {
     if (checked === "indeterminate") return;
     setIsIndianCitizen(checked);
@@ -94,6 +99,7 @@ const DatesStep = () => {
       setEligibilityError('This travel insurance policy is only available to Indian citizens currently in India. NRI, OCI or non-OCI individuals are not eligible.');
     }
   };
+
   const handleNext = () => {
     if (!startDate || !endDate) {
       toast({
@@ -136,8 +142,11 @@ const DatesStep = () => {
     });
     navigate('/travellers');
   };
+
   const today = new Date();
-  const maxEndDate = startDateObj ? addDays(startDateObj, 730) : undefined;
+  // Update this to 365 days instead of 730
+  const maxEndDate = startDateObj ? addDays(startDateObj, 365) : undefined;
+
   return <Layout>
       <div className="px-6 md:px-12">
         <BackButton />
