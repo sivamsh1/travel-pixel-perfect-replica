@@ -92,18 +92,6 @@ export const useTravellerDetails = () => {
         hasErrors = true;
       }
 
-      // Validate salutation
-      if (!traveller.salutation) {
-        newErrors[`traveller${index}Salutation`] = "Please select a salutation";
-        hasErrors = true;
-      }
-      
-      // Validate gender
-      if (!traveller.gender) {
-        newErrors[`traveller${index}Gender`] = "Please select a gender";
-        hasErrors = true;
-      }
-
       if (!traveller.passportNumber) {
         newErrors[`traveller${index}Passport`] = "Passport number is required";
         hasErrors = true;

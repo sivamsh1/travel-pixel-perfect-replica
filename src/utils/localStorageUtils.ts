@@ -19,8 +19,6 @@ interface TravellerLocationData {
 }
 
 interface TravellerDetail {
-  salutation?: string;
-  gender?: string;
   passportNumber?: string;
   name?: string;
   dob?: string;
@@ -31,14 +29,12 @@ interface TravellerDetail {
   mobileNo?: string;
   email?: string;
   hasPreExistingCondition?: boolean;
-  locationData?: TravellerLocationData;
-  medicalCondition?: string;
+  locationData?: TravellerLocationData; // Added location data
 }
 
 interface NomineeData {
   name?: string;
   relationship?: string;
-  dob?: string;
 }
 
 interface TravellersData {

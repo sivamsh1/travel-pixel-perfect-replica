@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface LocationData {
@@ -9,8 +8,6 @@ export interface LocationData {
 }
 
 export interface TravellerDetails {
-  salutation?: string;
-  gender?: string;
   dob?: string;
   age?: string;
   passportNumber?: string;
