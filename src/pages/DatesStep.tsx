@@ -18,11 +18,14 @@ import {
 } from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
+import { Checkbox } from "@/components/ui/checkbox";
 
 const DatesStep = () => {
   const navigate = useNavigate();
   const { startDate, setStartDate, endDate, setEndDate, setDuration, duration } = useTravelForm();
   const [dateError, setDateError] = useState<string>('');
+  const [isIndianCitizen, setIsIndianCitizen] = useState<boolean | undefined>(undefined);
+  const [eligibilityError, setEligibilityError] = useState<string>('');
   
   // State for calendar date objects
   const [startDateObj, setStartDateObj] = useState<Date | undefined>(
@@ -95,6 +98,17 @@ const DatesStep = () => {
     }
   };
 
+  const handleCitizenshipChange = (checked: boolean | "indeterminate") => {
+    if (checked === "indeterminate") return;
+    
+    setIsIndianCitizen(checked);
+    setEligibilityError('');
+    
+    if (!checked) {
+      setEligibilityError('This travel insurance policy is only available to Indian citizens currently in India. NRI, OCI or non-OCI individuals are not eligible.');
+    }
+  };
+
   const handleNext = () => {
     if (!startDate || !endDate) {
       toast({
@@ -109,6 +123,24 @@ const DatesStep = () => {
       toast({
         title: "Invalid Duration",
         description: dateError,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (isIndianCitizen === undefined) {
+      toast({
+        title: "Citizenship Confirmation Required",
+        description: "Please confirm your citizenship status",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!isIndianCitizen) {
+      toast({
+        title: "Eligibility Restriction",
+        description: "This travel insurance policy is only available to Indian citizens currently in India. NRI, OCI or non-OCI individuals are not eligible.",
         variant: "destructive"
       });
       return;
@@ -220,11 +252,32 @@ const DatesStep = () => {
             </span>
           </div>
           
+          {/* Citizenship Confirmation Checkbox */}
+          <div className="flex items-start space-x-3 p-4 bg-white rounded-md border border-gray-200 shadow-sm">
+            <Checkbox 
+              id="citizenship" 
+              className="mt-1"
+              checked={isIndianCitizen || false}
+              onCheckedChange={handleCitizenshipChange}
+            />
+            <div className="space-y-1">
+              <label 
+                htmlFor="citizenship" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Is the Traveller an Indian Citizen and currently in India whilst taking the policy?
+              </label>
+              {eligibilityError && (
+                <p className="text-sm text-destructive">{eligibilityError}</p>
+              )}
+            </div>
+          </div>
+          
           <div className="pt-4">
             <ActionButton
               onClick={handleNext}
               className="w-full"
-              disabled={!startDate || !endDate || !!dateError}
+              disabled={!startDate || !endDate || !!dateError || isIndianCitizen === false || isIndianCitizen === undefined}
             >
               NEXT
             </ActionButton>
