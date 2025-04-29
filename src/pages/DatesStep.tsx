@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from '@/lib/utils';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
 
@@ -23,6 +24,10 @@ const DatesStep = () => {
   const navigate = useNavigate();
   const { startDate, setStartDate, endDate, setEndDate, setDuration, duration } = useTravelForm();
   const [dateError, setDateError] = useState<string>('');
+  
+  // Add state for the citizenship checkbox
+  const [isIndianCitizen, setIsIndianCitizen] = useState<boolean>(false);
+  const [citizenError, setCitizenError] = useState<string>('');
   
   // State for calendar date objects
   const [startDateObj, setStartDateObj] = useState<Date | undefined>(
@@ -95,6 +100,13 @@ const DatesStep = () => {
     }
   };
 
+  const handleCitizenshipChange = (checked: boolean) => {
+    setIsIndianCitizen(checked);
+    if (checked) {
+      setCitizenError('');
+    }
+  };
+
   const handleNext = () => {
     if (!startDate || !endDate) {
       toast({
@@ -109,6 +121,17 @@ const DatesStep = () => {
       toast({
         title: "Invalid Duration",
         description: dateError,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check citizenship requirement
+    if (!isIndianCitizen) {
+      setCitizenError("This travel insurance policy is only available to Indian citizens currently in India. NRI, OCI or non-OCI individuals are not eligible.");
+      toast({
+        title: "Citizenship Requirement",
+        description: "This travel insurance policy is only available to Indian citizens currently in India.",
         variant: "destructive"
       });
       return;
@@ -220,11 +243,32 @@ const DatesStep = () => {
             </span>
           </div>
           
+          {/* Indian Citizen Checkbox */}
+          <div className="flex items-start space-x-3 pt-4 pb-4">
+            <Checkbox 
+              id="indian-citizen" 
+              checked={isIndianCitizen}
+              onCheckedChange={handleCitizenshipChange}
+              className="mt-0.5"
+            />
+            <div className="flex flex-col">
+              <label 
+                htmlFor="indian-citizen" 
+                className="text-sm font-medium leading-none cursor-pointer"
+              >
+                Is the Traveller an Indian Citizen and currently in India whilst taking the policy?
+              </label>
+              {citizenError && (
+                <span className="text-sm text-destructive mt-1">{citizenError}</span>
+              )}
+            </div>
+          </div>
+          
           <div className="pt-4">
             <ActionButton
               onClick={handleNext}
               className="w-full"
-              disabled={!startDate || !endDate || !!dateError}
+              disabled={!startDate || !endDate || !!dateError || !isIndianCitizen}
             >
               NEXT
             </ActionButton>
