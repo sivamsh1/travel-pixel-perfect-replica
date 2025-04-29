@@ -9,7 +9,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/DatePicker";
-import { differenceInYears } from 'date-fns';
+import { differenceInYears, subYears } from 'date-fns';
 import { toast } from "@/components/ui/use-toast";
 
 interface NomineeFormProps {
@@ -46,6 +46,11 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
       
       if (age < 18) {
         setDobError("Nominee must be at least 18 years old.");
+        toast({
+          title: "Age Restriction",
+          description: "Nominee must be at least 18 years old.",
+          variant: "destructive"
+        });
         updateNominee({ dob: undefined });
         return;
       } else {
@@ -110,6 +115,9 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
             placeholder="Select date"
             error={dobError}
             className="w-full h-12"
+            minDate={subYears(new Date(), 100)} // 100 years ago
+            maxDate={subYears(new Date(), 18)}  // 18 years ago
+            disableFuture
           />
         </div>
       </div>
