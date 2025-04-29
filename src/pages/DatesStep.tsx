@@ -1,19 +1,22 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { format, differenceInDays, addDays, isBefore, isAfter } from 'date-fns';
+import { toast } from "@/hooks/use-toast";
+import { saveToLocalStorage } from '@/utils/localStorageUtils';
+import { useTravelForm } from '@/context/TravelFormContext';
+import { formSteps } from '@/constants/formSteps';
+
+// Layout components
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
 import ProgressIndicator from '@/components/ProgressIndicator';
 import ActionButton from '@/components/ActionButton';
-import { useTravelForm } from '@/context/TravelFormContext';
-import { Calendar as CalendarIcon } from 'lucide-react';
-import { format, differenceInDays, addDays, isBefore, isAfter } from 'date-fns';
-import { formSteps } from '@/constants/formSteps';
-import { Calendar } from "@/components/ui/calendar";
-import { toast } from "@/hooks/use-toast";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from '@/lib/utils';
-import { saveToLocalStorage } from '@/utils/localStorageUtils';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+// Date step specific components
+import TravelDatePicker from '@/components/dates/TravelDatePicker';
+import TripDurationDisplay from '@/components/dates/TripDurationDisplay';
+import CitizenshipConfirmation from '@/components/dates/CitizenshipConfirmation';
 
 const DatesStep = () => {
   const navigate = useNavigate();
@@ -25,6 +28,7 @@ const DatesStep = () => {
     setDuration,
     duration
   } = useTravelForm();
+  
   const [dateError, setDateError] = useState<string>('');
   const [isIndianCitizen, setIsIndianCitizen] = useState<boolean | undefined>(undefined);
   const [eligibilityError, setEligibilityError] = useState<string>('');
@@ -61,6 +65,7 @@ const DatesStep = () => {
       setDuration(0);
     }
   };
+  
   const handleEndDateSelect = (date: Date | undefined) => {
     setEndDateObj(date);
     setDateError('');
@@ -88,6 +93,7 @@ const DatesStep = () => {
       setDuration(0);
     }
   };
+  
   const handleCitizenshipChange = (value: string) => {
     const isCitizen = value === 'yes';
     setIsIndianCitizen(isCitizen);
@@ -97,6 +103,7 @@ const DatesStep = () => {
       setEligibilityError('This travel insurance policy is only available to Indian citizens currently in India. NRI, OCI or non-OCI individuals are not eligible.');
     }
   };
+  
   const handleNext = () => {
     if (!startDate || !endDate) {
       toast({
@@ -139,10 +146,12 @@ const DatesStep = () => {
     });
     navigate('/travellers');
   };
+  
   const today = new Date();
   const maxEndDate = startDateObj ? addDays(startDateObj, 730) : undefined;
   
-  return <Layout>
+  return (
+    <Layout>
       <div className="px-6 md:px-12">
         <BackButton />
         <ProgressIndicator steps={formSteps} currentStep={1} completedSteps={[]} />
@@ -157,88 +166,46 @@ const DatesStep = () => {
         <div className="w-full max-w-md space-y-6">
           <div className="grid grid-cols-2 gap-6">
             {/* Start Date Picker */}
-            <div className="flex flex-col">
-              <span className="text-sm text-gray-500 mb-1">Start Date</span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className={cn("flex h-12 items-center justify-between rounded-md border border-primary bg-background px-3 py-2 text-sm w-full", !startDateObj && "text-muted-foreground")}>
-                    {startDateObj ? format(startDateObj, "dd MMM yyyy") : <span className="text-muted-foreground">Select date</span>}
-                    <CalendarIcon className="h-5 w-5 ml-2 text-gray-400" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={startDateObj} onSelect={handleStartDateSelect} disabled={{
-                  before: today
-                }} initialFocus className={cn("p-3 pointer-events-auto")} />
-                </PopoverContent>
-              </Popover>
-            </div>
+            <TravelDatePicker
+              label="Start Date"
+              selectedDate={startDateObj}
+              onDateSelect={handleStartDateSelect}
+              minDate={today}
+              error=""
+            />
             
             {/* End Date Picker */}
-            <div className="flex flex-col">
-              <span className="text-sm text-gray-500 mb-1">End Date</span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className={cn("flex h-12 items-center justify-between rounded-md border border-primary bg-background px-3 py-2 text-sm w-full", !endDateObj && "text-muted-foreground", dateError && "border-destructive")}>
-                    {endDateObj ? format(endDateObj, "dd MMM yyyy") : <span className="text-muted-foreground">Select date</span>}
-                    <CalendarIcon className="h-5 w-5 ml-2 text-gray-400" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={endDateObj} onSelect={handleEndDateSelect} disabled={{
-                  before: startDateObj || today,
-                  after: maxEndDate
-                }} initialFocus className={cn("p-3 pointer-events-auto")} />
-                </PopoverContent>
-              </Popover>
-              {dateError && <span className="text-sm text-destructive mt-1">{dateError}</span>}
-            </div>
+            <TravelDatePicker
+              label="End Date"
+              selectedDate={endDateObj}
+              onDateSelect={handleEndDateSelect}
+              minDate={startDateObj || today}
+              maxDate={maxEndDate}
+              error={dateError}
+            />
           </div>
           
-          <div className="flex items-center justify-center text-center p-4 bg-blue-50 rounded-md">
-            <span className="text-gray-600">
-              Trip Duration: <span className="text-primary font-medium">{duration} days</span>
-            </span>
-          </div>
+          <TripDurationDisplay duration={duration} />
           
-          {/* Citizenship Confirmation Radio Group */}
-          <div className="p-4 rounded-md border border-gray-200 shadow-sm bg-white">
-            <div className="space-y-3">
-              <label className="text-sm font-medium leading-none">
-                Is the Traveller an Indian Citizen and currently in India whilst taking the policy?
-              </label>
-              
-              <RadioGroup 
-                value={isIndianCitizen === true ? 'yes' : isIndianCitizen === false ? 'no' : ''} 
-                onValueChange={handleCitizenshipChange}
-                className="flex gap-4 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="citizenship-yes" />
-                  <label htmlFor="citizenship-yes" className="text-sm font-medium leading-none cursor-pointer">
-                    Yes
-                  </label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="citizenship-no" />
-                  <label htmlFor="citizenship-no" className="text-sm font-medium leading-none cursor-pointer">
-                    No
-                  </label>
-                </div>
-              </RadioGroup>
-              
-              {eligibilityError && <p className="text-sm text-destructive mt-1">{eligibilityError}</p>}
-            </div>
-          </div>
+          <CitizenshipConfirmation
+            isIndianCitizen={isIndianCitizen}
+            onCitizenshipChange={handleCitizenshipChange}
+            eligibilityError={eligibilityError}
+          />
           
           <div className="pt-4">
-            <ActionButton onClick={handleNext} className="w-full" disabled={!startDate || !endDate || !!dateError || isIndianCitizen === false || isIndianCitizen === undefined}>
+            <ActionButton 
+              onClick={handleNext} 
+              className="w-full" 
+              disabled={!startDate || !endDate || !!dateError || isIndianCitizen === false || isIndianCitizen === undefined}
+            >
               NEXT
             </ActionButton>
           </div>
         </div>
       </div>
-    </Layout>;
+    </Layout>
+  );
 };
 
 export default DatesStep;
