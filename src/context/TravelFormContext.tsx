@@ -25,8 +25,6 @@ export interface TravellerDetails {
 export interface NomineeDetails {
   name?: string;
   relationship?: string;
-  dob?: string;
-  age?: string;
 }
 
 interface TravelFormContextType {

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
-import { format, differenceInYears } from 'date-fns';
+import { format } from 'date-fns';
 import { toast } from "@/components/ui/use-toast";
 
 interface ValidationErrors {
@@ -122,28 +122,6 @@ export const useTravellerDetails = () => {
         newErrors[`traveller${index}Pincode`] = "Pincode should be 6 digits";
       }
     });
-    
-    // Validate nominee details
-    if (nominee.name && !nominee.dob) {
-      newErrors['nomineeDob'] = "Nominee date of birth is required";
-      hasErrors = true;
-    }
-    
-    // Check nominee age if DOB is provided
-    if (nominee.dob) {
-      try {
-        const date = new Date(nominee.dob);
-        const age = differenceInYears(new Date(), date);
-        
-        if (age < 18) {
-          newErrors['nomineeDob'] = "Nominee must be at least 18 years old";
-          hasErrors = true;
-        }
-      } catch (e) {
-        newErrors['nomineeDob'] = "Invalid date format";
-        hasErrors = true;
-      }
-    }
     
     setErrors(newErrors);
     return !hasErrors;
