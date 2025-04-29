@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { format, isValid, subYears } from "date-fns";
+import { format, isValid } from "date-fns";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,6 @@ interface DatePickerProps {
   className?: string;
   error?: string;
   disabled?: boolean;
-  isNomineeField?: boolean;
 }
 
 export function DatePicker({
@@ -35,10 +34,9 @@ export function DatePicker({
   className,
   error,
   disabled = false,
-  isNomineeField = false,
 }: DatePickerProps) {
   const [month, setMonth] = React.useState<number>(value ? value.getMonth() : new Date().getMonth());
-  const [year, setYear] = React.useState<number>(value ? value.getFullYear() : new Date().getFullYear() - 25);
+  const [year, setYear] = React.useState<number>(value ? value.getFullYear() : 1990);
   
   // Generate years for selection (100 years back from current year)
   const currentYear = new Date().getFullYear();
@@ -50,10 +48,23 @@ export function DatePicker({
     "July", "August", "September", "October", "November", "December"
   ];
 
-  // Calculate min date for nominee (18 years ago)
-  const minDate = isNomineeField 
-    ? subYears(new Date(), 18)  // Nominee must be at least 18
-    : undefined;
+  // Update calendar view when month/year selectors change
+  const handleMonthChange = (newMonth: string) => {
+    const monthIndex = months.findIndex(m => m === newMonth);
+    setMonth(monthIndex);
+  };
+
+  const handleYearChange = (newYear: string) => {
+    setYear(parseInt(newYear));
+  };
+
+  // Update month/year state when calendar value changes
+  React.useEffect(() => {
+    if (value && isValid(value)) {
+      setMonth(value.getMonth());
+      setYear(value.getFullYear());
+    }
+  }, [value]);
 
   return (
     <div className="w-full">
@@ -62,7 +73,7 @@ export function DatePicker({
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal border border-gray-300 bg-background px-3 py-3 h-12 rounded-md",
+              "w-full justify-start text-left font-normal border border-primary bg-background px-3 py-3 h-12 rounded-md",
               !value && "text-muted-foreground",
               error && "border-destructive focus:ring-destructive",
               className
@@ -71,7 +82,7 @@ export function DatePicker({
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value && isValid(value) ? (
-              format(value, "dd/MM/yyyy")
+              format(value, "PPP")
             ) : (
               <span>{placeholder}</span>
             )}
@@ -85,10 +96,7 @@ export function DatePicker({
           <div className="flex gap-2 p-2 border-b">
             <Select 
               value={months[month]} 
-              onValueChange={(newMonth) => {
-                const monthIndex = months.findIndex(m => m === newMonth);
-                setMonth(monthIndex);
-              }}
+              onValueChange={handleMonthChange}
             >
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Month" />
@@ -104,17 +112,16 @@ export function DatePicker({
             
             <Select 
               value={year.toString()} 
-              onValueChange={(newYear) => {
-                setYear(parseInt(newYear));
-              }}
+              onValueChange={handleYearChange}
+              defaultValue="1990"
             >
               <SelectTrigger className="w-[100px]">
                 <SelectValue placeholder="Year" />
               </SelectTrigger>
               <SelectContent position="popper" className="max-h-[300px] overflow-y-auto">
-                {years.map((yearValue) => (
-                  <SelectItem key={yearValue} value={yearValue.toString()}>
-                    {yearValue}
+                {years.map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -132,9 +139,8 @@ export function DatePicker({
             }}
             initialFocus
             className="pointer-events-auto"
-            disabled={isNomineeField
-              ? (date) => date > minDate || date < new Date("1900-01-01")
-              : (date) => date > new Date() || date < new Date("1900-01-01")
+            disabled={(date) =>
+              date > new Date() || date < new Date("1900-01-01")
             }
           />
         </PopoverContent>
