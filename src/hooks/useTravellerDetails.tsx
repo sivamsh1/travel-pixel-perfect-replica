@@ -89,7 +89,7 @@ export const useTravellerDetails = () => {
           description: "Sorry, travellers with selected medical conditions are not eligible to continue.",
           variant: "destructive"
         });
-        return false;
+        hasErrors = true;
       }
 
       if (!traveller.passportNumber) {
@@ -102,26 +102,43 @@ export const useTravellerDetails = () => {
       
       if (!traveller.name) {
         newErrors[`traveller${index}Name`] = "Name is required";
+        hasErrors = true;
       } else if (traveller.name.length < 3) {
         newErrors[`traveller${index}Name`] = "Name should be at least 3 characters";
+        hasErrors = true;
       }
       
       if (!traveller.dob) {
         newErrors[`traveller${index}Dob`] = "Date of birth is required";
+        hasErrors = true;
       }
       
       if (traveller.mobileNo && !isValidPhone(traveller.mobileNo)) {
         newErrors[`traveller${index}Mobile`] = "Please enter a valid 10-digit phone number";
+        hasErrors = true;
       }
       
       if (traveller.email && !isValidEmail(traveller.email)) {
         newErrors[`traveller${index}Email`] = "Please enter a valid email address";
+        hasErrors = true;
       }
       
       if (traveller.pincode && !/^\d{6}$/.test(traveller.pincode)) {
         newErrors[`traveller${index}Pincode`] = "Pincode should be 6 digits";
+        hasErrors = true;
       }
     });
+
+    // Validate nominee DOB (if name is provided)
+    if (nominee.name && !nominee.dob) {
+      newErrors.nomineeDob = "Nominee date of birth is required";
+      hasErrors = true;
+      toast({
+        title: "Form Validation",
+        description: "Please provide the nominee's date of birth.",
+        variant: "destructive"
+      });
+    }
     
     setErrors(newErrors);
     return !hasErrors;

@@ -8,6 +8,9 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { DatePicker } from "@/components/DatePicker";
+import { differenceInYears } from 'date-fns';
+import { toast } from "@/components/ui/use-toast";
 
 interface NomineeFormProps {
   nominee: NomineeDetails;
@@ -34,6 +37,40 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
   nominee,
   updateNominee
 }) => {
+  const [dobError, setDobError] = React.useState<string>("");
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      // Check if nominee is at least 18 years old
+      const age = differenceInYears(new Date(), date);
+      
+      if (age < 18) {
+        setDobError("Nominee must be at least 18 years old.");
+        updateNominee({ dob: undefined });
+        return;
+      } else {
+        setDobError("");
+        const formattedDate = date.toLocaleDateString('en-GB'); // Format as DD/MM/YYYY
+        updateNominee({ dob: formattedDate });
+      }
+    } else {
+      updateNominee({ dob: undefined });
+      setDobError("");
+    }
+  };
+
+  const parseDOB = (dateString?: string): Date | undefined => {
+    if (!dateString) return undefined;
+    
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split('/').map(Number);
+      return new Date(year, month - 1, day);
+    }
+    
+    const date = new Date(dateString);
+    return !isNaN(date.getTime()) ? date : undefined;
+  };
+
   return (
     <div className="mb-12">
       <h3 className="text-xl font-medium mb-6">Nominee Details</h3>
@@ -64,6 +101,16 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Date of Birth</label>
+          <DatePicker
+            value={parseDOB(nominee.dob)}
+            onChange={handleDateChange}
+            placeholder="Select date"
+            error={dobError}
+            className="w-full h-12"
+          />
         </div>
       </div>
     </div>
