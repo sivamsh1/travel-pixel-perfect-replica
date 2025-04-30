@@ -49,9 +49,7 @@ export function DatePicker({
 
   // Handle date selection
   const handleSelect = React.useCallback((date: Date | undefined) => {
-    if (onChange) {
-      onChange(date);
-    }
+    onChange(date);
     setOpen(false);
     // Return focus to the trigger button after selection
     setTimeout(() => triggerRef.current?.focus(), 10);
@@ -60,10 +58,8 @@ export function DatePicker({
   // Handle click on the button to toggle the popover
   const handleButtonClick = React.useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!disabled) {
-      setOpen(!open);
-    }
-  }, [open, disabled]);
+    setOpen(!open);
+  }, [open]);
 
   return (
     <div className="w-full">
@@ -81,7 +77,6 @@ export function DatePicker({
             disabled={disabled}
             type="button"
             onClick={handleButtonClick}
-            data-testid="date-picker-trigger"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value && isValid(value) ? (
