@@ -2,14 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
-import { Loader2 } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import SelectField from './SelectField';
+import InputField from './InputField';
+import PincodeField from './PincodeField';
 
 interface TravellerFormProps {
   traveller: TravellerDetails;
@@ -73,175 +68,114 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
     }
   }, [traveller.salutation, index, updateTraveller]);
 
+  const salutationOptions = [
+    { value: "Mr", label: "Mr" },
+    { value: "Mrs", label: "Mrs" },
+    { value: "Ms", label: "Ms" },
+    { value: "Dr", label: "Dr" }
+  ];
+
+  const genderOptions = [
+    { value: "Male", label: "Male" },
+    { value: "Female", label: "Female" },
+    { value: "Other", label: "Other" }
+  ];
+
   return (
     <div className="mb-12">
       <h3 className="text-xl font-medium mb-6">Traveller {index + 1} Details</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Salutation<span className="text-red-500">*</span></label>
-          <Select 
-            value={traveller.salutation || ''} 
-            onValueChange={(value) => updateTraveller(index, { salutation: value })}
-          >
-            <SelectTrigger className={`w-full p-3 border ${errors[`traveller${index}Salutation`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary h-12`}>
-              <SelectValue placeholder="Select salutation" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Mr">Mr</SelectItem>
-              <SelectItem value="Mrs">Mrs</SelectItem>
-              <SelectItem value="Ms">Ms</SelectItem>
-              <SelectItem value="Dr">Dr</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors[`traveller${index}Salutation`] && (
-            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Salutation`]}</p>
-          )}
-        </div>
+        <SelectField
+          label="Salutation"
+          value={traveller.salutation || ''}
+          onChange={(value) => updateTraveller(index, { salutation: value })}
+          options={salutationOptions}
+          placeholder="Select salutation"
+          required
+          error={errors[`traveller${index}Salutation`]}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Forename<span className="text-red-500">*</span></label>
-          <input
-            type="text"
-            className={`w-full p-3 border ${errors[`traveller${index}Forename`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
-            value={traveller.forename || ''}
-            onChange={(e) => updateTraveller(index, { forename: e.target.value })}
-          />
-          {errors[`traveller${index}Forename`] && (
-            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Forename`]}</p>
-          )}
-        </div>
+        <InputField
+          label="Forename"
+          value={traveller.forename || ''}
+          onChange={(e) => updateTraveller(index, { forename: e.target.value })}
+          required
+          error={errors[`traveller${index}Forename`]}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Lastname<span className="text-red-500">*</span></label>
-          <input
-            type="text"
-            className={`w-full p-3 border ${errors[`traveller${index}Lastname`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
-            value={traveller.lastname || ''}
-            onChange={(e) => updateTraveller(index, { lastname: e.target.value })}
-          />
-          {errors[`traveller${index}Lastname`] && (
-            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Lastname`]}</p>
-          )}
-        </div>
+        <InputField
+          label="Lastname"
+          value={traveller.lastname || ''}
+          onChange={(e) => updateTraveller(index, { lastname: e.target.value })}
+          required
+          error={errors[`traveller${index}Lastname`]}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number<span className="text-red-500">*</span></label>
-          <input
-            type="text"
-            className={`w-full p-3 border ${errors[`traveller${index}Passport`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
-            value={traveller.passportNumber || ''}
-            onChange={(e) => updateTraveller(index, { passportNumber: e.target.value.slice(0, 10) })}
-            maxLength={10}
-          />
-          {errors[`traveller${index}Passport`] && (
-            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Passport`]}</p>
-          )}
-        </div>
+        <InputField
+          label="Passport Number"
+          value={traveller.passportNumber || ''}
+          onChange={(e) => updateTraveller(index, { passportNumber: e.target.value.slice(0, 10) })}
+          required
+          maxLength={10}
+          error={errors[`traveller${index}Passport`]}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Gender<span className="text-red-500">*</span></label>
-          <Select 
-            value={traveller.gender || ''} 
-            onValueChange={(value) => updateTraveller(index, { gender: value })}
-          >
-            <SelectTrigger className={`w-full p-3 border ${errors[`traveller${index}Gender`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary h-12`}>
-              <SelectValue placeholder="Select gender" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Male">Male</SelectItem>
-              <SelectItem value="Female">Female</SelectItem>
-              <SelectItem value="Other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors[`traveller${index}Gender`] && (
-            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Gender`]}</p>
-          )}
-        </div>
+        <SelectField
+          label="Gender"
+          value={traveller.gender || ''}
+          onChange={(value) => updateTraveller(index, { gender: value })}
+          options={genderOptions}
+          placeholder="Select gender"
+          required
+          error={errors[`traveller${index}Gender`]}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth<span className="text-red-500">*</span></label>
-          <input
-            type="text"
-            className="w-full p-3 border border-gray-300 bg-gray-100 rounded-md text-gray-500 cursor-not-allowed"
-            value={traveller.dob || ''}
-            readOnly
-            disabled
-          />
-        </div>
+        <InputField
+          label="Date of Birth"
+          value={traveller.dob || ''}
+          onChange={() => {}}
+          readOnly
+          disabled
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-          <input
-            type="text"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            value={traveller.address || ''}
-            onChange={(e) => updateTraveller(index, { address: e.target.value })}
-          />
-        </div>
+        <InputField
+          label="Address"
+          value={traveller.address || ''}
+          onChange={(e) => updateTraveller(index, { address: e.target.value })}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
-          <div className="relative">
-            <input
-              type="text"
-              className={`w-full p-3 border ${errors[`traveller${index}Pincode`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
-              value={traveller.pincode || ''}
-              onChange={handlePincodeChange}
-              maxLength={6}
-            />
-            {isLoading && (
-              <div className="absolute right-3 top-3">
-                <span>
-                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                </span>
-              </div>
-            )}
-            {errors[`traveller${index}Pincode`] && (
-              <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Pincode`]}</p>
-            )}
-          </div>
-        </div>
+        <PincodeField
+          value={traveller.pincode || ''}
+          onChange={handlePincodeChange}
+          isLoading={isLoading}
+          error={errors[`traveller${index}Pincode`]}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-          <div className="relative">
-            <input
-              type="text"
-              className="w-full p-3 border border-gray-300 bg-gray-100 text-gray-500 rounded-md cursor-not-allowed"
-              value={traveller.city || ''}
-              readOnly
-              disabled
-            />
-          </div>
-        </div>
+        <InputField
+          label="City"
+          value={traveller.city || ''}
+          onChange={() => {}}
+          readOnly
+          disabled
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Mobile No.</label>
-          <input
-            type="tel"
-            className={`w-full p-3 border ${errors[`traveller${index}Mobile`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
-            value={traveller.mobileNo || ''}
-            onChange={(e) => updateTraveller(index, { mobileNo: e.target.value })}
-            maxLength={10}
-          />
-          {errors[`traveller${index}Mobile`] && (
-            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Mobile`]}</p>
-          )}
-        </div>
+        <InputField
+          label="Mobile No."
+          type="tel"
+          value={traveller.mobileNo || ''}
+          onChange={(e) => updateTraveller(index, { mobileNo: e.target.value })}
+          maxLength={10}
+          error={errors[`traveller${index}Mobile`]}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input
-            type="email"
-            className={`w-full p-3 border ${errors[`traveller${index}Email`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
-            value={traveller.email || ''}
-            onChange={(e) => updateTraveller(index, { email: e.target.value })}
-          />
-          {errors[`traveller${index}Email`] && (
-            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Email`]}</p>
-          )}
-        </div>
+        <InputField
+          label="Email"
+          type="email"
+          value={traveller.email || ''}
+          onChange={(e) => updateTraveller(index, { email: e.target.value })}
+          error={errors[`traveller${index}Email`]}
+        />
       </div>
     </div>
   );
