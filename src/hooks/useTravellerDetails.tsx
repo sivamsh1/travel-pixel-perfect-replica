@@ -22,7 +22,9 @@ export const useTravellerDetails = () => {
     travellers,
     updateTraveller,
     nominee,
-    updateNominee
+    updateNominee,
+    proposer,
+    updateProposer
   } = useTravelForm();
 
   const formattedStartDate = startDate ? 
@@ -47,6 +49,10 @@ export const useTravellerDetails = () => {
 
       if (storageData.travellers.nominee) {
         updateNominee(storageData.travellers.nominee);
+      }
+      
+      if (storageData.travellers.proposer) {
+        updateProposer(storageData.travellers.proposer);
       }
     }
 
@@ -140,6 +146,34 @@ export const useTravellerDetails = () => {
       });
     }
     
+    // Validate proposer fields if not "Self"
+    if (proposer.type && proposer.type !== "Self") {
+      if (!proposer.name) {
+        newErrors.proposerName = "Name is required";
+        hasErrors = true;
+      }
+      
+      if (!proposer.gender) {
+        newErrors.proposerGender = "Gender is required";
+        hasErrors = true;
+      }
+      
+      if (!proposer.salutation) {
+        newErrors.proposerSalutation = "Salutation is required";
+        hasErrors = true;
+      }
+      
+      if (!proposer.maritalStatus) {
+        newErrors.proposerMaritalStatus = "Marital status is required";
+        hasErrors = true;
+      }
+      
+      if (proposer.passportNumber && proposer.passportNumber.length !== 10) {
+        newErrors.proposerPassport = "Passport number must be exactly 10 characters";
+        hasErrors = true;
+      }
+    }
+    
     setErrors(newErrors);
     return !hasErrors;
   };
@@ -148,15 +182,18 @@ export const useTravellerDetails = () => {
     saveToLocalStorage('travellers', {
       count: travellers.length,
       details: travellers,
-      nominee: nominee
+      nominee: nominee,
+      proposer: proposer
     });
   };
 
   return {
     travellers,
     nominee,
+    proposer,
     updateTraveller,
     updateNominee,
+    updateProposer,
     formattedStartDate,
     formattedEndDate,
     errors,

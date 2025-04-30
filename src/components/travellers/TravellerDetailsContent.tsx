@@ -3,6 +3,7 @@ import React from 'react';
 import TravellerForm from './TravellerForm';
 import NomineeForm from './NomineeForm';
 import MedicalConditionSelector from './MedicalConditionSelector';
+import ProposerForm from './ProposerForm';
 import TripSummary from './TripSummary';
 import ActionButton from '@/components/ActionButton';
 import { useTravellerDetails } from '@/hooks/useTravellerDetails';
@@ -15,8 +16,10 @@ const TravellerDetailsContent: React.FC<TravellerDetailsContentProps> = ({ onCon
   const {
     travellers,
     nominee,
+    proposer,
     updateTraveller,
     updateNominee,
+    updateProposer,
     formattedStartDate,
     formattedEndDate,
     errors,
@@ -51,6 +54,12 @@ const TravellerDetailsContent: React.FC<TravellerDetailsContentProps> = ({ onCon
           traveller={travellers[0]}
           updateTraveller={updateTraveller}
           travellerIndex={0}
+        />
+        
+        <ProposerForm
+          proposer={proposer}
+          updateProposer={updateProposer}
+          errors={errors}
         />
         
         <div className="flex justify-center mt-12">

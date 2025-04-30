@@ -35,12 +35,26 @@ interface TravellerDetail {
 interface NomineeData {
   name?: string;
   relationship?: string;
+  dob?: string;
+}
+
+interface ProposerData {
+  type?: string;
+  salutation?: string;
+  name?: string;
+  gender?: string;
+  maritalStatus?: string;
+  occupation?: string;
+  passportNumber?: string;
+  communicationAddress?: string;
+  permanentAddress?: string;
 }
 
 interface TravellersData {
   count: number;
   details: TravellerDetail[];
   nominee?: NomineeData;
+  proposer?: ProposerData;
 }
 
 interface ContactData {

@@ -28,6 +28,18 @@ export interface NomineeDetails {
   dob?: string; // Added dob field
 }
 
+export interface ProposerDetails {
+  type?: string;
+  salutation?: string;
+  name?: string;
+  gender?: string;
+  maritalStatus?: string;
+  occupation?: string;
+  passportNumber?: string;
+  communicationAddress?: string;
+  permanentAddress?: string;
+}
+
 interface TravelFormContextType {
   region: string;
   setRegion: (region: string) => void;
@@ -56,6 +68,8 @@ interface TravelFormContextType {
   removeAddOn: (addon: string) => void;
   nominee: NomineeDetails;
   updateNominee: (details: Partial<NomineeDetails>) => void;
+  proposer: ProposerDetails;
+  updateProposer: (details: Partial<ProposerDetails>) => void;
   agreeToTerms: boolean;
   setAgreeToTerms: (agree: boolean) => void;
 }
@@ -76,6 +90,7 @@ export const TravelFormProvider: React.FC<{ children: ReactNode }> = ({ children
   const [selectedPlan, setSelectedPlan] = useState<string>('Icon Plan');
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [nominee, setNominee] = useState<NomineeDetails>({});
+  const [proposer, setProposer] = useState<ProposerDetails>({ type: "Self" });
   const [agreeToTerms, setAgreeToTerms] = useState<boolean>(false);
 
   const updateTraveller = (index: number, details: Partial<TravellerDetails>) => {
@@ -88,6 +103,10 @@ export const TravelFormProvider: React.FC<{ children: ReactNode }> = ({ children
 
   const updateNominee = (details: Partial<NomineeDetails>) => {
     setNominee(prev => ({ ...prev, ...details }));
+  };
+
+  const updateProposer = (details: Partial<ProposerDetails>) => {
+    setProposer(prev => ({ ...prev, ...details }));
   };
 
   const addAddOn = (addon: string) => {
@@ -141,6 +160,8 @@ export const TravelFormProvider: React.FC<{ children: ReactNode }> = ({ children
         removeAddOn,
         nominee,
         updateNominee,
+        proposer,
+        updateProposer,
         agreeToTerms,
         setAgreeToTerms,
       }}
