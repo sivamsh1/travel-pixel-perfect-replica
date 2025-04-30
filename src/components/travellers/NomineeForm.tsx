@@ -12,6 +12,7 @@ import { DatePicker } from "@/components/DatePicker";
 import { differenceInYears, subYears } from 'date-fns';
 import { toast } from "@/components/ui/use-toast";
 import { parseDOB } from '@/utils/travellerUtils';
+import InputField from './InputField';
 
 interface NomineeFormProps {
   nominee: NomineeDetails;
@@ -69,15 +70,12 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
     <div className="mb-12">
       <h3 className="text-xl font-medium mb-6">Nominee Details</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Name</label>
-          <input
-            type="text"
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary h-12"
-            value={nominee.name || ''}
-            onChange={(e) => updateNominee({ name: e.target.value })}
-          />
-        </div>
+        <InputField
+          label="Nominee Name"
+          value={nominee.name || ''}
+          onChange={(e) => updateNominee({ name: e.target.value })}
+        />
+        
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Relationship</label>
           <Select
@@ -96,6 +94,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
             </SelectContent>
           </Select>
         </div>
+        
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Date of Birth</label>
           <DatePicker

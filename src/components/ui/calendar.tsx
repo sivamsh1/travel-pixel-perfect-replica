@@ -18,9 +18,13 @@ function Calendar({
     props.selected instanceof Date ? new Date(props.selected) : new Date()
   );
 
-  // Generate years for selection (100 years back from current year)
+  // Track month/year select dropdown states
+  const [isMonthSelectOpen, setIsMonthSelectOpen] = React.useState(false);
+  const [isYearSelectOpen, setIsYearSelectOpen] = React.useState(false);
+
+  // Generate years for selection (100 years back from current year plus 20 years forward)
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 121 }, (_, i) => currentYear - i + 20);
+  const years = Array.from({ length: 121 }, (_, i) => currentYear - 100 + i);
 
   // Generate months for selection
   const months = [
@@ -28,61 +32,105 @@ function Calendar({
     "July", "August", "September", "October", "November", "December"
   ];
 
-  // Track the current month/year selectors state
-  const [isMonthSelectOpen, setIsMonthSelectOpen] = React.useState(false);
-  const [isYearSelectOpen, setIsYearSelectOpen] = React.useState(false);
-  const monthSelectRef = React.useRef<HTMLDivElement>(null);
-  const yearSelectRef = React.useRef<HTMLDivElement>(null);
+  // Refs for click outside detection
+  const calendarRef = React.useRef<HTMLDivElement>(null);
   const monthButtonRef = React.useRef<HTMLButtonElement>(null);
   const yearButtonRef = React.useRef<HTMLButtonElement>(null);
 
-  // Update calendar view when month/year changes
-  const handleMonthChange = (monthIndex: number) => {
-    const newDate = new Date(currentMonth);
-    newDate.setMonth(monthIndex);
-    setCurrentMonth(newDate);
-    setIsMonthSelectOpen(false);
-    monthButtonRef.current?.focus();
-  };
-
-  const handleYearChange = (year: number) => {
-    const newDate = new Date(currentMonth);
-    newDate.setFullYear(year);
-    setCurrentMonth(newDate);
-    setIsYearSelectOpen(false);
-    yearButtonRef.current?.focus();
-  };
-
+  // Update calendar view when props.selected changes
   React.useEffect(() => {
-    // Update current month when selected date changes
     if (props.selected instanceof Date) {
       setCurrentMonth(new Date(props.selected));
     }
   }, [props.selected]);
 
-  // Handle click outside the month/year selectors to close them
+  // Handle month selection
+  const handleMonthChange = (monthIndex: number) => {
+    const newDate = new Date(currentMonth);
+    newDate.setMonth(monthIndex);
+    setCurrentMonth(newDate);
+    setIsMonthSelectOpen(false);
+    if (monthButtonRef.current) {
+      monthButtonRef.current.focus();
+    }
+  };
+
+  // Handle year selection
+  const handleYearChange = (year: number) => {
+    const newDate = new Date(currentMonth);
+    newDate.setFullYear(year);
+    setCurrentMonth(newDate);
+    setIsYearSelectOpen(false);
+    if (yearButtonRef.current) {
+      yearButtonRef.current.focus();
+    }
+  };
+
+  // Close dropdowns when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isMonthSelectOpen && monthSelectRef.current && !monthSelectRef.current.contains(event.target as Node)) {
+      // Only process if one of the dropdowns is open
+      if (!isMonthSelectOpen && !isYearSelectOpen) return;
+      
+      // Check if click is outside calendar component
+      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
         setIsMonthSelectOpen(false);
-      }
-      if (isYearSelectOpen && yearSelectRef.current && !yearSelectRef.current.contains(event.target as Node)) {
         setIsYearSelectOpen(false);
+        return;
+      }
+      
+      // If month dropdown is open, check if click is outside month button and dropdown
+      if (isMonthSelectOpen && monthButtonRef.current) {
+        const target = event.target as Node;
+        if (target !== monthButtonRef.current && !monthButtonRef.current.contains(target)) {
+          const monthDropdown = document.getElementById('month-dropdown');
+          if (!monthDropdown || !monthDropdown.contains(target)) {
+            setIsMonthSelectOpen(false);
+          }
+        }
+      }
+      
+      // If year dropdown is open, check if click is outside year button and dropdown
+      if (isYearSelectOpen && yearButtonRef.current) {
+        const target = event.target as Node;
+        if (target !== yearButtonRef.current && !yearButtonRef.current.contains(target)) {
+          const yearDropdown = document.getElementById('year-dropdown');
+          if (!yearDropdown || !yearDropdown.contains(target)) {
+            setIsYearSelectOpen(false);
+          }
+        }
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    // Close dropdowns when ESC key is pressed
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (isMonthSelectOpen) {
+          setIsMonthSelectOpen(false);
+          monthButtonRef.current?.focus();
+        }
+        if (isYearSelectOpen) {
+          setIsYearSelectOpen(false);
+          yearButtonRef.current?.focus();
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isMonthSelectOpen, isYearSelectOpen]);
 
   // Custom Caption component for the calendar
   const CustomCaption = ({ ...captionProps }: any) => {
     return (
-      <div className="flex gap-2 justify-center items-center py-2 pointer-events-auto">
+      <div className="flex gap-2 justify-center items-center py-2 pointer-events-auto" ref={calendarRef}>
         {/* Month dropdown */}
-        <div className="relative" ref={monthSelectRef}>
+        <div className="relative">
           <button
             ref={monthButtonRef}
             className="flex items-center justify-between w-[140px] h-10 px-3 py-2 text-sm border rounded-md bg-background pointer-events-auto"
@@ -92,12 +140,19 @@ function Calendar({
               setIsYearSelectOpen(false);
             }}
             type="button"
+            aria-haspopup="listbox"
+            aria-expanded={isMonthSelectOpen}
           >
             {months[currentMonth.getMonth()]}
             <ChevronRight className={`h-4 w-4 transition-transform ${isMonthSelectOpen ? 'rotate-90' : ''}`} />
           </button>
+          
           {isMonthSelectOpen && (
-            <div className="absolute top-full left-0 z-[150] w-[140px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto">
+            <div 
+              id="month-dropdown"
+              className="absolute top-full left-0 z-[150] w-[140px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
+              role="listbox"
+            >
               {months.map((month, index) => (
                 <button
                   key={month}
@@ -109,6 +164,8 @@ function Calendar({
                     handleMonthChange(index);
                   }}
                   type="button"
+                  role="option"
+                  aria-selected={index === currentMonth.getMonth()}
                 >
                   {month}
                 </button>
@@ -118,7 +175,7 @@ function Calendar({
         </div>
 
         {/* Year dropdown */}
-        <div className="relative" ref={yearSelectRef}>
+        <div className="relative">
           <button
             ref={yearButtonRef}
             className="flex items-center justify-between w-[100px] h-10 px-3 py-2 text-sm border rounded-md bg-background pointer-events-auto"
@@ -128,12 +185,19 @@ function Calendar({
               setIsMonthSelectOpen(false);
             }}
             type="button"
+            aria-haspopup="listbox"
+            aria-expanded={isYearSelectOpen}
           >
             {currentMonth.getFullYear()}
             <ChevronRight className={`h-4 w-4 transition-transform ${isYearSelectOpen ? 'rotate-90' : ''}`} />
           </button>
+          
           {isYearSelectOpen && (
-            <div className="absolute top-full left-0 z-[150] w-[100px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto">
+            <div 
+              id="year-dropdown"
+              className="absolute top-full left-0 z-[150] w-[100px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
+              role="listbox"
+            >
               {years.map((year) => (
                 <button
                   key={year}
@@ -145,6 +209,8 @@ function Calendar({
                     handleYearChange(year);
                   }}
                   type="button"
+                  role="option"
+                  aria-selected={year === currentMonth.getFullYear()}
                 >
                   {year}
                 </button>

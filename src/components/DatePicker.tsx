@@ -38,14 +38,26 @@ export function DatePicker({
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [open, setOpen] = React.useState(false);
 
-  // Ensure calendar re-renders properly when opened
+  // Force calendar to re-render when opened
   const [calendarKey, setCalendarKey] = React.useState(0);
   
-  // Force calendar to re-render when opened
   React.useEffect(() => {
     if (open) {
       setCalendarKey(prev => prev + 1);
     }
+  }, [open]);
+
+  // Ensure the calendar closes when Escape key is pressed
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && open) {
+        setOpen(false);
+        setTimeout(() => triggerRef.current?.focus(), 10);
+      }
+    };
+    
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
   return (
@@ -62,6 +74,7 @@ export function DatePicker({
               className
             )}
             disabled={disabled}
+            type="button"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value && isValid(value) ? (
@@ -75,6 +88,13 @@ export function DatePicker({
           className="w-auto p-0 z-[100]" 
           align="start"
           sideOffset={8}
+          onEscapeKeyDown={() => {
+            setOpen(false);
+            setTimeout(() => triggerRef.current?.focus(), 10);
+          }}
+          onInteractOutside={(e) => {
+            setOpen(false);
+          }}
         >
           <Calendar
             key={calendarKey}
@@ -86,7 +106,7 @@ export function DatePicker({
               // Return focus to the trigger button when a date is selected
               setTimeout(() => {
                 triggerRef.current?.focus();
-              }, 100);
+              }, 10);
             }}
             initialFocus
             className="pointer-events-auto"
