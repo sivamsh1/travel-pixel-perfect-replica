@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import { cn } from '@/lib/utils';
 import { Plane } from 'lucide-react';
 
@@ -18,7 +18,7 @@ const ProgressIndicator = ({ steps, currentStep, completedSteps }: ProgressIndic
   return (
     <div className="flex items-center justify-center w-full max-w-3xl mx-auto mt-8 mb-12">
       {steps.map((step, index) => (
-        <React.Fragment key={step.id}>
+        <Fragment key={step.id}>
           {/* Step with icon */}
           <div className="flex flex-col items-center">
             <div 
@@ -68,7 +68,7 @@ const ProgressIndicator = ({ steps, currentStep, completedSteps }: ProgressIndic
               )}
             />
           )}
-        </React.Fragment>
+        </Fragment>
       ))}
     </div>
   );

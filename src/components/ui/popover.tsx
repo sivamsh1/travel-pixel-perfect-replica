@@ -26,8 +26,19 @@ const PopoverContent = React.forwardRef<
         // This allows us to control focus manually
         e.preventDefault();
       }}
+      onClick={(e) => {
+        // Stop propagation to prevent other elements from capturing the click
+        e.stopPropagation();
+      }}
+      onPointerDownOutside={(e) => {
+        // Prevent the popover from closing when clicking inside the calendar
+        if (e.target instanceof Element && e.target.closest('[data-radix-calendar-root]')) {
+          e.preventDefault();
+        }
+      }}
       style={{
-        zIndex: 9999 // Ensure maximum z-index to prevent other elements from appearing on top
+        zIndex: 9999, // Ensure maximum z-index to prevent other elements from appearing on top
+        backgroundColor: "white" // Ensure the background is opaque
       }}
       {...props}
     />

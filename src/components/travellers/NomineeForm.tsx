@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { NomineeDetails } from '@/context/TravelFormContext';
 import {
@@ -34,13 +35,13 @@ const RELATIONSHIP_OPTIONS = [
   "Husband"
 ];
 
-const NomineeForm: React.FC<NomineeFormProps> = ({
+const NomineeForm: React.FC<NomineeFormProps> = React.memo(({
   nominee,
   updateNominee
 }) => {
   const [dobError, setDobError] = useState<string>("");
 
-  const handleDateChange = (date: Date | undefined) => {
+  const handleDateChange = useCallback((date: Date | undefined) => {
     if (date) {
       // Check if nominee is at least 18 years old
       const age = differenceInYears(new Date(), date);
@@ -63,28 +64,33 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
       updateNominee({ dob: undefined });
       setDobError("");
     }
-  };
+  }, [updateNominee]);
 
-  // Function to handle form clicks to avoid event bubbling issues
-  const handleFormClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
+  // Handle name change
+  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateNominee({ name: e.target.value });
+  }, [updateNominee]);
+
+  // Handle relationship change
+  const handleRelationshipChange = useCallback((val: string) => {
+    updateNominee({ relationship: val });
+  }, [updateNominee]);
 
   return (
-    <div className="mb-12" onClick={handleFormClick}>
+    <div className="mb-12">
       <h3 className="text-xl font-medium mb-6">Nominee Details</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6" onClick={(e) => e.stopPropagation()}>
         <InputField
           label="Nominee Name"
           value={nominee.name || ''}
-          onChange={(e) => updateNominee({ name: e.target.value })}
+          onChange={handleNameChange}
         />
         
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Relationship</label>
           <Select
             value={nominee.relationship || ""}
-            onValueChange={(val) => updateNominee({ relationship: val })}
+            onValueChange={handleRelationshipChange}
           >
             <SelectTrigger className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white text-base">
               <SelectValue placeholder="Select relationship" />
@@ -99,7 +105,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
           </Select>
         </div>
         
-        <div className="relative z-50">
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Date of Birth</label>
           <DatePicker
             value={parseDOB(nominee.dob)}
@@ -115,6 +121,8 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
       </div>
     </div>
   );
-};
+});
+
+NomineeForm.displayName = 'NomineeForm';
 
 export default NomineeForm;

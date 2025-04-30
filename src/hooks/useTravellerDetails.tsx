@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 import { format } from 'date-fns';
@@ -20,6 +20,7 @@ export const useTravellerDetails = () => {
   } = useTravelForm();
 
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const formattedStartDate = startDate ? 
     format(new Date(startDate), 'do MMM') : 
@@ -31,8 +32,15 @@ export const useTravellerDetails = () => {
 
   const { handleDateChange } = useTravellerDateHandling(updateTraveller, errors, setErrors);
 
+  // Memoized update traveller function to prevent unnecessary re-renders
+  const memoizedUpdateTraveller = useCallback((index: number, details: Partial<any>) => {
+    updateTraveller(index, details);
+  }, [updateTraveller]);
+
   // Load data from local storage on initial render
   useEffect(() => {
+    if (isInitialized) return;
+
     const storageData = getFromLocalStorage();
     
     if (storageData?.travellers?.details) {
@@ -65,42 +73,54 @@ export const useTravellerDetails = () => {
       
       updateTraveller(0, updatedTraveller);
     }
-  }, []);
+    
+    setIsInitialized(true);
+  }, [travellers.length, updateTraveller, updateNominee, updateProposer, isInitialized]);
 
-  // Update name field when forename or lastname changes
+  // Update name field when forename or lastname changes - with debounce
   useEffect(() => {
+    const timeoutIds: NodeJS.Timeout[] = [];
+
     travellers.forEach((traveller, index) => {
       if (traveller.forename && traveller.lastname) {
         const fullName = `${traveller.forename} ${traveller.lastname}`;
         if (fullName !== traveller.name) {
-          updateTraveller(index, { name: fullName });
+          const timeoutId = setTimeout(() => {
+            updateTraveller(index, { name: fullName });
+          }, 300); // 300ms debounce
+          
+          timeoutIds.push(timeoutId);
         }
       }
     });
-  }, [travellers]);
 
-  // Validate form
-  const validateTravellerForm = (): boolean => {
+    return () => {
+      timeoutIds.forEach(id => clearTimeout(id));
+    };
+  }, [travellers, updateTraveller]);
+
+  // Validate form - memoized to prevent unnecessary re-renders
+  const validateTravellerForm = useCallback((): boolean => {
     const newErrors = validateForm(travellers, nominee, proposer);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [travellers, nominee, proposer]);
 
-  // Save travellers to localStorage
-  const saveTravellersToLocalStorage = () => {
+  // Save travellers to localStorage - memoized to prevent unnecessary re-renders
+  const saveTravellersToLocalStorage = useCallback(() => {
     saveToLocalStorage('travellers', {
       count: travellers.length,
       details: travellers,
       nominee: nominee,
       proposer: proposer
     });
-  };
+  }, [travellers, nominee, proposer]);
 
   return {
     travellers,
     nominee,
     proposer,
-    updateTraveller,
+    updateTraveller: memoizedUpdateTraveller,
     updateNominee,
     updateProposer,
     formattedStartDate,
