@@ -33,7 +33,7 @@ const ProposerForm: React.FC<ProposerFormProps> = ({
           value={proposer.type || "Self"} 
           onValueChange={(value) => updateProposer({ type: value })}
         >
-          <SelectTrigger className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+          <SelectTrigger className="w-1/4 h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
             <SelectValue placeholder="Select proposer" />
           </SelectTrigger>
           <SelectContent>
