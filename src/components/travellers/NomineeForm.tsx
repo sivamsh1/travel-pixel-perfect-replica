@@ -47,10 +47,11 @@ const NomineeForm: React.FC<NomineeFormProps> = React.memo(({
       const age = differenceInYears(new Date(), date);
       
       if (age < 18) {
-        setDobError("Nominee must be at least 18 years old.");
+        const errorMessage = "Nominee must be at least 18 years old";
+        setDobError(errorMessage);
         toast({
           title: "Age Restriction",
-          description: "Nominee must be at least 18 years old.",
+          description: errorMessage,
           variant: "destructive"
         });
         updateNominee({ dob: undefined });
@@ -114,7 +115,7 @@ const NomineeForm: React.FC<NomineeFormProps> = React.memo(({
             error={dobError}
             className="w-full h-12"
             minDate={subYears(new Date(), 100)} // 100 years ago
-            maxDate={subYears(new Date(), 18)}  // 18 years ago
+            maxDate={subYears(new Date(), 18)}  // 18 years ago (restrict to 18+ only)
             disableFuture
           />
         </div>

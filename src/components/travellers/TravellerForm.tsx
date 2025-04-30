@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
@@ -66,9 +65,9 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
     };
   }, [index, updateTraveller]);
 
-  // Auto-fill gender based on salutation - moved to an effect with dependencies
+  // Auto-update gender based on salutation - always update when salutation changes
   useEffect(() => {
-    if (traveller.salutation && !traveller.gender) {
+    if (traveller.salutation) {
       let gender = "";
       if (traveller.salutation === "Mr") {
         gender = "Male";
@@ -80,7 +79,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
         updateTraveller(index, { gender });
       }
     }
-  }, [traveller.salutation, index, updateTraveller, traveller.gender]);
+  }, [traveller.salutation, index, updateTraveller]);
 
   const salutationOptions = [
     { value: "Mr", label: "Mr" },
