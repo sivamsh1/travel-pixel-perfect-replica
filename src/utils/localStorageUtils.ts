@@ -1,3 +1,4 @@
+
 interface LocationData {
   region: string;
   destination: string;
@@ -10,14 +11,14 @@ interface DatesData {
   duration: number;
 }
 
-interface TravellerLocationData {
+export interface TravellerLocationData {
   stateId: number;
   districtId: number;
   cityId: number;
   cityName: string;
 }
 
-interface TravellerDetail {
+export interface TravellerDetail {
   passportNumber?: string;
   name?: string;
   forename?: string;  // Added forename field
@@ -32,16 +33,17 @@ interface TravellerDetail {
   mobileNo?: string;
   email?: string;
   hasPreExistingCondition?: boolean;
+  medicalCondition?: string;  // Add this field that was missing
   locationData?: TravellerLocationData;
 }
 
-interface NomineeData {
+export interface NomineeData {
   name?: string;
   relationship?: string;
   dob?: string;
 }
 
-interface ProposerData {
+export interface ProposerData {
   type?: string;
   salutation?: string;
   name?: string;
