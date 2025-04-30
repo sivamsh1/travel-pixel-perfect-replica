@@ -26,14 +26,29 @@ const PlansList: React.FC<PlansListProps> = ({
   // First check if we're in a loading state
   if (isLoading) {
     return (
-      <div className="w-full flex flex-col items-center justify-center py-12 mb-20">
-        <img 
-          src="/lovable-uploads/loader/Flight loader.gif" 
-          alt="Loading" 
-          className="w-40 h-40 object-contain mb-4"
-        />
-        <p className="text-lg font-medium text-gray-600">Loading available plans...</p>
-        <p className="text-sm text-gray-500 mt-2">Please wait while we find the best options for you</p>
+      <div className="w-full space-y-6 mb-20">
+        {[1, 2, 3].map((_, index) => (
+          <div key={index} className="border border-gray-200 rounded-xl p-6 shadow-sm bg-white">
+            <div className="flex items-start justify-between">
+              <div className="flex gap-4">
+                <Skeleton className="h-16 w-16 rounded-lg" />
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-40" />
+                  <Skeleton className="h-4 w-60" />
+                </div>
+              </div>
+              <Skeleton className="h-10 w-24" />
+            </div>
+            <div className="mt-4">
+              <Skeleton className="h-4 w-full" />
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -68,3 +83,4 @@ const PlansList: React.FC<PlansListProps> = ({
 };
 
 export default PlansList;
+
