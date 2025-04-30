@@ -47,17 +47,19 @@ export function DatePicker({
     }
   }, [open]);
 
-  // Stop propagation on all events inside the popover content
-  const handleContentClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
-  // Handle calendar selection
-  const handleSelect = (date: Date | undefined) => {
+  // Handle date selection
+  const handleSelect = React.useCallback((date: Date | undefined) => {
     onChange(date);
     setOpen(false);
+    // Return focus to the trigger button after selection
     setTimeout(() => triggerRef.current?.focus(), 10);
-  };
+  }, [onChange]);
+
+  // Handle click on the button to toggle the popover
+  const handleButtonClick = React.useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setOpen(!open);
+  }, [open]);
 
   return (
     <div className="w-full">
@@ -74,10 +76,7 @@ export function DatePicker({
             )}
             disabled={disabled}
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpen(!open);
-            }}
+            onClick={handleButtonClick}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value && isValid(value) ? (
@@ -95,15 +94,7 @@ export function DatePicker({
             setOpen(false);
             setTimeout(() => triggerRef.current?.focus(), 10);
           }}
-          onInteractOutside={(e) => {
-            e.preventDefault(); // Prevent default to keep the calendar open
-            e.stopPropagation(); // Stop event propagation
-            setOpen(false);
-          }}
-          onClick={handleContentClick}
-          onPointerDownOutside={(e) => {
-            e.preventDefault();
-          }}
+          onClick={(e) => e.stopPropagation()}
         >
           <Calendar
             key={calendarKey}
@@ -111,7 +102,7 @@ export function DatePicker({
             selected={value}
             onSelect={handleSelect}
             initialFocus
-            className={cn("p-3 pointer-events-auto z-[9999]")}
+            className="p-3 pointer-events-auto z-[9999]"
             disabled={(date) => {
               const today = new Date();
               
@@ -132,6 +123,7 @@ export function DatePicker({
               
               return false;
             }}
+            data-radix-calendar-root
           />
         </PopoverContent>
       </Popover>

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
 import SelectField from './SelectField';
@@ -14,7 +14,7 @@ interface TravellerFormProps {
   handleDateChange: (index: number, date: Date | undefined) => void;
 }
 
-const TravellerForm: React.FC<TravellerFormProps> = ({
+const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
   traveller,
   index,
   updateTraveller,
@@ -25,7 +25,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
   const [autoFilled, setAutoFilled] = useState(false);
   const [lastFetchedPincode, setLastFetchedPincode] = useState<string | null>(null);
 
-  const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePincodeChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const pincode = e.target.value.slice(0, 6);
     updateTraveller(index, { pincode });
 
@@ -50,11 +50,25 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         setTimeout(() => setAutoFilled(false), 3000);
       }
     }
-  };
+  }, [index, lastFetchedPincode, searchCityByPincode, updateTraveller]);
 
-  // Auto-fill gender based on salutation
+  // Use a stable function for input change handlers
+  const createInputChangeHandler = useCallback((field: string) => {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateTraveller(index, { [field]: e.target.value });
+    };
+  }, [index, updateTraveller]);
+
+  // Use a stable function for select change handlers
+  const createSelectChangeHandler = useCallback((field: string) => {
+    return (value: string) => {
+      updateTraveller(index, { [field]: value });
+    };
+  }, [index, updateTraveller]);
+
+  // Auto-fill gender based on salutation - moved to an effect with dependencies
   useEffect(() => {
-    if (traveller.salutation) {
+    if (traveller.salutation && !traveller.gender) {
       let gender = "";
       if (traveller.salutation === "Mr") {
         gender = "Male";
@@ -66,7 +80,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         updateTraveller(index, { gender });
       }
     }
-  }, [traveller.salutation, index, updateTraveller]);
+  }, [traveller.salutation, index, updateTraveller, traveller.gender]);
 
   const salutationOptions = [
     { value: "Mr", label: "Mr" },
@@ -81,15 +95,47 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
     { value: "Other", label: "Other" }
   ];
 
+  const handleForenameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateTraveller(index, { forename: e.target.value });
+  }, [index, updateTraveller]);
+
+  const handleLastnameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateTraveller(index, { lastname: e.target.value });
+  }, [index, updateTraveller]);
+
+  const handlePassportChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateTraveller(index, { passportNumber: e.target.value.slice(0, 10) });
+  }, [index, updateTraveller]);
+
+  const handleAddressChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateTraveller(index, { address: e.target.value });
+  }, [index, updateTraveller]);
+
+  const handleMobileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateTraveller(index, { mobileNo: e.target.value });
+  }, [index, updateTraveller]);
+
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    updateTraveller(index, { email: e.target.value });
+  }, [index, updateTraveller]);
+
+  const handleSalutationChange = useCallback((value: string) => {
+    updateTraveller(index, { salutation: value });
+  }, [index, updateTraveller]);
+
+  const handleGenderChange = useCallback((value: string) => {
+    updateTraveller(index, { gender: value });
+  }, [index, updateTraveller]);
+
   return (
     <div className="mb-12">
       <h3 className="text-xl font-medium mb-6">Traveller {index + 1} Details</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6" onClick={(e) => e.stopPropagation()}>
         <SelectField
           label="Salutation"
           value={traveller.salutation || ''}
-          onChange={(value) => updateTraveller(index, { salutation: value })}
+          onChange={handleSalutationChange}
           options={salutationOptions}
           placeholder="Select salutation"
           required
@@ -99,7 +145,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         <InputField
           label="Forename"
           value={traveller.forename || ''}
-          onChange={(e) => updateTraveller(index, { forename: e.target.value })}
+          onChange={handleForenameChange}
           required
           error={errors[`traveller${index}Forename`]}
         />
@@ -107,7 +153,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         <InputField
           label="Lastname"
           value={traveller.lastname || ''}
-          onChange={(e) => updateTraveller(index, { lastname: e.target.value })}
+          onChange={handleLastnameChange}
           required
           error={errors[`traveller${index}Lastname`]}
         />
@@ -115,7 +161,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         <InputField
           label="Passport Number"
           value={traveller.passportNumber || ''}
-          onChange={(e) => updateTraveller(index, { passportNumber: e.target.value.slice(0, 10) })}
+          onChange={handlePassportChange}
           required
           maxLength={10}
           error={errors[`traveller${index}Passport`]}
@@ -124,7 +170,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         <SelectField
           label="Gender"
           value={traveller.gender || ''}
-          onChange={(value) => updateTraveller(index, { gender: value })}
+          onChange={handleGenderChange}
           options={genderOptions}
           placeholder="Select gender"
           required
@@ -142,7 +188,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         <InputField
           label="Address"
           value={traveller.address || ''}
-          onChange={(e) => updateTraveller(index, { address: e.target.value })}
+          onChange={handleAddressChange}
         />
 
         <PincodeField
@@ -164,7 +210,7 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
           label="Mobile No."
           type="tel"
           value={traveller.mobileNo || ''}
-          onChange={(e) => updateTraveller(index, { mobileNo: e.target.value })}
+          onChange={handleMobileChange}
           maxLength={10}
           error={errors[`traveller${index}Mobile`]}
         />
@@ -173,12 +219,14 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
           label="Email"
           type="email"
           value={traveller.email || ''}
-          onChange={(e) => updateTraveller(index, { email: e.target.value })}
+          onChange={handleEmailChange}
           error={errors[`traveller${index}Email`]}
         />
       </div>
     </div>
   );
-};
+});
+
+TravellerForm.displayName = 'TravellerForm';
 
 export default TravellerForm;

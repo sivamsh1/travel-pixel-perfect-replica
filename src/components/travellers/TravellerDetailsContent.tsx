@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 import TravellerForm from './TravellerForm';
 import NomineeForm from './NomineeForm';
 import MedicalConditionSelector from './MedicalConditionSelector';
@@ -12,7 +12,7 @@ interface TravellerDetailsContentProps {
   onContinue: () => void;
 }
 
-const TravellerDetailsContent: React.FC<TravellerDetailsContentProps> = ({ onContinue }) => {
+const TravellerDetailsContent: React.FC<TravellerDetailsContentProps> = React.memo(({ onContinue }) => {
   const {
     travellers,
     nominee,
@@ -26,20 +26,12 @@ const TravellerDetailsContent: React.FC<TravellerDetailsContentProps> = ({ onCon
     handleDateChange
   } = useTravellerDetails();
 
-  // Update name field when forename or lastname changes
-  useEffect(() => {
-    travellers.forEach((traveller, index) => {
-      if (traveller.forename && traveller.lastname) {
-        const fullName = `${traveller.forename} ${traveller.lastname}`;
-        if (fullName !== traveller.name) {
-          updateTraveller(index, { name: fullName });
-        }
-      }
-    });
-  }, [travellers]);
+  const handleContinueClick = useCallback(() => {
+    onContinue();
+  }, [onContinue]);
 
   return (
-    <div className="flex flex-1 flex-col items-center px-6 max-w-4xl mx-auto w-full">
+    <div className="flex flex-1 flex-col items-center px-6 max-w-4xl mx-auto w-full" onClick={(e) => e.stopPropagation()}>
       <h2 className="text-3xl font-bold mb-6">Travellers Details</h2>
       
       <TripSummary 
@@ -75,13 +67,15 @@ const TravellerDetailsContent: React.FC<TravellerDetailsContentProps> = ({ onCon
         />
         
         <div className="flex justify-center mt-12">
-          <ActionButton onClick={onContinue}>
+          <ActionButton onClick={handleContinueClick}>
             Continue to KYC Verification
           </ActionButton>
         </div>
       </div>
     </div>
   );
-};
+});
+
+TravellerDetailsContent.displayName = 'TravellerDetailsContent';
 
 export default TravellerDetailsContent;
