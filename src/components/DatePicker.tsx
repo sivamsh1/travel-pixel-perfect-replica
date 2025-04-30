@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { format, isValid, differenceInDays } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -34,11 +34,15 @@ export function DatePicker({
   minDate,
   maxDate,
 }: DatePickerProps) {
+  // Create a ref for the popover trigger to manage focus
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+
   return (
     <div className="w-full">
       <Popover>
         <PopoverTrigger asChild>
           <Button
+            ref={triggerRef}
             variant="outline"
             className={cn(
               "w-full justify-start text-left font-normal border border-gray-300 bg-background px-3 py-3 h-12 rounded-md",
@@ -57,14 +61,24 @@ export function DatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0" 
+          className="w-auto p-0 z-50" 
           align="start"
           sideOffset={8}
+          onOpenAutoFocus={(e) => {
+            // Prevent default auto focus behavior to avoid focus conflicts
+            e.preventDefault();
+          }}
         >
           <Calendar
             mode="single"
             selected={value}
-            onSelect={onChange}
+            onSelect={(date) => {
+              onChange(date);
+              // Return focus to the trigger button when a date is selected
+              setTimeout(() => {
+                triggerRef.current?.focus();
+              }, 100);
+            }}
             initialFocus
             className="pointer-events-auto"
             disabled={(date) => {

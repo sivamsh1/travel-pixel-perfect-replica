@@ -49,6 +49,13 @@ function Calendar({
     setCurrentMonth(newDate);
   };
 
+  React.useEffect(() => {
+    // Update current month when selected date changes
+    if (props.selected instanceof Date) {
+      setCurrentMonth(new Date(props.selected));
+    }
+  }, [props.selected]);
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -61,7 +68,7 @@ function Calendar({
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
@@ -69,10 +76,10 @@ function Calendar({
         head_row: "flex",
         head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
-        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9",
+        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9 pointer-events-auto",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 pointer-events-auto"
         ),
         day_range_end: "day-range-end",
         day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
@@ -87,17 +94,17 @@ function Calendar({
         IconLeft: () => <ChevronLeft className="h-4 w-4" />,
         IconRight: () => <ChevronRight className="h-4 w-4" />,
         Caption: () => (
-          <div className="flex gap-2 justify-center items-center py-2">
+          <div className="flex gap-2 justify-center items-center py-2 pointer-events-auto">
             <Select 
               value={months[currentMonth.getMonth()]} 
               onValueChange={handleMonthChange}
             >
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[140px] pointer-events-auto">
                 <SelectValue placeholder="Month" />
               </SelectTrigger>
-              <SelectContent position="popper" className="max-h-[300px]">
+              <SelectContent position="popper" className="max-h-[300px] z-50 pointer-events-auto">
                 {months.map((monthName) => (
-                  <SelectItem key={monthName} value={monthName}>
+                  <SelectItem key={monthName} value={monthName} className="pointer-events-auto">
                     {monthName}
                   </SelectItem>
                 ))}
@@ -108,12 +115,12 @@ function Calendar({
               value={currentMonth.getFullYear().toString()} 
               onValueChange={handleYearChange}
             >
-              <SelectTrigger className="w-[100px]">
+              <SelectTrigger className="w-[100px] pointer-events-auto">
                 <SelectValue placeholder="Year" />
               </SelectTrigger>
-              <SelectContent position="popper" className="max-h-[300px]">
+              <SelectContent position="popper" className="max-h-[300px] z-50 pointer-events-auto">
                 {years.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
+                  <SelectItem key={year} value={year.toString()} className="pointer-events-auto">
                     {year}
                   </SelectItem>
                 ))}
@@ -123,6 +130,7 @@ function Calendar({
         ),
       }}
       month={currentMonth}
+      onMonthChange={setCurrentMonth}
       {...props}
     />
   );

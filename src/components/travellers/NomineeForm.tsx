@@ -9,7 +9,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/DatePicker";
-import { differenceInYears, subYears } from 'date-fns';
+import { differenceInYears, subYears, parse } from 'date-fns';
 import { toast } from "@/components/ui/use-toast";
 
 interface NomineeFormProps {
@@ -98,7 +98,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
             <SelectTrigger className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white text-base">
               <SelectValue placeholder="Select relationship" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent position="popper" className="max-h-[300px] z-50">
               {RELATIONSHIP_OPTIONS.map((relation) => (
                 <SelectItem key={relation} value={relation}>
                      {relation.charAt(0).toUpperCase() + relation.slice(1)}
