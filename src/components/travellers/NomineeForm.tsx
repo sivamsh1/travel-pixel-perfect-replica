@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { NomineeDetails } from '@/context/TravelFormContext';
 import {
   Select,
@@ -9,8 +9,9 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/DatePicker";
-import { differenceInYears, subYears, parse } from 'date-fns';
+import { differenceInYears, subYears } from 'date-fns';
 import { toast } from "@/components/ui/use-toast";
+import { parseDOB } from '@/utils/travellerUtils';
 
 interface NomineeFormProps {
   nominee: NomineeDetails;
@@ -37,7 +38,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
   nominee,
   updateNominee
 }) => {
-  const [dobError, setDobError] = React.useState<string>("");
+  const [dobError, setDobError] = useState<string>("");
 
   const handleDateChange = (date: Date | undefined) => {
     if (date) {
@@ -62,18 +63,6 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
       updateNominee({ dob: undefined });
       setDobError("");
     }
-  };
-
-  const parseDOB = (dateString?: string): Date | undefined => {
-    if (!dateString) return undefined;
-    
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
-      const [day, month, year] = dateString.split('/').map(Number);
-      return new Date(year, month - 1, day);
-    }
-    
-    const date = new Date(dateString);
-    return !isNaN(date.getTime()) ? date : undefined;
   };
 
   return (

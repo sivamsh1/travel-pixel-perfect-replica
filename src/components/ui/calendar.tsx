@@ -4,13 +4,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -35,18 +28,29 @@ function Calendar({
     "July", "August", "September", "October", "November", "December"
   ];
 
-  // Update calendar view when month/year selectors change
-  const handleMonthChange = (newMonth: string) => {
-    const monthIndex = months.findIndex(m => m === newMonth);
+  // Track the current month/year selectors state
+  const [isMonthSelectOpen, setIsMonthSelectOpen] = React.useState(false);
+  const [isYearSelectOpen, setIsYearSelectOpen] = React.useState(false);
+  const monthSelectRef = React.useRef<HTMLDivElement>(null);
+  const yearSelectRef = React.useRef<HTMLDivElement>(null);
+  const monthButtonRef = React.useRef<HTMLButtonElement>(null);
+  const yearButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  // Update calendar view when month/year changes
+  const handleMonthChange = (monthIndex: number) => {
     const newDate = new Date(currentMonth);
     newDate.setMonth(monthIndex);
     setCurrentMonth(newDate);
+    setIsMonthSelectOpen(false);
+    monthButtonRef.current?.focus();
   };
 
-  const handleYearChange = (newYear: string) => {
+  const handleYearChange = (year: number) => {
     const newDate = new Date(currentMonth);
-    newDate.setFullYear(parseInt(newYear));
+    newDate.setFullYear(year);
     setCurrentMonth(newDate);
+    setIsYearSelectOpen(false);
+    yearButtonRef.current?.focus();
   };
 
   React.useEffect(() => {
@@ -55,6 +59,102 @@ function Calendar({
       setCurrentMonth(new Date(props.selected));
     }
   }, [props.selected]);
+
+  // Handle click outside the month/year selectors to close them
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isMonthSelectOpen && monthSelectRef.current && !monthSelectRef.current.contains(event.target as Node)) {
+        setIsMonthSelectOpen(false);
+      }
+      if (isYearSelectOpen && yearSelectRef.current && !yearSelectRef.current.contains(event.target as Node)) {
+        setIsYearSelectOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMonthSelectOpen, isYearSelectOpen]);
+
+  // Custom Caption component for the calendar
+  const CustomCaption = ({ ...captionProps }: any) => {
+    return (
+      <div className="flex gap-2 justify-center items-center py-2 pointer-events-auto">
+        {/* Month dropdown */}
+        <div className="relative" ref={monthSelectRef}>
+          <button
+            ref={monthButtonRef}
+            className="flex items-center justify-between w-[140px] h-10 px-3 py-2 text-sm border rounded-md bg-background pointer-events-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMonthSelectOpen(!isMonthSelectOpen);
+              setIsYearSelectOpen(false);
+            }}
+            type="button"
+          >
+            {months[currentMonth.getMonth()]}
+            <ChevronRight className={`h-4 w-4 transition-transform ${isMonthSelectOpen ? 'rotate-90' : ''}`} />
+          </button>
+          {isMonthSelectOpen && (
+            <div className="absolute top-full left-0 z-[150] w-[140px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto">
+              {months.map((month, index) => (
+                <button
+                  key={month}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-accent pointer-events-auto ${
+                    index === currentMonth.getMonth() ? 'bg-muted' : ''
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleMonthChange(index);
+                  }}
+                  type="button"
+                >
+                  {month}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Year dropdown */}
+        <div className="relative" ref={yearSelectRef}>
+          <button
+            ref={yearButtonRef}
+            className="flex items-center justify-between w-[100px] h-10 px-3 py-2 text-sm border rounded-md bg-background pointer-events-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsYearSelectOpen(!isYearSelectOpen);
+              setIsMonthSelectOpen(false);
+            }}
+            type="button"
+          >
+            {currentMonth.getFullYear()}
+            <ChevronRight className={`h-4 w-4 transition-transform ${isYearSelectOpen ? 'rotate-90' : ''}`} />
+          </button>
+          {isYearSelectOpen && (
+            <div className="absolute top-full left-0 z-[150] w-[100px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto">
+              {years.map((year) => (
+                <button
+                  key={year}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-accent pointer-events-auto ${
+                    year === currentMonth.getFullYear() ? 'bg-muted' : ''
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleYearChange(year);
+                  }}
+                  type="button"
+                >
+                  {year}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <DayPicker
@@ -93,41 +193,7 @@ function Calendar({
       components={{
         IconLeft: () => <ChevronLeft className="h-4 w-4" />,
         IconRight: () => <ChevronRight className="h-4 w-4" />,
-        Caption: () => (
-          <div className="flex gap-2 justify-center items-center py-2 pointer-events-auto">
-            <Select 
-              value={months[currentMonth.getMonth()]} 
-              onValueChange={handleMonthChange}
-            >
-              <SelectTrigger className="w-[140px] pointer-events-auto">
-                <SelectValue placeholder="Month" />
-              </SelectTrigger>
-              <SelectContent position="popper" className="max-h-[300px] z-50 pointer-events-auto">
-                {months.map((monthName) => (
-                  <SelectItem key={monthName} value={monthName} className="pointer-events-auto">
-                    {monthName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <Select 
-              value={currentMonth.getFullYear().toString()} 
-              onValueChange={handleYearChange}
-            >
-              <SelectTrigger className="w-[100px] pointer-events-auto">
-                <SelectValue placeholder="Year" />
-              </SelectTrigger>
-              <SelectContent position="popper" className="max-h-[300px] z-50 pointer-events-auto">
-                {years.map((year) => (
-                  <SelectItem key={year} value={year.toString()} className="pointer-events-auto">
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        ),
+        Caption: CustomCaption,
       }}
       month={currentMonth}
       onMonthChange={setCurrentMonth}

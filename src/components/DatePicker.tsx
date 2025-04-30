@@ -36,10 +36,21 @@ export function DatePicker({
 }: DatePickerProps) {
   // Create a ref for the popover trigger to manage focus
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = React.useState(false);
+
+  // Ensure calendar re-renders properly when opened
+  const [calendarKey, setCalendarKey] = React.useState(0);
+  
+  // Force calendar to re-render when opened
+  React.useEffect(() => {
+    if (open) {
+      setCalendarKey(prev => prev + 1);
+    }
+  }, [open]);
 
   return (
     <div className="w-full">
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             ref={triggerRef}
@@ -61,19 +72,17 @@ export function DatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0 z-50" 
+          className="w-auto p-0 z-[100]" 
           align="start"
           sideOffset={8}
-          onOpenAutoFocus={(e) => {
-            // Prevent default auto focus behavior to avoid focus conflicts
-            e.preventDefault();
-          }}
         >
           <Calendar
+            key={calendarKey}
             mode="single"
             selected={value}
             onSelect={(date) => {
               onChange(date);
+              setOpen(false);
               // Return focus to the trigger button when a date is selected
               setTimeout(() => {
                 triggerRef.current?.focus();
