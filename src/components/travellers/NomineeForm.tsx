@@ -66,8 +66,13 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
     }
   };
 
+  // Function to handle form clicks to avoid event bubbling issues
+  const handleFormClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className="mb-12">
+    <div className="mb-12" onClick={handleFormClick}>
       <h3 className="text-xl font-medium mb-6">Nominee Details</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <InputField
@@ -85,7 +90,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
             <SelectTrigger className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white text-base">
               <SelectValue placeholder="Select relationship" />
             </SelectTrigger>
-            <SelectContent position="popper" className="max-h-[300px] z-50">
+            <SelectContent position="popper" className="max-h-[300px] z-[9999]">
               {RELATIONSHIP_OPTIONS.map((relation) => (
                 <SelectItem key={relation} value={relation}>
                      {relation.charAt(0).toUpperCase() + relation.slice(1)}
@@ -95,7 +100,7 @@ const NomineeForm: React.FC<NomineeFormProps> = ({
           </Select>
         </div>
         
-        <div>
+        <div className="relative z-50">
           <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Date of Birth</label>
           <DatePicker
             value={parseDOB(nominee.dob)}

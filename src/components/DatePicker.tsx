@@ -47,18 +47,17 @@ export function DatePicker({
     }
   }, [open]);
 
-  // Ensure the calendar closes when Escape key is pressed
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) {
-        setOpen(false);
-        setTimeout(() => triggerRef.current?.focus(), 10);
-      }
-    };
-    
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open]);
+  // Stop propagation on all events inside the popover content
+  const handleContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  // Handle calendar selection
+  const handleSelect = (date: Date | undefined) => {
+    onChange(date);
+    setOpen(false);
+    setTimeout(() => triggerRef.current?.focus(), 10);
+  };
 
   return (
     <div className="w-full">
@@ -75,6 +74,10 @@ export function DatePicker({
             )}
             disabled={disabled}
             type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(!open);
+            }}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value && isValid(value) ? (
@@ -85,7 +88,7 @@ export function DatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0 z-[100]" 
+          className="w-auto p-0 z-[9999]" 
           align="start"
           sideOffset={8}
           onEscapeKeyDown={() => {
@@ -93,23 +96,22 @@ export function DatePicker({
             setTimeout(() => triggerRef.current?.focus(), 10);
           }}
           onInteractOutside={(e) => {
+            e.preventDefault(); // Prevent default to keep the calendar open
+            e.stopPropagation(); // Stop event propagation
             setOpen(false);
+          }}
+          onClick={handleContentClick}
+          onPointerDownOutside={(e) => {
+            e.preventDefault();
           }}
         >
           <Calendar
             key={calendarKey}
             mode="single"
             selected={value}
-            onSelect={(date) => {
-              onChange(date);
-              setOpen(false);
-              // Return focus to the trigger button when a date is selected
-              setTimeout(() => {
-                triggerRef.current?.focus();
-              }, 10);
-            }}
+            onSelect={handleSelect}
             initialFocus
-            className="pointer-events-auto"
+            className={cn("p-3 pointer-events-auto z-[9999]")}
             disabled={(date) => {
               const today = new Date();
               
