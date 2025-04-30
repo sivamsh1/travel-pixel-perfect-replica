@@ -12,6 +12,10 @@ export interface TravellerDetails {
   age?: string;
   passportNumber?: string;
   name?: string;
+  forename?: string;  // Added forename field
+  lastname?: string;  // Added lastname field
+  salutation?: string; // Added salutation field
+  gender?: string;    // Added gender field
   address?: string;
   pincode?: string;
   city?: string;
@@ -19,7 +23,7 @@ export interface TravellerDetails {
   email?: string;
   hasPreExistingCondition?: boolean;
   medicalCondition?: string;
-  locationData?: LocationData; // Added location data
+  locationData?: LocationData;
 }
 
 export interface NomineeDetails {

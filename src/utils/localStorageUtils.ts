@@ -1,4 +1,3 @@
-
 interface LocationData {
   region: string;
   destination: string;
@@ -21,6 +20,10 @@ interface TravellerLocationData {
 interface TravellerDetail {
   passportNumber?: string;
   name?: string;
+  forename?: string;  // Added forename field
+  lastname?: string;  // Added lastname field
+  salutation?: string; // Added salutation field
+  gender?: string;    // Added gender field
   dob?: string;
   age?: string;
   address?: string;
@@ -29,7 +32,7 @@ interface TravellerDetail {
   mobileNo?: string;
   email?: string;
   hasPreExistingCondition?: boolean;
-  locationData?: TravellerLocationData; // Added location data
+  locationData?: TravellerLocationData;
 }
 
 interface NomineeData {

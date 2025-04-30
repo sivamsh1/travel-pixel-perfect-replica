@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import TravellerForm from './TravellerForm';
 import NomineeForm from './NomineeForm';
 import MedicalConditionSelector from './MedicalConditionSelector';
@@ -25,6 +25,18 @@ const TravellerDetailsContent: React.FC<TravellerDetailsContentProps> = ({ onCon
     errors,
     handleDateChange
   } = useTravellerDetails();
+
+  // Update name field when forename or lastname changes
+  useEffect(() => {
+    travellers.forEach((traveller, index) => {
+      if (traveller.forename && traveller.lastname) {
+        const fullName = `${traveller.forename} ${traveller.lastname}`;
+        if (fullName !== traveller.name) {
+          updateTraveller(index, { name: fullName });
+        }
+      }
+    });
+  }, [travellers]);
 
   return (
     <div className="flex flex-1 flex-col items-center px-6 max-w-4xl mx-auto w-full">

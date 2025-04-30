@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
@@ -89,6 +88,7 @@ export const useTravellerDetails = () => {
     let hasErrors = false;
     
     travellers.forEach((traveller, index) => {
+      // Check for medical conditions
       if (traveller.hasPreExistingCondition && traveller.medicalCondition) {
         toast({
           title: "Medical Condition Restriction",
@@ -98,6 +98,34 @@ export const useTravellerDetails = () => {
         hasErrors = true;
       }
 
+      // Validate new required fields
+      if (!traveller.salutation) {
+        newErrors[`traveller${index}Salutation`] = "Salutation is required";
+        hasErrors = true;
+      }
+      
+      if (!traveller.forename) {
+        newErrors[`traveller${index}Forename`] = "Forename is required";
+        hasErrors = true;
+      } else if (traveller.forename.length < 2) {
+        newErrors[`traveller${index}Forename`] = "Forename should be at least 2 characters";
+        hasErrors = true;
+      }
+      
+      if (!traveller.lastname) {
+        newErrors[`traveller${index}Lastname`] = "Lastname is required";
+        hasErrors = true;
+      } else if (traveller.lastname.length < 2) {
+        newErrors[`traveller${index}Lastname`] = "Lastname should be at least 2 characters";
+        hasErrors = true;
+      }
+      
+      if (!traveller.gender) {
+        newErrors[`traveller${index}Gender`] = "Gender is required";
+        hasErrors = true;
+      }
+
+      // Keep existing validation
       if (!traveller.passportNumber) {
         newErrors[`traveller${index}Passport`] = "Passport number is required";
         hasErrors = true;
@@ -106,10 +134,11 @@ export const useTravellerDetails = () => {
         hasErrors = true;
       }
       
-      if (!traveller.name) {
+      // Update name validation to use forename and lastname if available
+      if (!traveller.name && (!traveller.forename || !traveller.lastname)) {
         newErrors[`traveller${index}Name`] = "Name is required";
         hasErrors = true;
-      } else if (traveller.name.length < 3) {
+      } else if (traveller.name && traveller.name.length < 3) {
         newErrors[`traveller${index}Name`] = "Name should be at least 3 characters";
         hasErrors = true;
       }

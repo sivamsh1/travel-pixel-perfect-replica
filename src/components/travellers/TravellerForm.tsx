@@ -1,7 +1,15 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
 import { Loader2 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TravellerFormProps {
   traveller: TravellerDetails;
@@ -49,11 +57,74 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
     }
   };
 
+  // Auto-fill gender based on salutation
+  useEffect(() => {
+    if (traveller.salutation) {
+      let gender = "";
+      if (traveller.salutation === "Mr") {
+        gender = "Male";
+      } else if (traveller.salutation === "Mrs" || traveller.salutation === "Ms") {
+        gender = "Female";
+      }
+      
+      if (gender) {
+        updateTraveller(index, { gender });
+      }
+    }
+  }, [traveller.salutation, index, updateTraveller]);
+
   return (
     <div className="mb-12">
       <h3 className="text-xl font-medium mb-6">Traveller {index + 1} Details</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Salutation<span className="text-red-500">*</span></label>
+          <Select 
+            value={traveller.salutation || ''} 
+            onValueChange={(value) => updateTraveller(index, { salutation: value })}
+          >
+            <SelectTrigger className={`w-full p-3 border ${errors[`traveller${index}Salutation`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary h-12`}>
+              <SelectValue placeholder="Select salutation" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Mr">Mr</SelectItem>
+              <SelectItem value="Mrs">Mrs</SelectItem>
+              <SelectItem value="Ms">Ms</SelectItem>
+              <SelectItem value="Dr">Dr</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors[`traveller${index}Salutation`] && (
+            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Salutation`]}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Forename<span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            className={`w-full p-3 border ${errors[`traveller${index}Forename`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
+            value={traveller.forename || ''}
+            onChange={(e) => updateTraveller(index, { forename: e.target.value })}
+          />
+          {errors[`traveller${index}Forename`] && (
+            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Forename`]}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Lastname<span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            className={`w-full p-3 border ${errors[`traveller${index}Lastname`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
+            value={traveller.lastname || ''}
+            onChange={(e) => updateTraveller(index, { lastname: e.target.value })}
+          />
+          {errors[`traveller${index}Lastname`] && (
+            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Lastname`]}</p>
+          )}
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Passport Number<span className="text-red-500">*</span></label>
           <input
@@ -69,15 +140,22 @@ const TravellerForm: React.FC<TravellerFormProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Name<span className="text-red-500">*</span></label>
-          <input
-            type="text"
-            className={`w-full p-3 border ${errors[`traveller${index}Name`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
-            value={traveller.name || ''}
-            onChange={(e) => updateTraveller(index, { name: e.target.value })}
-          />
-          {errors[`traveller${index}Name`] && (
-            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Name`]}</p>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Gender<span className="text-red-500">*</span></label>
+          <Select 
+            value={traveller.gender || ''} 
+            onValueChange={(value) => updateTraveller(index, { gender: value })}
+          >
+            <SelectTrigger className={`w-full p-3 border ${errors[`traveller${index}Gender`] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary h-12`}>
+              <SelectValue placeholder="Select gender" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Male">Male</SelectItem>
+              <SelectItem value="Female">Female</SelectItem>
+              <SelectItem value="Other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors[`traveller${index}Gender`] && (
+            <p className="text-sm font-medium text-destructive mt-1">{errors[`traveller${index}Gender`]}</p>
           )}
         </div>
 
