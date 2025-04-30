@@ -9,7 +9,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/DatePicker";
-import { differenceInYears } from 'date-fns';
+import { differenceInYears, subYears } from 'date-fns';
 import { toast } from "@/components/ui/use-toast";
 import { parseDOB } from '@/utils/travellerUtils';
 import InputField from './InputField';
@@ -113,6 +113,8 @@ const NomineeForm: React.FC<NomineeFormProps> = React.memo(({
             placeholder="Select date"
             error={dobError}
             className="w-full h-12"
+            minDate={subYears(new Date(), 100)} // 100 years ago
+            maxDate={subYears(new Date(), 18)}  // 18 years ago
             disableFuture
           />
         </div>
