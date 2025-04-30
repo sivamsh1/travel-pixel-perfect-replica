@@ -104,19 +104,17 @@ export function DatePicker({
             initialFocus
             className="p-3 pointer-events-auto z-[9999]"
             disabled={(date) => {
-              const today = new Date();
-              
               // Disable future dates if requested
-              if (disableFuture && date > today) {
+              if (disableFuture && date > new Date()) {
                 return true;
               }
               
-              // Disable dates before minDate
+              // Disable dates before minDate if specified
               if (minDate && date < minDate) {
                 return true;
               }
               
-              // Disable dates after maxDate
+              // Disable dates after maxDate if specified
               if (maxDate && date > maxDate) {
                 return true;
               }
