@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -10,14 +9,7 @@ import TravellerDetails from '@/components/review/TravellerDetails';
 import ProductDetails from '@/components/review/ProductDetails';
 import PricingSummary from '@/components/review/PricingSummary';
 import TermsAndPayment from '@/components/review/TermsAndPayment';
-
-const steps = [
-  { id: 1, name: "Trip Details" },
-  { id: 2, name: "Choose Plan" },
-  { id: 3, name: "Choose Add-Ons" },
-  { id: 4, name: "Travellers Details" },
-  { id: 5, name: "Review & Pay" }
-];
+import { formSteps } from '@/constants/formSteps';
 
 const ReviewStep = () => {
   const {
@@ -44,7 +36,7 @@ const ReviewStep = () => {
       <div className="px-6 md:px-12">
         <BackButton />
         <ProgressIndicator 
-          steps={steps} 
+          steps={formSteps} 
           currentStep={5} 
           completedSteps={[1, 2, 3, 4]}
         />
