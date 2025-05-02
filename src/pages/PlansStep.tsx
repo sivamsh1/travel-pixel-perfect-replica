@@ -73,21 +73,24 @@ const PlansStep = () => {
 
   // Apply filters to quotes
   const filteredQuotes = useMemo(() => {
-    if (!quotes || quotes.length === 0) return [];
+    // Ensure quotes is always an array
+    const safeQuotes = Array.isArray(quotes) ? quotes : [];
     
-    let filtered = [...quotes];
+    if (safeQuotes.length === 0) return [];
+    
+    let filtered = [...safeQuotes];
     
     // Filter by insurer
     if (selectedInsurer !== 'all') {
-      filtered = filtered.filter(plan => plan.provider === selectedInsurer);
+      filtered = filtered.filter(plan => plan?.provider === selectedInsurer);
     }
     
     // Sort by price (netPremium)
     if (selectedPriceSort !== 'all') {
       filtered = filtered.sort((a, b) => {
         // Ensure we're sorting by netPremium numeric values
-        const premiumA = a.netPremium || 0;
-        const premiumB = b.netPremium || 0;
+        const premiumA = a?.netPremium || 0;
+        const premiumB = b?.netPremium || 0;
         
         return selectedPriceSort === 'lowToHigh' 
           ? premiumA - premiumB 
@@ -99,6 +102,8 @@ const PlansStep = () => {
   }, [quotes, selectedInsurer, selectedPriceSort]);
 
   const handleBuyNow = (planName: string) => {
+    if (!quotes) return;
+    
     // Find the selected plan from quotes
     const selectedPlanData = quotes.find(plan => plan.name === planName);
     

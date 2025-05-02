@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -32,22 +33,22 @@ export const useInsuranceQuotes = () => {
   const requestPayload = useMemo(() => {
     const storageData = getFromLocalStorage();
     
+    // Add a null/undefined check for travellers
     const dob = storageData?.travellers?.details?.map(traveller => {
-      if (traveller.dob && /^\d{2}\/\d{2}\/\d{4}$/.test(traveller.dob)) {
+      if (!traveller?.dob) return null;
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(traveller.dob)) {
         return traveller.dob;
       }
-      if (traveller.dob) {
-        try {
-          const parsedDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
-          if (isValid(parsedDate)) {
-            return format(parsedDate, 'dd/MM/yyyy');
-          }
-        } catch (error) {
-          console.error('Error parsing traveller DOB:', error);
+      try {
+        const parsedDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
+        if (isValid(parsedDate)) {
+          return format(parsedDate, 'dd/MM/yyyy');
         }
+      } catch (error) {
+        console.error('Error parsing traveller DOB:', error);
       }
       return null;
-    }).filter(Boolean);
+    }).filter(Boolean) || [];
     
     let startDate = '';
     let endDate = '';
@@ -104,11 +105,11 @@ export const useInsuranceQuotes = () => {
         const data = await response.json();
         
         if (data && data.result) {
-          return Object.entries(data.result).map(([key, value]: [string, any]) => {
-            let planName = value.planName || key;
+          return Object.entries(data.result || {}).map(([key, value]: [string, any]) => {
+            let planName = value?.planName || key;
             planName = planName.replace(/_/g, ' ');
 
-            let provider = value.companyName || 'Reliance';
+            let provider = value?.companyName || 'Reliance';
             const insurer = getInsurerFromKey(key);
             
             let logo: LogoPath = LOGO_PATHS.reliance; // Default to Reliance logo
@@ -123,16 +124,16 @@ export const useInsuranceQuotes = () => {
                 : value.netPremium;
             }
 
-            const covers: any[] = Array.isArray(value.covers) ? value.covers : [];
+            const covers = Array.isArray(value?.covers) ? value.covers : [];
 
             const benefits = covers.slice(0, 3).map((cover) => ({
               icon: "✓",
-              text: cover.coverName,
-              amount: cover.coverAmount
+              text: cover?.coverName || '',
+              amount: cover?.coverAmount || ''
             }));
 
             const coveragePoints = covers.map(
-              (cover) => `${cover.coverName}: ₹${cover.coverAmount}`
+              (cover) => `${cover?.coverName || ''}: ₹${cover?.coverAmount || ''}`
             );
 
             return {
