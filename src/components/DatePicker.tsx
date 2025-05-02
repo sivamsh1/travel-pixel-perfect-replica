@@ -21,6 +21,7 @@ interface DatePickerProps {
   disableFuture?: boolean;
   minDate?: Date;
   maxDate?: Date;
+  id?: string; // Added id prop
 }
 
 export function DatePicker({
@@ -33,6 +34,7 @@ export function DatePicker({
   disableFuture = false,
   minDate,
   maxDate,
+  id, // Added id to destructuring
 }: DatePickerProps) {
   // Create a ref for the popover trigger to manage focus
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -77,6 +79,7 @@ export function DatePicker({
             disabled={disabled}
             type="button"
             onClick={handleButtonClick}
+            id={id} // Add id to the button
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value && isValid(value) ? (
