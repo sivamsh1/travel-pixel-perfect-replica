@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -157,6 +156,32 @@ const PlanCard: React.FC<PlanCardProps> = ({
     }
   };
 
+  // New helper function to shorten coverage point text
+  const shortenCoveragePoint = (point: string): string => {
+    // Extract the amount from the beginning
+    const amountMatch = point.match(/\$\s*(\d+,?)+/);
+    const amount = amountMatch ? amountMatch[0] : '';
+    
+    // Identify common benefit types to extract the main part
+    if (point.toLowerCase().includes('medical')) {
+      return `${amount} Medical Expenses`;
+    } else if (point.toLowerCase().includes('evacuation')) {
+      return `${amount} Emergency Evacuation`;
+    } else if (point.toLowerCase().includes('baggage')) {
+      return `${amount} Baggage Coverage`;
+    } else if (point.toLowerCase().includes('delay')) {
+      return `${amount} Travel Delay`;
+    } else if (point.toLowerCase().includes('repatriation')) {
+      return `${amount} Repatriation`;
+    } else {
+      // For other cases, just take the first few words
+      const words = point.split(' ');
+      return words.length > 4 ? 
+        `${amount} ${words.slice(1, 3).join(' ')}` : 
+        point;
+    }
+  };
+
   return (
     <div className="border border-[#E5E7EB] rounded-2xl p-6 relative">
       <div className="flex flex-col space-y-5">
@@ -208,11 +233,11 @@ const PlanCard: React.FC<PlanCardProps> = ({
           </div>
           
           <div className="flex-1 px-4 py-2 flex items-center">
-            {/* Display only 2 benefits with proper spacing */}
+            {/* Display only 2 benefits with proper spacing and shortened text */}
             <div className="flex items-center gap-6 flex-1">
               {plan.coveragePoints.slice(0, 2).map((point, index) => (
                 <div key={index} className="text-gray-600 text-sm whitespace-nowrap">
-                  {point}
+                  {shortenCoveragePoint(point)}
                 </div>
               ))}
             </div>
