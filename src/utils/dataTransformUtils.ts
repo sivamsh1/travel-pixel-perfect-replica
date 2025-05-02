@@ -46,7 +46,7 @@ export const createAddressPayload = (traveller: any) => {
     streetNumber: traveller.address || "123 Main Street",
     street: traveller.city || "New Delhi",
     district: locationData.districtId ? locationData.districtId.toString() : "1",
-    state: locationData.stateId ? locationData.stateId.toString() : "1",
+    state: locationData._id || (locationData.stateId ? locationData.stateId.toString() : "1"),
     city: locationData.cityId ? locationData.cityId.toString() : "1",
     country: "India",
     pincode: traveller.pincode || "110001"
