@@ -201,22 +201,25 @@ const PlanCard: React.FC<PlanCardProps> = ({
           ))}
         </div>
         
-        {/* Plan benefits bar */}
-        <div className="flex items-center border border-[#E5E7EB] rounded-md overflow-hidden">
+        {/* Plan benefits bar - REDESIGNED */}
+        <div className="flex items-center border border-[#E5E7EB] rounded-md bg-gray-50">
           <div className="bg-[#00B2FF] text-white py-2 px-4 whitespace-nowrap">
             Plan Benefits
           </div>
           
-          <div className="flex-1 overflow-x-auto whitespace-nowrap px-4 py-2 flex gap-6">
-            {plan.coveragePoints.slice(0, 2).map((point, index) => (
-              <div key={index} className="text-gray-600">
-                {point}
-              </div>
-            ))}
-          </div>
-          
-          <div className="text-[#00B2FF] px-4 py-2 cursor-pointer whitespace-nowrap">
-            View All &gt;
+          <div className="flex-1 px-4 py-2 flex items-center">
+            {/* Display only 2 benefits with proper spacing */}
+            <div className="flex items-center gap-6 flex-1">
+              {plan.coveragePoints.slice(0, 2).map((point, index) => (
+                <div key={index} className="text-gray-600 text-sm whitespace-nowrap">
+                  {point}
+                </div>
+              ))}
+            </div>
+            
+            <div className="text-[#00B2FF] px-2 py-2 cursor-pointer whitespace-nowrap ml-auto">
+              View All &gt;
+            </div>
           </div>
         </div>
         
