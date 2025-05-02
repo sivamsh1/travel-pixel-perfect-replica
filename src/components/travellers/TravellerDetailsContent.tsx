@@ -52,7 +52,11 @@ const TravellerDetailsContent: React.FC<TravellerDetailsContentProps> = React.me
           />
         ))}
         
-        <NomineeForm nominee={nominee} updateNominee={updateNominee} />
+        <NomineeForm 
+          nominee={nominee} 
+          updateNominee={updateNominee} 
+          errors={errors}
+        />
         
         <MedicalConditionSelector
           traveller={travellers[0]}

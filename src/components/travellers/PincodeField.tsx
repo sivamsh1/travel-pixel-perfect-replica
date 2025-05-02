@@ -9,6 +9,7 @@ interface PincodeFieldProps {
   isLoading: boolean;
   error?: string;
   id?: string;
+  required?: boolean;
 }
 
 const PincodeField: React.FC<PincodeFieldProps> = ({ 
@@ -16,15 +17,16 @@ const PincodeField: React.FC<PincodeFieldProps> = ({
   onChange, 
   isLoading, 
   error,
-  id
+  id,
+  required = false
 }) => {
   return (
-    <FormField label="Pincode" error={error}>
+    <FormField label="Pincode" error={error} required={required}>
       <div className="relative">
         <input
           id={id}
           type="text"
-          className={`w-full p-3 border ${error ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
+          className={`w-full p-3 border ${error ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
           value={value || ''}
           onChange={onChange}
           maxLength={6}

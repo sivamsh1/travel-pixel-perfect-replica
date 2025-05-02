@@ -52,6 +52,44 @@ export const useTravellerDetails = () => {
     }
   }, [updateTraveller, errors]);
 
+  // Memoized update nominee function with error clearing
+  const memoizedUpdateNominee = useCallback((details: Partial<any>) => {
+    updateNominee(details);
+    
+    // Clear validation errors when nominee fields change
+    if (details) {
+      Object.keys(details).forEach(key => {
+        const errorKey = `nominee${key.charAt(0).toUpperCase() + key.slice(1)}`;
+        if (errors[errorKey]) {
+          setErrors(prev => {
+            const updated = { ...prev };
+            delete updated[errorKey];
+            return updated;
+          });
+        }
+      });
+    }
+  }, [updateNominee, errors]);
+
+  // Memoized update proposer function with error clearing
+  const memoizedUpdateProposer = useCallback((details: Partial<any>) => {
+    updateProposer(details);
+    
+    // Clear validation errors when proposer fields change
+    if (details) {
+      Object.keys(details).forEach(key => {
+        const errorKey = `proposer${key.charAt(0).toUpperCase() + key.slice(1)}`;
+        if (errors[errorKey]) {
+          setErrors(prev => {
+            const updated = { ...prev };
+            delete updated[errorKey];
+            return updated;
+          });
+        }
+      });
+    }
+  }, [updateProposer, errors]);
+
   // Load data from local storage on initial render
   useEffect(() => {
     if (isInitialized) return;
@@ -134,11 +172,12 @@ export const useTravellerDetails = () => {
     setErrors(newErrors);
     
     // Find the first error key for scrolling
-    if (Object.keys(newErrors).length > 0) {
-      firstErrorRef.current = Object.keys(newErrors)[0];
+    const errorKeys = Object.keys(newErrors);
+    if (errorKeys.length > 0) {
+      firstErrorRef.current = errorKeys[0];
     }
     
-    return Object.keys(newErrors).length === 0;
+    return errorKeys.length === 0;
   }, [travellers, nominee, proposer]);
 
   // Save travellers to localStorage - memoized to prevent unnecessary re-renders
@@ -167,8 +206,8 @@ export const useTravellerDetails = () => {
     nominee,
     proposer,
     updateTraveller: memoizedUpdateTraveller,
-    updateNominee,
-    updateProposer,
+    updateNominee: memoizedUpdateNominee,
+    updateProposer: memoizedUpdateProposer,
     formattedStartDate,
     formattedEndDate,
     errors,

@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -46,7 +46,7 @@ const TravellersDetailsStep = () => {
           const fieldNames = missingFields.map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(", ");
           toast({
             title: "Proposer Details Required",
-            description: `Please fill in the required proposer fields: ${fieldNames}`,
+            description: `Please complete the required proposer fields: ${fieldNames}`,
             variant: "destructive"
           });
           return;

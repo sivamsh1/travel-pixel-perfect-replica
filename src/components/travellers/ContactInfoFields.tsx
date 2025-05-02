@@ -37,6 +37,7 @@ const ContactInfoFields: React.FC<ContactInfoFieldsProps> = ({
         label="Address"
         value={traveller.address || ''}
         onChange={onAddressChange}
+        error={errors[`traveller${index}Address`]}
       />
 
       <PincodeField
@@ -54,6 +55,7 @@ const ContactInfoFields: React.FC<ContactInfoFieldsProps> = ({
         onChange={() => {}}
         readOnly
         disabled
+        error={errors[`traveller${index}City`]}
       />
 
       <InputField

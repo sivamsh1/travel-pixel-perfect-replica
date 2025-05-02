@@ -13,10 +13,12 @@ import { differenceInYears, subYears } from 'date-fns';
 import { toast } from "@/components/ui/use-toast";
 import { parseDOB } from '@/utils/travellerUtils';
 import InputField from './InputField';
+import FormField from './FormField';
 
 interface NomineeFormProps {
   nominee: NomineeDetails;
   updateNominee: (details: Partial<NomineeDetails>) => void;
+  errors?: { [key: string]: string };
 }
 
 const RELATIONSHIP_OPTIONS = [
@@ -37,7 +39,8 @@ const RELATIONSHIP_OPTIONS = [
 
 const NomineeForm: React.FC<NomineeFormProps> = React.memo(({
   nominee,
-  updateNominee
+  updateNominee,
+  errors = {}
 }) => {
   const [dobError, setDobError] = useState<string>("");
 
@@ -84,39 +87,48 @@ const NomineeForm: React.FC<NomineeFormProps> = React.memo(({
           label="Nominee Name"
           value={nominee.name || ''}
           onChange={handleNameChange}
+          error={errors.nomineeName}
+          id="nomineeName"
         />
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Relationship</label>
-          <Select
-            value={nominee.relationship || ""}
-            onValueChange={handleRelationshipChange}
-          >
-            <SelectTrigger className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white text-base">
-              <SelectValue placeholder="Select relationship" />
-            </SelectTrigger>
-            <SelectContent position="popper" className="max-h-[300px] z-[9999]">
-              {RELATIONSHIP_OPTIONS.map((relation) => (
-                <SelectItem key={relation} value={relation}>
-                     {relation.charAt(0).toUpperCase() + relation.slice(1)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FormField label="Nominee Relationship" error={errors.nomineeRelationship}>
+            <Select
+              value={nominee.relationship || ""}
+              onValueChange={handleRelationshipChange}
+            >
+              <SelectTrigger 
+                id="nomineeRelationship"
+                className={`w-full h-12 p-3 border ${errors.nomineeRelationship ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-white text-base`}
+                aria-invalid={!!errors.nomineeRelationship}
+              >
+                <SelectValue placeholder="Select relationship" />
+              </SelectTrigger>
+              <SelectContent position="popper" className="max-h-[300px] z-[9999]">
+                {RELATIONSHIP_OPTIONS.map((relation) => (
+                  <SelectItem key={relation} value={relation}>
+                       {relation.charAt(0).toUpperCase() + relation.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nominee Date of Birth</label>
-          <DatePicker
-            value={parseDOB(nominee.dob)}
-            onChange={handleDateChange}
-            placeholder="Select date"
-            error={dobError}
-            className="w-full h-12"
-            minDate={subYears(new Date(), 100)} // 100 years ago
-            maxDate={subYears(new Date(), 18)}  // 18 years ago
-            disableFuture
-          />
+          <FormField label="Nominee Date of Birth" error={errors.nomineeDob || dobError}>
+            <DatePicker
+              value={parseDOB(nominee.dob)}
+              onChange={handleDateChange}
+              placeholder="Select date"
+              error={errors.nomineeDob || dobError}
+              className={`w-full h-12 ${errors.nomineeDob || dobError ? 'border-red-500 ring-1 ring-red-500' : ''}`}
+              minDate={subYears(new Date(), 100)} // 100 years ago
+              maxDate={subYears(new Date(), 18)}  // 18 years ago
+              disableFuture
+              id="nomineeDob"
+            />
+          </FormField>
         </div>
       </div>
     </div>

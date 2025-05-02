@@ -53,7 +53,7 @@ const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({
         onChange={onSalutationChange}
         options={salutationOptions}
         placeholder="Select salutation"
-        required
+        required={true}
         error={errors[`traveller${index}Salutation`]}
       />
 
@@ -62,7 +62,7 @@ const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({
         label="Forename"
         value={traveller.forename || ''}
         onChange={onForenameChange}
-        required
+        required={true}
         error={errors[`traveller${index}Forename`]}
       />
 
@@ -71,7 +71,7 @@ const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({
         label="Lastname"
         value={traveller.lastname || ''}
         onChange={onLastnameChange}
-        required
+        required={true}
         error={errors[`traveller${index}Lastname`]}
       />
 
@@ -80,7 +80,7 @@ const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({
         label="Passport Number"
         value={traveller.passportNumber || ''}
         onChange={onPassportChange}
-        required
+        required={true}
         maxLength={10}
         error={errors[`traveller${index}Passport`]}
       />
@@ -92,7 +92,7 @@ const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({
         onChange={onGenderChange}
         options={genderOptions}
         placeholder="Select gender"
-        required
+        required={true}
         error={errors[`traveller${index}Gender`]}
       />
 
@@ -103,6 +103,7 @@ const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({
         onChange={() => {}}
         readOnly
         disabled
+        required={true}
         error={errors[`traveller${index}Dob`]}
       />
     </>

@@ -70,6 +70,10 @@ export const validateNominee = (nominee: NomineeData, errors: ValidationErrors =
     newErrors.nomineeDob = "Nominee date of birth is required";
   }
   
+  if (nominee.name && !nominee.relationship) {
+    newErrors.nomineeRelationship = "Nominee relationship is required";
+  }
+  
   return newErrors;
 };
 
@@ -115,11 +119,11 @@ export const validateForm = (travellers: TravellerDetail[], nominee: NomineeData
   // Validate proposer
   errors = validateProposer(proposer, errors);
   
-  // If we have errors, show a summary toast without listing every error
+  // If we have errors, show a gentle reminder toast
   if (Object.keys(errors).length > 0) {
     toast({
-      title: "Validation Error",
-      description: "Please correct the highlighted fields and try again.",
+      title: "Please check your information",
+      description: "Please fill in all required fields correctly before continuing.",
       variant: "destructive"
     });
   }

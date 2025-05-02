@@ -19,7 +19,7 @@ const FormField: React.FC<FormFieldProps> = ({
     <div className="mb-4">
       <label className={`block text-sm font-medium ${error ? 'text-red-500' : 'text-gray-700'} mb-1`}>
         {label}
-        {required && <span className="text-red-500">*</span>}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       {children}
       {error && (

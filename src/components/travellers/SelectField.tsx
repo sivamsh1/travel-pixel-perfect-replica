@@ -23,7 +23,7 @@ interface SelectFieldProps {
   required?: boolean;
   error?: string;
   className?: string;
-  id?: string; // Added ID prop for focus management
+  id?: string;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -35,7 +35,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   required = false,
   error,
   className = "h-12",
-  id, // Use ID for element targeting
+  id,
 }) => {
   return (
     <FormField label={label} required={required} error={error}>
@@ -45,7 +45,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
       >
         <SelectTrigger 
           id={id}
-          className={`w-full p-3 border ${error ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${className}`}
+          className={`w-full p-3 border ${error ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${className}`}
           aria-invalid={!!error}
           aria-describedby={error ? `${id}-error` : undefined}
         >
