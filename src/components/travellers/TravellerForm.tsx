@@ -1,10 +1,9 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
-import SelectField from './SelectField';
-import InputField from './InputField';
-import PincodeField from './PincodeField';
+import PersonalInfoFields from './PersonalInfoFields';
+import ContactInfoFields from './ContactInfoFields';
 
 interface TravellerFormProps {
   traveller: TravellerDetails;
@@ -52,49 +51,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
     }
   }, [index, lastFetchedPincode, searchCityByPincode, updateTraveller]);
 
-  // Use a stable function for input change handlers
-  const createInputChangeHandler = useCallback((field: string) => {
-    return (e: React.ChangeEvent<HTMLInputElement>) => {
-      updateTraveller(index, { [field]: e.target.value });
-    };
-  }, [index, updateTraveller]);
-
-  // Use a stable function for select change handlers
-  const createSelectChangeHandler = useCallback((field: string) => {
-    return (value: string) => {
-      updateTraveller(index, { [field]: value });
-    };
-  }, [index, updateTraveller]);
-
-  // Auto-fill gender based on salutation - moved to an effect with dependencies
-  useEffect(() => {
-    if (traveller.salutation && !traveller.gender) {
-      let gender = "";
-      if (traveller.salutation === "Mr") {
-        gender = "Male";
-      } else if (traveller.salutation === "Mrs" || traveller.salutation === "Ms") {
-        gender = "Female";
-      }
-      
-      if (gender) {
-        updateTraveller(index, { gender });
-      }
-    }
-  }, [traveller.salutation, index, updateTraveller, traveller.gender]);
-
-  const salutationOptions = [
-    { value: "Mr", label: "Mr" },
-    { value: "Mrs", label: "Mrs" },
-    { value: "Ms", label: "Ms" },
-    { value: "Dr", label: "Dr" }
-  ];
-
-  const genderOptions = [
-    { value: "Male", label: "Male" },
-    { value: "Female", label: "Female" },
-    { value: "Other", label: "Other" }
-  ];
-
+  // Create input change handlers
   const handleForenameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     updateTraveller(index, { forename: e.target.value });
   }, [index, updateTraveller]);
@@ -132,107 +89,26 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
       <h3 className="text-xl font-medium mb-6">Traveller {index + 1} Details</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6" onClick={(e) => e.stopPropagation()}>
-        <SelectField
-          id={`traveller${index}Salutation`}
-          label="Salutation"
-          value={traveller.salutation || ''}
-          onChange={handleSalutationChange}
-          options={salutationOptions}
-          placeholder="Select salutation"
-          required
-          error={errors[`traveller${index}Salutation`]}
+        <PersonalInfoFields
+          index={index}
+          traveller={traveller}
+          errors={errors}
+          onSalutationChange={handleSalutationChange}
+          onForenameChange={handleForenameChange}
+          onLastnameChange={handleLastnameChange}
+          onGenderChange={handleGenderChange}
+          onPassportChange={handlePassportChange}
         />
-
-        <InputField
-          id={`traveller${index}Forename`}
-          label="Forename"
-          value={traveller.forename || ''}
-          onChange={handleForenameChange}
-          required
-          error={errors[`traveller${index}Forename`]}
-        />
-
-        <InputField
-          id={`traveller${index}Lastname`}
-          label="Lastname"
-          value={traveller.lastname || ''}
-          onChange={handleLastnameChange}
-          required
-          error={errors[`traveller${index}Lastname`]}
-        />
-
-        <InputField
-          id={`traveller${index}Passport`}
-          label="Passport Number"
-          value={traveller.passportNumber || ''}
-          onChange={handlePassportChange}
-          required
-          maxLength={10}
-          error={errors[`traveller${index}Passport`]}
-        />
-
-        <SelectField
-          id={`traveller${index}Gender`}
-          label="Gender"
-          value={traveller.gender || ''}
-          onChange={handleGenderChange}
-          options={genderOptions}
-          placeholder="Select gender"
-          required
-          error={errors[`traveller${index}Gender`]}
-        />
-
-        <InputField
-          id={`traveller${index}Dob`}
-          label="Date of Birth"
-          value={traveller.dob || ''}
-          onChange={() => {}}
-          readOnly
-          disabled
-          error={errors[`traveller${index}Dob`]}
-        />
-
-        <InputField
-          id={`traveller${index}Address`}
-          label="Address"
-          value={traveller.address || ''}
-          onChange={handleAddressChange}
-        />
-
-        <PincodeField
-          id={`traveller${index}Pincode`}
-          value={traveller.pincode || ''}
-          onChange={handlePincodeChange}
-          isLoading={isLoading}
-          error={errors[`traveller${index}Pincode`]}
-        />
-
-        <InputField
-          id={`traveller${index}City`}
-          label="City"
-          value={traveller.city || ''}
-          onChange={() => {}}
-          readOnly
-          disabled
-        />
-
-        <InputField
-          id={`traveller${index}Mobile`}
-          label="Mobile No."
-          type="tel"
-          value={traveller.mobileNo || ''}
-          onChange={handleMobileChange}
-          maxLength={10}
-          error={errors[`traveller${index}Mobile`]}
-        />
-
-        <InputField
-          id={`traveller${index}Email`}
-          label="Email"
-          type="email"
-          value={traveller.email || ''}
-          onChange={handleEmailChange}
-          error={errors[`traveller${index}Email`]}
+        
+        <ContactInfoFields
+          index={index}
+          traveller={traveller}
+          errors={errors}
+          onAddressChange={handleAddressChange}
+          onPincodeChange={handlePincodeChange}
+          onMobileChange={handleMobileChange}
+          onEmailChange={handleEmailChange}
+          isLoadingPincode={isLoading}
         />
       </div>
     </div>
