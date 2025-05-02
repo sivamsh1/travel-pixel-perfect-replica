@@ -24,7 +24,7 @@ const PincodeField: React.FC<PincodeFieldProps> = ({
         <input
           id={id}
           type="text"
-          className={`w-full p-3 border ${error ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
+          className={`w-full p-3 border ${error ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
           value={value || ''}
           onChange={onChange}
           maxLength={6}
