@@ -42,7 +42,8 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
             stateId: locationData.stateId,
             districtId: locationData.districtId,
             cityId: locationData.cityId,
-            cityName: locationData.cityName
+            cityName: locationData.cityName,
+            _id: locationData._id // Store the _id in traveller's locationData
           }
         });
         setAutoFilled(true);

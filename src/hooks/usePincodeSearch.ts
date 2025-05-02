@@ -7,6 +7,7 @@ interface LocationData {
   districtId: number;
   cityId: number;
   cityName: string;
+  _id: string; // Added _id field
 }
 
 export const usePincodeSearch = () => {
@@ -38,7 +39,8 @@ export const usePincodeSearch = () => {
           stateId: firstResult.stateId,
           districtId: firstResult.districtId,
           cityId: firstResult.cityId,
-          cityName: firstResult.cityName
+          cityName: firstResult.cityName,
+          _id: firstResult._id // Store the _id from the API response
         };
       } else {
         toast({

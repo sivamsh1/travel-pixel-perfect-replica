@@ -16,6 +16,7 @@ export interface TravellerLocationData {
   districtId: number;
   cityId: number;
   cityName: string;
+  _id: string; // Added _id field
 }
 
 export interface TravellerDetail {

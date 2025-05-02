@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface LocationData {
@@ -5,6 +6,7 @@ export interface LocationData {
   districtId: number;
   cityId: number;
   cityName: string;
+  _id: string; // Added _id field
 }
 
 export interface TravellerDetails {
