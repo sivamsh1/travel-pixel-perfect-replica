@@ -18,7 +18,7 @@ const ProgressIndicator = ({ steps, currentStep, completedSteps }: ProgressIndic
   return (
     <div className="flex items-center justify-center w-full max-w-3xl mx-auto mt-8 mb-12">
       <div className="w-full relative">
-        {/* Horizontal connecting line */}
+        {/* Main horizontal line */}
         <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200" />
         
         {/* Steps container */}
@@ -26,6 +26,7 @@ const ProgressIndicator = ({ steps, currentStep, completedSteps }: ProgressIndic
           {steps.map((step) => {
             const isCompleted = completedSteps.includes(step.id);
             const isActive = currentStep === step.id;
+            const isLast = step.id === steps.length;
             
             return (
               <div 
@@ -37,30 +38,31 @@ const ProgressIndicator = ({ steps, currentStep, completedSteps }: ProgressIndic
                   className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center relative z-10",
                     isActive 
-                      ? "bg-primary border-2 border-primary" 
+                      ? "bg-white border border-primary" 
                       : isCompleted
                         ? "bg-primary"
-                        : "bg-white border-2 border-gray-200"
+                        : "bg-gray-200 border border-gray-200"
                   )}
                 >
                   {isCompleted && (
                     <CheckIcon className="h-4 w-4 text-white" />
                   )}
-                  
-                  {isActive && (
-                    <div className="absolute -top-3">
-                      <Plane 
-                        className="h-5 w-5 text-primary" 
-                        style={{ transform: 'rotate(45deg)' }}
-                      />
-                    </div>
-                  )}
                 </div>
+                
+                {/* Plane indicator for current step */}
+                {isActive && (
+                  <div className="absolute top-3.5 transform translate-y-px">
+                    <Plane 
+                      className="h-5 w-5 text-primary" 
+                      style={{ transform: 'rotate(90deg)' }}
+                    />
+                  </div>
+                )}
                 
                 {/* Step label */}
                 <span 
                   className={cn(
-                    "text-xs mt-2 text-center",
+                    "text-sm mt-2 text-center",
                     isActive 
                       ? "text-primary font-medium" 
                       : isCompleted
