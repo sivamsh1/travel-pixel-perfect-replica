@@ -1,8 +1,8 @@
-
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PlanCard, { InsurancePlan } from '@/components/PlanCard';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
+import FlightLoader from "../../../public/lovable-uploads/Flightloader-ezgif.com-speed.gif";
 
 interface PlansListProps {
   apiQuotes: InsurancePlan[];
@@ -23,14 +23,22 @@ const PlansList: React.FC<PlansListProps> = ({
 }) => {
   const isMobile = useIsMobile();
   
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (isLoading && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [isLoading]);
+
   // First check if we're in a loading state
   if (isLoading) {
     return (
-      <div className="w-full flex flex-col items-center justify-center py-12">
+      <div className="w-full flex flex-col items-center justify-center">
         <img 
-          src="/lovable-uploads/loader/Flight loader.gif" 
+          src={FlightLoader} 
           alt="Loading" 
-          className="w-24 h-24 mb-4"
+          className="w-80 h-80 mb-4"
           onError={(e) => {
             // Fallback if image fails to load
             e.currentTarget.style.display = 'none';
@@ -44,6 +52,7 @@ const PlansList: React.FC<PlansListProps> = ({
           }}
         />
         <p className="text-gray-500 text-center">Loading available plans...</p>
+        <div ref={messagesEndRef} />
       </div>
     );
   }
