@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -61,12 +61,6 @@ const TravellersDetailsStep = () => {
         description: "Traveller details saved successfully",
       });
       navigate('/review');
-    } else {
-      toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields correctly",
-        variant: "destructive"
-      });
     }
   };
 

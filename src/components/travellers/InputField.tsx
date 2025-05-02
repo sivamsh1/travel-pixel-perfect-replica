@@ -14,6 +14,7 @@ interface InputFieldProps {
   disabled?: boolean;
   maxLength?: number;
   className?: string;
+  id?: string; // Added ID prop for focus management
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -28,10 +29,12 @@ const InputField: React.FC<InputFieldProps> = ({
   disabled = false,
   maxLength,
   className = "",
+  id, // Use ID for element targeting
 }) => {
   return (
     <FormField label={label} required={required} error={error}>
       <input
+        id={id}
         type={type}
         className={`w-full p-3 border ${error ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${readOnly || disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''} ${className}`}
         value={value || ''}
@@ -40,7 +43,14 @@ const InputField: React.FC<InputFieldProps> = ({
         readOnly={readOnly}
         disabled={disabled}
         maxLength={maxLength}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
       />
+      {error && (
+        <p id={`${id}-error`} className="text-sm font-medium text-destructive mt-1">
+          {error}
+        </p>
+      )}
     </FormField>
   );
 };

@@ -133,6 +133,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6" onClick={(e) => e.stopPropagation()}>
         <SelectField
+          id={`traveller${index}Salutation`}
           label="Salutation"
           value={traveller.salutation || ''}
           onChange={handleSalutationChange}
@@ -143,6 +144,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
         />
 
         <InputField
+          id={`traveller${index}Forename`}
           label="Forename"
           value={traveller.forename || ''}
           onChange={handleForenameChange}
@@ -151,6 +153,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
         />
 
         <InputField
+          id={`traveller${index}Lastname`}
           label="Lastname"
           value={traveller.lastname || ''}
           onChange={handleLastnameChange}
@@ -159,6 +162,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
         />
 
         <InputField
+          id={`traveller${index}Passport`}
           label="Passport Number"
           value={traveller.passportNumber || ''}
           onChange={handlePassportChange}
@@ -168,6 +172,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
         />
 
         <SelectField
+          id={`traveller${index}Gender`}
           label="Gender"
           value={traveller.gender || ''}
           onChange={handleGenderChange}
@@ -178,20 +183,24 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
         />
 
         <InputField
+          id={`traveller${index}Dob`}
           label="Date of Birth"
           value={traveller.dob || ''}
           onChange={() => {}}
           readOnly
           disabled
+          error={errors[`traveller${index}Dob`]}
         />
 
         <InputField
+          id={`traveller${index}Address`}
           label="Address"
           value={traveller.address || ''}
           onChange={handleAddressChange}
         />
 
         <PincodeField
+          id={`traveller${index}Pincode`}
           value={traveller.pincode || ''}
           onChange={handlePincodeChange}
           isLoading={isLoading}
@@ -199,6 +208,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
         />
 
         <InputField
+          id={`traveller${index}City`}
           label="City"
           value={traveller.city || ''}
           onChange={() => {}}
@@ -207,6 +217,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
         />
 
         <InputField
+          id={`traveller${index}Mobile`}
           label="Mobile No."
           type="tel"
           value={traveller.mobileNo || ''}
@@ -216,6 +227,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
         />
 
         <InputField
+          id={`traveller${index}Email`}
           label="Email"
           type="email"
           value={traveller.email || ''}

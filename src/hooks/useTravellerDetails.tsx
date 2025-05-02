@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 import { format } from 'date-fns';
@@ -21,6 +21,7 @@ export const useTravellerDetails = () => {
 
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isInitialized, setIsInitialized] = useState(false);
+  const firstErrorRef = useRef<string | null>(null);
 
   const formattedStartDate = startDate ? 
     format(new Date(startDate), 'do MMM') : 
@@ -99,10 +100,30 @@ export const useTravellerDetails = () => {
     };
   }, [travellers, updateTraveller]);
 
+  // Effect to scroll to and focus first error
+  useEffect(() => {
+    if (firstErrorRef.current) {
+      const elementId = firstErrorRef.current;
+      const element = document.getElementById(elementId);
+      
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.focus();
+        firstErrorRef.current = null;
+      }
+    }
+  }, [errors]);
+
   // Validate form - memoized to prevent unnecessary re-renders
   const validateTravellerForm = useCallback((): boolean => {
     const newErrors = validateForm(travellers, nominee, proposer);
     setErrors(newErrors);
+    
+    // Find the first error key for scrolling
+    if (Object.keys(newErrors).length > 0) {
+      firstErrorRef.current = Object.keys(newErrors)[0];
+    }
+    
     return Object.keys(newErrors).length === 0;
   }, [travellers, nominee, proposer]);
 
@@ -116,6 +137,17 @@ export const useTravellerDetails = () => {
     });
   }, [travellers, nominee, proposer]);
 
+  // Clear validation errors for a specific field
+  const clearError = useCallback((key: string) => {
+    if (errors[key]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[key];
+        return newErrors;
+      });
+    }
+  }, [errors]);
+
   return {
     travellers,
     nominee,
@@ -128,6 +160,7 @@ export const useTravellerDetails = () => {
     errors,
     handleDateChange,
     validateForm: validateTravellerForm,
-    saveTravellersToLocalStorage
+    saveTravellersToLocalStorage,
+    clearError
   };
 };

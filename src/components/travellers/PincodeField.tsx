@@ -8,23 +8,28 @@ interface PincodeFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isLoading: boolean;
   error?: string;
+  id?: string;
 }
 
 const PincodeField: React.FC<PincodeFieldProps> = ({ 
   value, 
   onChange, 
   isLoading, 
-  error 
+  error,
+  id
 }) => {
   return (
     <FormField label="Pincode" error={error}>
       <div className="relative">
         <input
+          id={id}
           type="text"
           className={`w-full p-3 border ${error ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
           value={value || ''}
           onChange={onChange}
           maxLength={6}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : undefined}
         />
         {isLoading && (
           <div className="absolute right-3 top-3">
@@ -34,6 +39,11 @@ const PincodeField: React.FC<PincodeFieldProps> = ({
           </div>
         )}
       </div>
+      {error && (
+        <p id={`${id}-error`} className="text-sm font-medium text-destructive mt-1">
+          {error}
+        </p>
+      )}
     </FormField>
   );
 };

@@ -23,6 +23,7 @@ interface SelectFieldProps {
   required?: boolean;
   error?: string;
   className?: string;
+  id?: string; // Added ID prop for focus management
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -34,6 +35,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   required = false,
   error,
   className = "h-12",
+  id, // Use ID for element targeting
 }) => {
   return (
     <FormField label={label} required={required} error={error}>
@@ -41,7 +43,12 @@ const SelectField: React.FC<SelectFieldProps> = ({
         value={value || ''}
         onValueChange={onChange}
       >
-        <SelectTrigger className={`w-full p-3 border ${error ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${className}`}>
+        <SelectTrigger 
+          id={id}
+          className={`w-full p-3 border ${error ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${className}`}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : undefined}
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -52,6 +59,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
           ))}
         </SelectContent>
       </Select>
+      {error && (
+        <p id={`${id}-error`} className="text-sm font-medium text-destructive mt-1">
+          {error}
+        </p>
+      )}
     </FormField>
   );
 };

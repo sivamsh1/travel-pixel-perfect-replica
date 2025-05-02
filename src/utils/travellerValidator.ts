@@ -41,13 +41,6 @@ export const validateTraveller = (traveller: TravellerDetail, index: number, err
     newErrors[`traveller${index}Passport`] = "Passport number must be exactly 10 characters";
   }
   
-  // Validate name
-  if (!traveller.name && (!traveller.forename || !traveller.lastname)) {
-    newErrors[`traveller${index}Name`] = "Name is required";
-  } else if (traveller.name && traveller.name.length < 3) {
-    newErrors[`traveller${index}Name`] = "Name should be at least 3 characters";
-  }
-  
   // Validate DOB
   if (!traveller.dob) {
     newErrors[`traveller${index}Dob`] = "Date of birth is required";
@@ -75,11 +68,6 @@ export const validateNominee = (nominee: NomineeData, errors: ValidationErrors =
   
   if (nominee.name && !nominee.dob) {
     newErrors.nomineeDob = "Nominee date of birth is required";
-    toast({
-      title: "Form Validation",
-      description: "Please provide the nominee's date of birth.",
-      variant: "destructive"
-    });
   }
   
   return newErrors;
@@ -119,15 +107,6 @@ export const validateForm = (travellers: TravellerDetail[], nominee: NomineeData
   // Validate all travellers
   travellers.forEach((traveller, index) => {
     errors = validateTraveller(traveller, index, errors);
-    
-    // Check for medical conditions
-    if (traveller.hasPreExistingCondition && traveller.medicalCondition) {
-      toast({
-        title: "Medical Condition Restriction",
-        description: "Sorry, travellers with selected medical conditions are not eligible to continue.",
-        variant: "destructive"
-      });
-    }
   });
   
   // Validate nominee
@@ -135,6 +114,15 @@ export const validateForm = (travellers: TravellerDetail[], nominee: NomineeData
   
   // Validate proposer
   errors = validateProposer(proposer, errors);
+  
+  // If we have errors, show a summary toast without listing every error
+  if (Object.keys(errors).length > 0) {
+    toast({
+      title: "Validation Error",
+      description: "Please correct the highlighted fields and try again.",
+      variant: "destructive"
+    });
+  }
   
   return errors;
 };
