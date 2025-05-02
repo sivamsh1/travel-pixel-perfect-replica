@@ -124,6 +124,7 @@ export const useInsuranceQuotes = () => {
                 : value.netPremium;
             }
 
+            // Ensure covers is always an array
             const covers = Array.isArray(value?.covers) ? value.covers : [];
 
             const benefits = covers.slice(0, 3).map((cover) => ({
@@ -159,7 +160,7 @@ export const useInsuranceQuotes = () => {
           description: "Failed to fetch insurance quotes. Please try again.",
           variant: "destructive",
         });
-        throw error;
+        return []; // Return empty array on error
       }
     },
     staleTime: 5 * 60 * 1000,
@@ -168,7 +169,7 @@ export const useInsuranceQuotes = () => {
   });
 
   return {
-    quotes: apiQuotes || [],
+    quotes: apiQuotes || [], // Ensure we always return an array
     isLoading,
     error: error instanceof Error ? error.message : null
   };

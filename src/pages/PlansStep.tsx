@@ -76,8 +76,6 @@ const PlansStep = () => {
     // Ensure quotes is always an array
     const safeQuotes = Array.isArray(quotes) ? quotes : [];
     
-    if (safeQuotes.length === 0) return [];
-    
     let filtered = [...safeQuotes];
     
     // Filter by insurer
@@ -102,7 +100,7 @@ const PlansStep = () => {
   }, [quotes, selectedInsurer, selectedPriceSort]);
 
   const handleBuyNow = (planName: string) => {
-    if (!quotes) return;
+    if (!Array.isArray(quotes) || quotes.length === 0) return;
     
     // Find the selected plan from quotes
     const selectedPlanData = quotes.find(plan => plan.name === planName);

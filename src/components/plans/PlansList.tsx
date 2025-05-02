@@ -31,6 +31,17 @@ const PlansList: React.FC<PlansListProps> = ({
           src="/lovable-uploads/loader/Flight loader.gif" 
           alt="Loading" 
           className="w-24 h-24 mb-4"
+          onError={(e) => {
+            // Fallback if image fails to load
+            e.currentTarget.style.display = 'none';
+            const parent = e.currentTarget.parentElement;
+            if (parent) {
+              const loadingText = document.createElement('p');
+              loadingText.textContent = 'Loading...';
+              loadingText.className = 'text-xl font-medium text-gray-500';
+              parent.appendChild(loadingText);
+            }
+          }}
         />
         <p className="text-gray-500 text-center">Loading available plans...</p>
       </div>
@@ -42,10 +53,10 @@ const PlansList: React.FC<PlansListProps> = ({
   
   // Filter out plans with netPremium <= 0 or invalid
   const nonZeroPlans = safeApiQuotes.filter(
-    (plan) => plan?.netPremium !== null && plan?.netPremium !== undefined && plan?.netPremium > 0
+    (plan) => plan && plan.netPremium !== null && plan.netPremium !== undefined && plan.netPremium > 0
   );
 
-  if (!safeApiQuotes.length || nonZeroPlans.length === 0) {
+  if (safeApiQuotes.length === 0 || nonZeroPlans.length === 0) {
     return (
       <div className="w-full py-10 text-center">
         <p className="text-gray-500">No plans available. Please try again later.</p>
