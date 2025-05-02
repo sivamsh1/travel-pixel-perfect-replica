@@ -21,7 +21,9 @@ export const createGoDigitQuotePayload = (formData: TravelFormData): GoDigitQuot
   const address = createAddressPayload(traveller);
   const mobileNo = traveller.mobileNo || "9876543210";
   const email = traveller.email || "user@example.com";
-  const destination = formData.location?.destinationId || "679e707834ecd414eb0004f1";
+  
+  // Use the _id from traveller's locationData if available, otherwise fall back to destination ID
+  const destination = traveller.locationData?._id || formData.location?.destinationId || "679e707834ecd414eb0004f1";
   
   let amount = 2790.7;
   if (formData.selectedPlan?.price) {
