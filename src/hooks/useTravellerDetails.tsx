@@ -36,7 +36,21 @@ export const useTravellerDetails = () => {
   // Memoized update traveller function to prevent unnecessary re-renders
   const memoizedUpdateTraveller = useCallback((index: number, details: Partial<any>) => {
     updateTraveller(index, details);
-  }, [updateTraveller]);
+    
+    // Clear validation errors when field values change
+    if (details) {
+      Object.keys(details).forEach(key => {
+        const errorKey = `traveller${index}${key.charAt(0).toUpperCase() + key.slice(1)}`;
+        if (errors[errorKey]) {
+          setErrors(prev => {
+            const updated = { ...prev };
+            delete updated[errorKey];
+            return updated;
+          });
+        }
+      });
+    }
+  }, [updateTraveller, errors]);
 
   // Load data from local storage on initial render
   useEffect(() => {

@@ -46,11 +46,6 @@ const InputField: React.FC<InputFieldProps> = ({
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
       />
-      {error && (
-        <p id={`${id}-error`} className="text-sm font-medium text-destructive mt-1">
-          {error}
-        </p>
-      )}
     </FormField>
   );
 };

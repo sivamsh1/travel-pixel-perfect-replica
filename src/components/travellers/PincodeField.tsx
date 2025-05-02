@@ -39,11 +39,6 @@ const PincodeField: React.FC<PincodeFieldProps> = ({
           </div>
         )}
       </div>
-      {error && (
-        <p id={`${id}-error`} className="text-sm font-medium text-destructive mt-1">
-          {error}
-        </p>
-      )}
     </FormField>
   );
 };

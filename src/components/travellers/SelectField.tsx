@@ -59,11 +59,6 @@ const SelectField: React.FC<SelectFieldProps> = ({
           ))}
         </SelectContent>
       </Select>
-      {error && (
-        <p id={`${id}-error`} className="text-sm font-medium text-destructive mt-1">
-          {error}
-        </p>
-      )}
     </FormField>
   );
 };
