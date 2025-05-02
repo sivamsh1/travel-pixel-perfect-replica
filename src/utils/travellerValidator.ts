@@ -115,12 +115,12 @@ export const validateForm = (travellers: TravellerDetail[], nominee: NomineeData
   // Validate proposer
   errors = validateProposer(proposer, errors);
   
-  // If we have errors, show a summary toast without listing every error
+  // If we have errors, show a summary toast with a soft reminder
   if (Object.keys(errors).length > 0) {
     toast({
-      title: "Validation Error",
-      description: "Please correct the highlighted fields and try again.",
-      variant: "destructive"
+      title: "Please Check Form",
+      description: "Please fix the highlighted errors above to continue.",
+      variant: "default"
     });
   }
   

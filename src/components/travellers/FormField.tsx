@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { AlertCircle } from 'lucide-react';
 
 interface FormFieldProps {
   label: string;
@@ -23,9 +24,12 @@ const FormField: React.FC<FormFieldProps> = ({
       </label>
       {children}
       {error && (
-        <p className="text-sm font-medium text-red-500 mt-1">
-          {error}
-        </p>
+        <div className="flex items-center gap-1 mt-1">
+          <AlertCircle className="h-4 w-4 text-red-500" />
+          <p className="text-sm font-medium text-red-500">
+            {error}
+          </p>
+        </div>
       )}
     </div>
   );
