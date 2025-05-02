@@ -1,15 +1,11 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { format, parse, isValid } from 'date-fns';
-import PlanCardLogo from './plans/PlanCardLogo';
-import PlanCardHeader from './plans/PlanCardHeader';
-import PlanCardBenefits from './plans/PlanCardBenefits';
-import PlanCardCoveragePoints from './plans/PlanCardCoveragePoints';
-import PlanCardActions from './plans/PlanCardActions';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Ambulance, HandHeart, Car, Check } from 'lucide-react';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Benefit {
   icon: string;
@@ -50,7 +46,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
     endDate,
     travellers
   } = useTravelForm();
-  const isMobile = useIsMobile();
 
   const isPremiumValid = plan.netPremium !== null && plan.netPremium !== undefined && plan.netPremium > 0;
 
@@ -119,12 +114,19 @@ const PlanCard: React.FC<PlanCardProps> = ({
   };
 
   const renderBuyNowButton = () => {
-    const buttonClass = isPremiumValid ? "bg-blue-500 hover:bg-blue-600 text-white transition-colors" : "bg-gray-300 text-gray-500 cursor-not-allowed";
-    const button = <button className={`py-2 px-6 rounded-full text-sm font-medium ${buttonClass}`} onClick={isPremiumValid ? handleBuyNow : undefined} disabled={!isPremiumValid}>
+    const button = (
+      <button 
+        className={`bg-[#00B2FF] text-white py-3 px-6 rounded-md font-medium ${!isPremiumValid ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#00A0E6]'}`}
+        onClick={isPremiumValid ? handleBuyNow : undefined} 
+        disabled={!isPremiumValid}
+      >
         Buy Now
-      </button>;
+      </button>
+    );
+    
     if (!isPremiumValid) {
-      return <TooltipProvider>
+      return (
+        <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               {button}
@@ -133,63 +135,106 @@ const PlanCard: React.FC<PlanCardProps> = ({
               <p>Not Available</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>;
+        </TooltipProvider>
+      );
     }
+    
     return button;
   };
 
+  // This function returns the appropriate icon component based on the benefit text
+  const getBenefitIcon = (text: string) => {
+    const textLower = text.toLowerCase();
+    
+    if (textLower.includes('medical') || textLower.includes('emergency')) {
+      return <Ambulance className="text-[#00B2FF] w-5 h-5" />;
+    } else if (textLower.includes('lifestyle') || textLower.includes('living')) {
+      return <HandHeart className="text-[#00B2FF] w-5 h-5" />;
+    } else if (textLower.includes('domestic') || textLower.includes('roadside') || textLower.includes('transportation')) {
+      return <Car className="text-[#00B2FF] w-5 h-5" />;
+    } else {
+      return <Check className="text-[#00B2FF] w-5 h-5" />;
+    }
+  };
+
   return (
-    <div className="border border-gray-200 rounded-xl p-6 relative hover:shadow-md transition-shadow">
-      <div className="flex flex-col gap-6">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-4">
-            <PlanCardLogo logo={plan.logo} provider={plan.provider} />
-            <div>
+    <div className="border border-[#E5E7EB] rounded-2xl p-6 relative">
+      <div className="flex flex-col space-y-5">
+        {/* Header section with logo, name, details, and price */}
+        <div className="flex justify-between">
+          {/* Logo and plan details */}
+          <div className="flex space-x-4">
+            <div className="flex items-center justify-center">
+              <img 
+                src={plan.logo} 
+                alt={`${plan.provider} logo`} 
+                className="h-10 w-auto object-contain max-w-[120px]"
+                onError={(e) => {
+                  e.currentTarget.src = '/placeholder.svg';
+                }}
+              />
+            </div>
+            <div className="flex flex-col">
               <h3 className="font-bold text-xl text-[#FF6B35]">
                 {plan.name.replace(/_/g, ' ')}
               </h3>
-              <p className="text-gray-600 text-sm">{plan.details}</p>
+              <p className="text-gray-500 text-sm">{plan.details}</p>
             </div>
           </div>
           
+          {/* Travellers count and price */}
           <div className="text-right">
             {plan.travellersCount !== undefined && (
-              <div className="text-xs text-gray-500">{plan.travellersCount} traveller(s)</div>
+              <div className="text-sm text-gray-500">{plan.travellersCount} Traveller(s)</div>
             )}
-            <div className="text-xl font-bold text-[#FF6B35]">{plan.price}</div>
+            <div className="text-2xl font-bold text-[#FF6B35]">{plan.price}</div>
           </div>
         </div>
         
-        <PlanCardBenefits benefits={plan.benefits} />
+        {/* Benefits section */}
+        <div className="flex flex-wrap items-center gap-6">
+          {plan.benefits.slice(0, 3).map((benefit, index) => (
+            <div key={index} className="flex items-center gap-2">
+              {getBenefitIcon(benefit.text)}
+              <span className="text-[#00B2FF]">{benefit.text}</span>
+            </div>
+          ))}
+        </div>
         
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="text-white text-sm px-4 py-1.5 rounded-full bg-[#0fb1f6]">
+        {/* Plan benefits bar */}
+        <div className="flex items-center border border-[#E5E7EB] rounded-md overflow-hidden">
+          <div className="bg-[#00B2FF] text-white py-2 px-4 whitespace-nowrap">
             Plan Benefits
           </div>
           
-          {plan.coveragePoints.map((point, index) => (
-            <div key={index} className="px-3 py-1 border border-gray-200 rounded-full text-sm text-gray-600">
-              {point}
-            </div>
-          ))}
+          <div className="flex-1 overflow-x-auto whitespace-nowrap px-4 py-2 flex gap-6">
+            {plan.coveragePoints.slice(0, 2).map((point, index) => (
+              <div key={index} className="text-gray-600">
+                {point}
+              </div>
+            ))}
+          </div>
           
-          <div className="text-blue-500 text-sm ml-auto cursor-pointer hover:underline">
-            View All →
+          <div className="text-[#00B2FF] px-4 py-2 cursor-pointer whitespace-nowrap">
+            View All &gt;
           </div>
         </div>
         
+        {/* Actions row: compare checkbox and buy now button */}
         <div className="flex justify-between items-center">
+          {/* Add to Compare checkbox */}
           <div className="flex items-center gap-2">
             <input 
               type="checkbox" 
               id={`compare-${plan.id}`} 
               checked={isSelectedForComparison} 
               onChange={() => onToggleCompare(plan)} 
-              className="rounded text-blue-500 focus:ring-blue-500" 
+              className="rounded border-gray-300 text-[#00B2FF] focus:ring-[#00B2FF]" 
             />
             <label htmlFor={`compare-${plan.id}`} className="text-sm">Add to Compare</label>
           </div>
           
+          {/* Buy Now button */}
           {renderBuyNowButton()}
         </div>
       </div>

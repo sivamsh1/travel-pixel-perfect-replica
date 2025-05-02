@@ -126,15 +126,17 @@ export const useInsuranceQuotes = () => {
 
             // Ensure covers is always an array
             const covers = Array.isArray(value?.covers) ? value.covers : [];
+            
+            // Create standardized benefit names that match the reference design
+            const standardBenefits = [
+              { icon: "ambulance", text: "Emergency Medical Assistance" },
+              { icon: "heart", text: "Lifestyle Assistance" },
+              { icon: "car", text: "Domestic Roadside Assistance" }
+            ];
 
-            const benefits = covers.slice(0, 3).map((cover) => ({
-              icon: "✓",
-              text: cover?.coverName || '',
-              amount: cover?.coverAmount || ''
-            }));
-
+            // Format coverage points to match the design
             const coveragePoints = covers.map(
-              (cover) => `${cover?.coverName || ''}: ₹${cover?.coverAmount || ''}`
+              (cover) => `$ ${cover?.coverAmount || '0'} ${cover?.coverName || ''}`
             );
 
             return {
@@ -144,8 +146,8 @@ export const useInsuranceQuotes = () => {
               logo: logo,
               description: `${planName} Insurance Plan`,
               details: details,
-              price: netPremium > 0 ? `₹${netPremium}` : '₹0',
-              benefits: benefits,
+              price: netPremium > 0 ? `₹ ${netPremium}` : '₹0',
+              benefits: standardBenefits,
               coveragePoints: coveragePoints,
               travellersCount,
               netPremium: netPremium
