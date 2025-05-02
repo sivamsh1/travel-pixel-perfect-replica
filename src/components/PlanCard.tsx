@@ -5,12 +5,10 @@ import { format, parse, isValid } from 'date-fns';
 import { Ambulance, HandHeart, Car, Check } from 'lucide-react';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
-
 interface Benefit {
   icon: string;
   text: string;
 }
-
 export interface InsurancePlan {
   id: string;
   name: string;
@@ -24,14 +22,12 @@ export interface InsurancePlan {
   travellersCount?: number;
   netPremium?: number | null;
 }
-
 interface PlanCardProps {
   plan: InsurancePlan;
   isSelectedForComparison: boolean;
   onBuyNow: (planName: string) => void;
   onToggleCompare: (plan: InsurancePlan) => void;
 }
-
 const PlanCard: React.FC<PlanCardProps> = ({
   plan,
   isSelectedForComparison,
@@ -45,12 +41,9 @@ const PlanCard: React.FC<PlanCardProps> = ({
     endDate,
     travellers
   } = useTravelForm();
-
   const isPremiumValid = plan.netPremium !== null && plan.netPremium !== undefined && plan.netPremium > 0;
-
   const handleBuyNow = () => {
     if (!isPremiumValid) return;
-
     const planData = {
       name: plan.name,
       provider: plan.provider,
@@ -59,9 +52,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
       insurer: `${plan.provider} ${plan.name}`,
       sumInsured: 'USD 50000'
     };
-
     saveToLocalStorage('selectedPlan', planData);
-
     const dob = travellers.map(traveller => {
       if (!traveller.dob) return null;
       try {
@@ -73,7 +64,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
         return null;
       }
     }).filter(Boolean);
-
     let formattedStartDate = '';
     if (startDate) {
       try {
@@ -85,7 +75,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
         console.error('Error parsing start date:', error);
       }
     }
-
     let formattedEndDate = '';
     if (endDate) {
       try {
@@ -97,35 +86,22 @@ const PlanCard: React.FC<PlanCardProps> = ({
         console.error('Error parsing end date:', error);
       }
     }
-
     const purchaseData = {
       destination: destination || "679e707834ecd414eb0004de",
       dob: dob.length ? dob : ["17/08/1997"],
       startDate: formattedStartDate || "19/06/2025",
       returnDate: formattedEndDate || "29/07/2025"
     };
-
     console.log('Purchase data:', JSON.stringify(purchaseData, null, 2));
-
     onBuyNow(plan.name);
-
     navigate('/addons');
   };
-
   const renderBuyNowButton = () => {
-    const button = (
-      <button 
-        className={`bg-[#00B2FF] text-white py-3 px-6 rounded-md font-medium ${!isPremiumValid ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#00A0E6]'}`}
-        onClick={isPremiumValid ? handleBuyNow : undefined} 
-        disabled={!isPremiumValid}
-      >
+    const button = <button className={`bg-[#00B2FF] text-white py-3 px-6 rounded-md font-medium ${!isPremiumValid ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#00A0E6]'}`} onClick={isPremiumValid ? handleBuyNow : undefined} disabled={!isPremiumValid}>
         Buy Now
-      </button>
-    );
-    
+      </button>;
     if (!isPremiumValid) {
-      return (
-        <TooltipProvider>
+      return <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               {button}
@@ -134,17 +110,14 @@ const PlanCard: React.FC<PlanCardProps> = ({
               <p>Not Available</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
-      );
+        </TooltipProvider>;
     }
-    
     return button;
   };
 
   // This function returns the appropriate icon component based on the benefit text
   const getBenefitIcon = (text: string) => {
     const textLower = text.toLowerCase();
-    
     if (textLower.includes('medical') || textLower.includes('emergency')) {
       return <Ambulance className="text-[#00B2FF] w-5 h-5" />;
     } else if (textLower.includes('lifestyle') || textLower.includes('living')) {
@@ -161,7 +134,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
     // Extract the amount from the beginning
     const amountMatch = point.match(/\$\s*(\d+,?)+/);
     const amount = amountMatch ? amountMatch[0] : '';
-    
+
     // Identify common benefit types to extract the main part
     if (point.toLowerCase().includes('medical')) {
       return `${amount} Medical Expenses`;
@@ -176,28 +149,19 @@ const PlanCard: React.FC<PlanCardProps> = ({
     } else {
       // For other cases, just take the first few words
       const words = point.split(' ');
-      return words.length > 4 ? 
-        `${amount} ${words.slice(1, 3).join(' ')}` : 
-        point;
+      return words.length > 4 ? `${amount} ${words.slice(1, 3).join(' ')}` : point;
     }
   };
-
-  return (
-    <div className="border border-[#E5E7EB] rounded-2xl p-6 relative">
+  return <div className="border border-[#E5E7EB] rounded-2xl p-6 relative">
       <div className="flex flex-col space-y-5">
         {/* Header section with logo, name, details, and price */}
         <div className="flex justify-between">
           {/* Logo and plan details */}
           <div className="flex space-x-4">
             <div className="flex items-center justify-center">
-              <img 
-                src={plan.logo} 
-                alt={`${plan.provider} logo`} 
-                className="h-10 w-auto object-contain max-w-[120px]"
-                onError={(e) => {
-                  e.currentTarget.src = '/placeholder.svg';
-                }}
-              />
+              <img src={plan.logo} alt={`${plan.provider} logo`} className="h-10 w-auto object-contain max-w-[120px]" onError={e => {
+              e.currentTarget.src = '/placeholder.svg';
+            }} />
             </div>
             <div className="flex flex-col">
               <h3 className="font-bold text-xl text-[#FF6B35]">
@@ -209,25 +173,21 @@ const PlanCard: React.FC<PlanCardProps> = ({
           
           {/* Travellers count and price */}
           <div className="text-right">
-            {plan.travellersCount !== undefined && (
-              <div className="text-sm text-gray-500">{plan.travellersCount} Traveller(s)</div>
-            )}
+            {plan.travellersCount !== undefined && <div className="text-sm text-gray-500">{plan.travellersCount} Traveller(s)</div>}
             <div className="text-2xl font-bold text-[#FF6B35]">{plan.price}</div>
           </div>
         </div>
         
         {/* Benefits section */}
         <div className="flex flex-wrap items-center gap-6">
-          {plan.benefits.slice(0, 3).map((benefit, index) => (
-            <div key={index} className="flex items-center gap-2">
+          {plan.benefits.slice(0, 3).map((benefit, index) => <div key={index} className="flex items-center gap-2">
               {getBenefitIcon(benefit.text)}
               <span className="text-[#00B2FF]">{benefit.text}</span>
-            </div>
-          ))}
+            </div>)}
         </div>
         
         {/* Plan benefits bar - REDESIGNED */}
-        <div className="flex items-center border border-[#E5E7EB] rounded-md bg-gray-50">
+        <div className="flex items-center border border-[#E5E7EB] rounded-md bg-gray-50 px-[134px]">
           <div className="bg-[#00B2FF] text-white py-2 px-4 whitespace-nowrap">
             Plan Benefits
           </div>
@@ -235,11 +195,9 @@ const PlanCard: React.FC<PlanCardProps> = ({
           <div className="flex-1 px-4 py-2 flex items-center">
             {/* Display only 2 benefits with proper spacing and shortened text */}
             <div className="flex items-center gap-6 flex-1">
-              {plan.coveragePoints.slice(0, 2).map((point, index) => (
-                <div key={index} className="text-gray-600 text-sm whitespace-nowrap">
+              {plan.coveragePoints.slice(0, 2).map((point, index) => <div key={index} className="text-gray-600 text-sm whitespace-nowrap">
                   {shortenCoveragePoint(point)}
-                </div>
-              ))}
+                </div>)}
             </div>
             
             <div className="text-[#00B2FF] px-2 py-2 cursor-pointer whitespace-nowrap ml-auto">
@@ -252,13 +210,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
         <div className="flex justify-between items-center">
           {/* Add to Compare checkbox */}
           <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id={`compare-${plan.id}`} 
-              checked={isSelectedForComparison} 
-              onChange={() => onToggleCompare(plan)} 
-              className="rounded border-gray-300 text-[#00B2FF] focus:ring-[#00B2FF]" 
-            />
+            <input type="checkbox" id={`compare-${plan.id}`} checked={isSelectedForComparison} onChange={() => onToggleCompare(plan)} className="rounded border-gray-300 text-[#00B2FF] focus:ring-[#00B2FF]" />
             <label htmlFor={`compare-${plan.id}`} className="text-sm">Add to Compare</label>
           </div>
           
@@ -266,8 +218,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
           {renderBuyNowButton()}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PlanCard;
