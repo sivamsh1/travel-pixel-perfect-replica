@@ -1,8 +1,10 @@
 
 import { formatDateForAPI, formatDOBForAPI } from './dateFormatUtils';
-import { splitName, createAddressPayload } from './dataTransformUtils';
+import { splitName, createAddressPayload, createAddressPayloadGodigit } from './dataTransformUtils';
 import { TravelFormData } from './localStorageUtils';
 import { GoDigitQuotePayload } from './apiTypes';
+
+
 
 /**
  * Create GoDigit specific payload
@@ -18,7 +20,7 @@ export const createGoDigitQuotePayload = (formData: TravelFormData): GoDigitQuot
   
   let dob = formatDOBForAPI(traveller.dob) || '01/01/1990';
   
-  const address = createAddressPayload(traveller);
+  const address = createAddressPayloadGodigit(traveller);
   const mobileNo = traveller.mobileNo || "9876543210";
   const email = traveller.email || "user@example.com";
   const destination = formData.location?.destinationId || "679e707834ecd414eb0004f1";
@@ -28,14 +30,24 @@ export const createGoDigitQuotePayload = (formData: TravelFormData): GoDigitQuot
     const priceMatch = formData.selectedPlan.price.match(/[\d.]+/);
     if (priceMatch && priceMatch[0]) {
       amount = parseFloat(priceMatch[0]);
+
+      amount = (amount * 0.18 ) + amount
+      amount = parseFloat(amount.toFixed(2));
     }
   }
   
+  const planName = formData.selectedPlan?.name; 
+
+
+
+
+const parts = planName.split("-");
+const result = parts[parts.length - 1];  // "RS5"
   // Default university address that fits within 30 chars
   const defaultUniversityAddress = "DU Main Campus";
   
   return {
-    productName: "RS2",
+    productName: result,
     amount: amount,
     startDate: startDate || "20/05/2025",
     returnDate: returnDate || "20/06/2025",

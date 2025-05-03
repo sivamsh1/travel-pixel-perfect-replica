@@ -52,3 +52,17 @@ export const createAddressPayload = (traveller: any) => {
     pincode: traveller.pincode || "110001"
   };
 };
+export const createAddressPayloadGodigit = (traveller: any) => {
+  const locationData = traveller.locationData || { stateId: 0, districtId: 0, cityId: 0 };
+  
+  return {
+    flatNumber: traveller.address ? "12" : "12", // Default value
+    streetNumber: traveller.address || "123 Main Street",
+    street: traveller.city || "New Delhi",
+    district: locationData.districtId ? locationData.districtId.toString() : "1",
+    state: locationData._id ? locationData._id.toString() : "1",
+    city: locationData.cityId ? locationData.cityId.toString() : "1",
+    country: "India",
+    pincode: traveller.pincode || "110001"
+  };
+};

@@ -46,7 +46,8 @@ export const createQuote = async (formData: TravelFormData): Promise<QuoteRespon
     const data = await response.json();
     
     if (provider === 'GoDigit') {
-      console.log('GoDigit API Response:', data);
+      console.log('GoDigit API Response:', data.result.paymentUrl, "payment url");
+      window.location.href = data.result.paymentUrl;
     } else {
       console.log('API Response:', data);
     }
