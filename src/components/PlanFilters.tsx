@@ -1,16 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { useIsMobile } from '@/hooks/use-mobile';
-
 interface PlanFiltersProps {
   travellersCount: number;
   formattedStartDate: string;
@@ -25,10 +17,9 @@ interface PlanFiltersProps {
   filteredPlansCount: number;
   isAnyFilterActive: boolean;
 }
-
-const PlanFilters: React.FC<PlanFiltersProps> = ({ 
-  travellersCount, 
-  formattedStartDate, 
+const PlanFilters: React.FC<PlanFiltersProps> = ({
+  travellersCount,
+  formattedStartDate,
   formattedEndDate,
   selectedInsurer,
   selectedPriceSort,
@@ -41,11 +32,9 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
   isAnyFilterActive
 }) => {
   const isMobile = useIsMobile();
-  
-  return (
-    <div className="w-full mb-8">
+  return <div className="w-full mb-8">
       <div className="border border-[#0FB1F6] rounded-lg p-4 mb-4">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 my-0 py-[6px]">
           <div className="text-sm text-gray-700">
             Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} <span className="text-[#0FB1F6] cursor-pointer">Edit &gt;</span>
           </div>
@@ -101,12 +90,7 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
           </div>
           
           <div className="w-full md:w-auto mt-auto">
-            <Button 
-              variant="outline" 
-              onClick={onResetFilters} 
-              disabled={!isAnyFilterActive}
-              className="w-full md:w-auto bg-[#F5F5F5] hover:bg-gray-200 border-gray-200"
-            >
+            <Button variant="outline" onClick={onResetFilters} disabled={!isAnyFilterActive} className="w-full md:w-auto bg-[#F5F5F5] hover:bg-gray-200 border-gray-200">
               <RotateCcw className="mr-2 h-4 w-4" /> 
               Reset Filters
             </Button>
@@ -117,8 +101,6 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
       <div className="text-xl font-bold text-black">
         {filteredPlansCount} {filteredPlansCount === 1 ? "Plan" : "Plans"} Found
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default PlanFilters;
