@@ -21,6 +21,7 @@ export interface InsurancePlan {
   coveragePoints: string[];
   travellersCount?: number;
   netPremium?: number | null;
+  sumInsured?: number; // Added sumInsured property
 }
 interface PlanCardProps {
   plan: InsurancePlan;

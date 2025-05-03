@@ -127,6 +127,19 @@ export const useInsuranceQuotes = () => {
             // Ensure covers is always an array
             const covers = Array.isArray(value?.covers) ? value.covers : [];
             
+            // Extract sumInsured from covers or use a default value
+            let sumInsured = 50000; // Default value
+            if (covers.length > 0 && covers[0]?.coverAmount) {
+              const coverAmount = covers[0].coverAmount;
+              if (typeof coverAmount === 'string') {
+                // Try to extract numeric value from string like "50,000" or "50000"
+                const numericValue = coverAmount.replace(/[^0-9]/g, '');
+                sumInsured = parseInt(numericValue, 10) || 50000;
+              } else if (typeof coverAmount === 'number') {
+                sumInsured = coverAmount;
+              }
+            }
+            
             // Create standardized benefit names that match the reference design
             const standardBenefits = [
               { icon: "ambulance", text: "Emergency Medical Assistance" },
@@ -150,7 +163,8 @@ export const useInsuranceQuotes = () => {
               benefits: standardBenefits,
               coveragePoints: coveragePoints,
               travellersCount,
-              netPremium: netPremium
+              netPremium: netPremium,
+              sumInsured: sumInsured // Add the sumInsured property
             };
           });
         }
