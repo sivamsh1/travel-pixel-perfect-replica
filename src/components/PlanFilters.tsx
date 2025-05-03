@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { useIsMobile } from '@/hooks/use-mobile';
+
 interface PlanFiltersProps {
   travellersCount: number;
   formattedStartDate: string;
@@ -17,6 +19,7 @@ interface PlanFiltersProps {
   filteredPlansCount: number;
   isAnyFilterActive: boolean;
 }
+
 const PlanFilters: React.FC<PlanFiltersProps> = ({
   travellersCount,
   formattedStartDate,
@@ -32,6 +35,7 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
   isAnyFilterActive
 }) => {
   const isMobile = useIsMobile();
+  
   return <div className="w-full mb-8 py-0 my-[6px]">
       <div className="border border-[#0FB1F6] rounded-lg p-4 mb-4">
         <div className="flex justify-between items-center mb-4">
@@ -64,6 +68,7 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
                 <SelectValue placeholder="Most Popular (1 Lakh USD)" className="text-[#0FB1F6]" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="show-all" className="font-semibold">Show All</SelectItem>
                 <SelectItem value="most-popular" className="font-semibold">Most Popular (1 Lakh USD)</SelectItem>
                 <SelectItem value="30k-50k">30,000 USD to 50,000 USD</SelectItem>
                 <SelectItem value="50k-75k">50,000 USD to 75,000 USD</SelectItem>
@@ -103,4 +108,5 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
       </div>
     </div>;
 };
+
 export default PlanFilters;

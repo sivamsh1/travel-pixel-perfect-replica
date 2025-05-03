@@ -34,20 +34,20 @@ const PlansStep = () => {
   // Filter state
   const [selectedInsurer, setSelectedInsurer] = useState('all');
   const [selectedPriceSort, setSelectedPriceSort] = useState('lowToHigh');
-  const [selectedCoverage, setSelectedCoverage] = useState('most-popular');
+  const [selectedCoverage, setSelectedCoverage] = useState('show-all'); // Default to show all
   
   // Track if any filter is active for the Reset button
   const isAnyFilterActive = useMemo(() => {
     return selectedInsurer !== 'all' || 
            selectedPriceSort !== 'lowToHigh' || 
-           selectedCoverage !== 'most-popular';
+           selectedCoverage !== 'show-all'; // Updated default value
   }, [selectedInsurer, selectedPriceSort, selectedCoverage]);
   
   // Reset filters handler
   const handleResetFilters = () => {
     setSelectedInsurer('all');
     setSelectedPriceSort('lowToHigh');
-    setSelectedCoverage('most-popular');
+    setSelectedCoverage('show-all'); // Reset to show all
   };
   
   const isMobile = useIsMobile();
@@ -98,13 +98,14 @@ const PlansStep = () => {
       filtered = filtered.filter(plan => plan?.provider === selectedInsurer);
     }
     
-    // Filter by coverage
-    if (selectedCoverage) {
-      // Handle "Most Popular" option specially - filter by 1 Lakh USD and sort by highest premium first
+    // Filter by coverage - skip if "show-all" is selected
+    if (selectedCoverage && selectedCoverage !== 'show-all') {
+      // Handle "Most Popular" option specially
       if (selectedCoverage === 'most-popular') {
         filtered = filtered.filter(plan => {
           const coverage = plan.sumInsured || 0;
-          return coverage >= 100000 && coverage <= 100000;
+          // More flexible range for "Most Popular" - approximately around 100,000
+          return coverage >= 75000 && coverage <= 125000;
         }).sort((a, b) => {
           // Sort by highest premium first for "Most Popular"
           const premiumA = a?.netPremium || 0;
