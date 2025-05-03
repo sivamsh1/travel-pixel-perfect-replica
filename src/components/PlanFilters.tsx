@@ -44,11 +44,11 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
   
   return (
     <div className="w-full mb-8">
-      <div className="text-sm text-gray-700 mb-4">
-        Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} <span className="text-primary cursor-pointer">Edit &gt;</span>
-      </div>
-      
-      <div className="border border-[#E0F0FF] rounded-lg p-4 mb-4">
+      <div className="border border-[#0FB1F6] rounded-lg p-4 mb-4">
+        <div className="text-sm text-gray-700 mb-4">
+          Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} <span className="text-[#0FB1F6] cursor-pointer">Edit &gt;</span>
+        </div>
+        
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="w-full md:w-auto">
             <label className="block text-sm font-medium text-gray-700 mb-1">Sort By Premium</label>
@@ -64,17 +64,18 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
           </div>
           
           <div className="w-full md:w-auto">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Coverage</label>
+            <label className="block text-sm font-medium text-[#0FB1F6] mb-1">Coverage</label>
             <Select value={selectedCoverage} onValueChange={onCoverageChange}>
-              <SelectTrigger className="w-full md:w-72">
-                <SelectValue placeholder="Most Popular (1 Lakh USD)" />
+              <SelectTrigger className="w-full md:w-72 border-[#0FB1F6]">
+                <SelectValue placeholder="Most Popular (1 Lakh USD)" className="text-[#0FB1F6]" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="30k-50k">30000 USD to 50000 USD</SelectItem>
-                <SelectItem value="50k-75k">50000 USD to 75000 USD</SelectItem>
-                <SelectItem value="75k-1L">75000 USD to 1 Lakh USD</SelectItem>
+                <SelectItem value="most-popular" className="font-semibold">Most Popular (1 Lakh USD)</SelectItem>
+                <SelectItem value="30k-50k">30,000 USD to 50,000 USD</SelectItem>
+                <SelectItem value="50k-75k">50,000 USD to 75,000 USD</SelectItem>
+                <SelectItem value="75k-1L">75,000 USD to 1 Lakh USD</SelectItem>
                 <SelectItem value="1L-2L">1 Lakh USD to 2 Lakhs USD</SelectItem>
-                <SelectItem value="2L+">Above 2 Lakhs</SelectItem>
+                <SelectItem value="2L+">Above 2 Lakhs USD</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -34,20 +34,20 @@ const PlansStep = () => {
   // Filter state
   const [selectedInsurer, setSelectedInsurer] = useState('all');
   const [selectedPriceSort, setSelectedPriceSort] = useState('lowToHigh');
-  const [selectedCoverage, setSelectedCoverage] = useState('1L-2L');
+  const [selectedCoverage, setSelectedCoverage] = useState('most-popular');
   
   // Track if any filter is active for the Reset button
   const isAnyFilterActive = useMemo(() => {
     return selectedInsurer !== 'all' || 
            selectedPriceSort !== 'lowToHigh' || 
-           selectedCoverage !== '1L-2L';
+           selectedCoverage !== 'most-popular';
   }, [selectedInsurer, selectedPriceSort, selectedCoverage]);
   
   // Reset filters handler
   const handleResetFilters = () => {
     setSelectedInsurer('all');
     setSelectedPriceSort('lowToHigh');
-    setSelectedCoverage('1L-2L');
+    setSelectedCoverage('most-popular');
   };
   
   const isMobile = useIsMobile();
@@ -100,26 +100,40 @@ const PlansStep = () => {
     
     // Filter by coverage
     if (selectedCoverage) {
-      // This is a simplified implementation - you would need to adjust based on your actual coverage data
-      const coverageMappings = {
-        '30k-50k': [30000, 50000],
-        '50k-75k': [50000, 75000],
-        '75k-1L': [75000, 100000],
-        '1L-2L': [100000, 200000],
-        '2L+': [200000, Infinity]
-      };
-      
-      const range = coverageMappings[selectedCoverage as keyof typeof coverageMappings];
-      if (range) {
+      // Handle "Most Popular" option specially - filter by 1 Lakh USD and sort by highest premium first
+      if (selectedCoverage === 'most-popular') {
         filtered = filtered.filter(plan => {
           const coverage = plan.sumInsured || 0;
-          return coverage >= range[0] && coverage <= range[1];
+          return coverage >= 100000 && coverage <= 100000;
+        }).sort((a, b) => {
+          // Sort by highest premium first for "Most Popular"
+          const premiumA = a?.netPremium || 0;
+          const premiumB = b?.netPremium || 0;
+          return premiumB - premiumA;
         });
+      } else {
+        // This is the regular coverage filtering
+        const coverageMappings = {
+          '30k-50k': [30000, 50000],
+          '50k-75k': [50000, 75000],
+          '75k-1L': [75000, 100000],
+          '1L-2L': [100000, 200000],
+          '2L+': [200000, Infinity]
+        };
+        
+        const range = coverageMappings[selectedCoverage as keyof typeof coverageMappings];
+        if (range) {
+          filtered = filtered.filter(plan => {
+            const coverage = plan.sumInsured || 0;
+            return coverage >= range[0] && coverage <= range[1];
+          });
+        }
       }
     }
     
-    // Sort by price (netPremium)
-    if (selectedPriceSort !== 'all') {
+    // Sort by price (netPremium) - but only if we're not in "Most Popular" mode
+    // which already has its own sorting logic
+    if (selectedPriceSort !== 'all' && selectedCoverage !== 'most-popular') {
       filtered = filtered.sort((a, b) => {
         // Ensure we're sorting by netPremium numeric values
         const premiumA = a?.netPremium || 0;
