@@ -45,8 +45,13 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
   return (
     <div className="w-full mb-8">
       <div className="border border-[#0FB1F6] rounded-lg p-4 mb-4">
-        <div className="text-sm text-gray-700 mb-4">
-          Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} <span className="text-[#0FB1F6] cursor-pointer">Edit &gt;</span>
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-sm text-gray-700">
+            Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} <span className="text-[#0FB1F6] cursor-pointer">Edit &gt;</span>
+          </div>
+          <div className="text-xs text-gray-500">
+            All prices are inclusive of GST
+          </div>
         </div>
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -106,10 +111,6 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
               Reset Filters
             </Button>
           </div>
-        </div>
-        
-        <div className="flex justify-end items-center text-right mt-2 text-xs text-gray-500">
-          All prices are inclusive of GST
         </div>
       </div>
       
