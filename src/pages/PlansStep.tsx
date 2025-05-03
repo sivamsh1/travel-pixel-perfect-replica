@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import Layout from '@/components/Layout';
 import BackButton from '@/components/BackButton';
@@ -33,7 +33,22 @@ const PlansStep = () => {
   
   // Filter state
   const [selectedInsurer, setSelectedInsurer] = useState('all');
-  const [selectedPriceSort, setSelectedPriceSort] = useState('all');
+  const [selectedPriceSort, setSelectedPriceSort] = useState('lowToHigh');
+  const [selectedCoverage, setSelectedCoverage] = useState('1L-2L');
+  
+  // Track if any filter is active for the Reset button
+  const isAnyFilterActive = useMemo(() => {
+    return selectedInsurer !== 'all' || 
+           selectedPriceSort !== 'lowToHigh' || 
+           selectedCoverage !== '1L-2L';
+  }, [selectedInsurer, selectedPriceSort, selectedCoverage]);
+  
+  // Reset filters handler
+  const handleResetFilters = () => {
+    setSelectedInsurer('all');
+    setSelectedPriceSort('lowToHigh');
+    setSelectedCoverage('1L-2L');
+  };
   
   const isMobile = useIsMobile();
   const { quotes, isLoading, error } = useInsuranceQuotes();
@@ -83,6 +98,26 @@ const PlansStep = () => {
       filtered = filtered.filter(plan => plan?.provider === selectedInsurer);
     }
     
+    // Filter by coverage
+    if (selectedCoverage) {
+      // This is a simplified implementation - you would need to adjust based on your actual coverage data
+      const coverageMappings = {
+        '30k-50k': [30000, 50000],
+        '50k-75k': [50000, 75000],
+        '75k-1L': [75000, 100000],
+        '1L-2L': [100000, 200000],
+        '2L+': [200000, Infinity]
+      };
+      
+      const range = coverageMappings[selectedCoverage as keyof typeof coverageMappings];
+      if (range) {
+        filtered = filtered.filter(plan => {
+          const coverage = plan.sumInsured || 0;
+          return coverage >= range[0] && coverage <= range[1];
+        });
+      }
+    }
+    
     // Sort by price (netPremium)
     if (selectedPriceSort !== 'all') {
       filtered = filtered.sort((a, b) => {
@@ -97,7 +132,7 @@ const PlansStep = () => {
     }
     
     return filtered;
-  }, [quotes, selectedInsurer, selectedPriceSort]);
+  }, [quotes, selectedInsurer, selectedPriceSort, selectedCoverage]);
 
   const handleBuyNow = (planName: string) => {
     if (!Array.isArray(quotes) || quotes.length === 0) return;
@@ -143,8 +178,13 @@ const PlansStep = () => {
           formattedEndDate={formattedEndDate}
           selectedInsurer={selectedInsurer}
           selectedPriceSort={selectedPriceSort}
+          selectedCoverage={selectedCoverage}
           onInsurerChange={setSelectedInsurer}
           onPriceSortChange={setSelectedPriceSort}
+          onCoverageChange={setSelectedCoverage}
+          onResetFilters={handleResetFilters}
+          filteredPlansCount={filteredQuotes.length}
+          isAnyFilterActive={isAnyFilterActive}
         />
         
         <PlanComparisonManager>

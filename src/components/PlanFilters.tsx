@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Select,
   SelectContent,
@@ -7,6 +7,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { RotateCcw } from "lucide-react";
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PlanFiltersProps {
@@ -15,8 +17,13 @@ interface PlanFiltersProps {
   formattedEndDate: string;
   selectedInsurer: string;
   selectedPriceSort: string;
+  selectedCoverage: string;
   onInsurerChange: (value: string) => void;
   onPriceSortChange: (value: string) => void;
+  onCoverageChange: (value: string) => void;
+  onResetFilters: () => void;
+  filteredPlansCount: number;
+  isAnyFilterActive: boolean;
 }
 
 const PlanFilters: React.FC<PlanFiltersProps> = ({ 
@@ -25,46 +32,88 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
   formattedEndDate,
   selectedInsurer,
   selectedPriceSort,
+  selectedCoverage,
   onInsurerChange,
-  onPriceSortChange
+  onPriceSortChange,
+  onCoverageChange,
+  onResetFilters,
+  filteredPlansCount,
+  isAnyFilterActive
 }) => {
   const isMobile = useIsMobile();
   
   return (
-    <div className="w-full mb-4">
+    <div className="w-full mb-8">
       <div className="text-sm text-gray-700 mb-4">
-        Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} <span className="text-primary">Edit &gt;</span>
+        Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} <span className="text-primary cursor-pointer">Edit &gt;</span>
       </div>
       
-      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-4 mb-6`}>
-        <div className={isMobile ? 'w-full' : 'w-1/2'}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Insurers</label>
-          <Select value={selectedInsurer} onValueChange={onInsurerChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="All" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="GoDigit">GoDigit</SelectItem>
-              <SelectItem value="Reliance">Reliance</SelectItem>
-              <SelectItem value="Bajaj">Bajaj</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="border border-[#E0F0FF] rounded-lg p-4 mb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="w-full md:w-auto">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Sort By Premium</label>
+            <Select value={selectedPriceSort} onValueChange={onPriceSortChange}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="Low - High" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="lowToHigh">Low - High</SelectItem>
+                <SelectItem value="highToLow">High - Low</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="w-full md:w-auto">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Coverage</label>
+            <Select value={selectedCoverage} onValueChange={onCoverageChange}>
+              <SelectTrigger className="w-full md:w-72">
+                <SelectValue placeholder="Most Popular (1 Lakh USD)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="30k-50k">30000 USD to 50000 USD</SelectItem>
+                <SelectItem value="50k-75k">50000 USD to 75000 USD</SelectItem>
+                <SelectItem value="75k-1L">75000 USD to 1 Lakh USD</SelectItem>
+                <SelectItem value="1L-2L">1 Lakh USD to 2 Lakhs USD</SelectItem>
+                <SelectItem value="2L+">Above 2 Lakhs</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="w-full md:w-auto">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Insurer</label>
+            <Select value={selectedInsurer} onValueChange={onInsurerChange}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="Select Insurer" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Select Insurer</SelectItem>
+                <SelectItem value="Reliance">Reliance</SelectItem>
+                <SelectItem value="GoDigit">Go Digit</SelectItem>
+                <SelectItem value="Bajaj">Bajaj</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="w-full md:w-auto mt-auto">
+            <Button 
+              variant="outline" 
+              onClick={onResetFilters} 
+              disabled={!isAnyFilterActive}
+              className="w-full md:w-auto bg-[#F5F5F5] hover:bg-gray-200 border-gray-200"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" /> 
+              Reset Filters
+            </Button>
+          </div>
         </div>
         
-        <div className={isMobile ? 'w-full' : 'w-1/2'}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
-          <Select value={selectedPriceSort} onValueChange={onPriceSortChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="All" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="lowToHigh">Low to High</SelectItem>
-              <SelectItem value="highToLow">High to Low</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex justify-end items-center text-right mt-2 text-xs text-gray-500">
+          All prices are inclusive of GST
         </div>
+      </div>
+      
+      <div className="text-xl font-bold text-black">
+        {filteredPlansCount} {filteredPlansCount === 1 ? "Plan" : "Plans"} Found
       </div>
     </div>
   );
