@@ -1,14 +1,11 @@
-
 import React from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { TravelFormData } from '@/utils/localStorageUtils';
-
 interface TravellerDetailsProps {
   travellers?: TravelFormData['travellers'];
   formatDate: (dateStr: string | undefined, defaultValue?: string) => string;
   formatTravellerAge: (dob?: string) => string;
 }
-
 const TravellerDetails: React.FC<TravellerDetailsProps> = ({
   travellers,
   formatDate,
@@ -17,7 +14,7 @@ const TravellerDetails: React.FC<TravellerDetailsProps> = ({
   if (!travellers?.details?.length) {
     return null;
   }
-  
+
   // Helper to display DOB as dd/MM/yyyy even if not
   const displayDOB = (dob?: string) => {
     if (!dob) return 'Unknown';
@@ -31,11 +28,8 @@ const TravellerDetails: React.FC<TravellerDetailsProps> = ({
     } catch {}
     return dob;
   };
-
-  return (
-    <>
-      {travellers.details.map((traveller, index) => (
-        <div className="bg-blue-50 p-4 mt-4" key={index}>
+  return <>
+      {travellers.details.map((traveller, index) => <div key={index} className="p-4 mt-4 bg-[#e7f5fa]">
           <div className="font-medium text-blue-800 pb-2">
             Traveller {index + 1} : {traveller.name || 'Guest'}
           </div>
@@ -58,39 +52,27 @@ const TravellerDetails: React.FC<TravellerDetailsProps> = ({
               <span>{traveller.mobileNo || 'Not provided'}</span>
             </div>
             
-            {traveller.passportNumber && (
-              <div>
+            {traveller.passportNumber && <div>
                 <span className="text-gray-500">Passport: </span>
                 <span>{traveller.passportNumber}</span>
-              </div>
-            )}
+              </div>}
             
-            {traveller.address && (
-              <div>
+            {traveller.address && <div>
                 <span className="text-gray-500">Address: </span>
                 <span>{traveller.address}</span>
-              </div>
-            )}
+              </div>}
             
-            {traveller.city && (
-              <div>
+            {traveller.city && <div>
                 <span className="text-gray-500">City: </span>
                 <span>{traveller.city}</span>
-              </div>
-            )}
+              </div>}
             
-            {traveller.pincode && (
-              <div>
+            {traveller.pincode && <div>
                 <span className="text-gray-500">Pincode: </span>
                 <span>{traveller.pincode}</span>
-              </div>
-            )}
+              </div>}
           </div>
-        </div>
-      ))}
-    </>
-  );
+        </div>)}
+    </>;
 };
-
 export default TravellerDetails;
-
