@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { useIsMobile } from '@/hooks/use-mobile';
-
 interface PlanFiltersProps {
   travellersCount: number;
   formattedStartDate: string;
@@ -19,7 +17,6 @@ interface PlanFiltersProps {
   filteredPlansCount: number;
   isAnyFilterActive: boolean;
 }
-
 const PlanFilters: React.FC<PlanFiltersProps> = ({
   travellersCount,
   formattedStartDate,
@@ -35,7 +32,6 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
   isAnyFilterActive
 }) => {
   const isMobile = useIsMobile();
-  
   return <div className="w-full mb-8 py-0 my-[6px]">
       <div className="border border-[#0FB1F6] rounded-lg p-4 mb-4">
         <div className="flex justify-between items-center mb-4">
@@ -103,10 +99,7 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
         </div>
       </div>
       
-      <div className="text-xl font-bold text-black">
-        {filteredPlansCount} {filteredPlansCount === 1 ? "Plan" : "Plans"} Found
-      </div>
+      
     </div>;
 };
-
 export default PlanFilters;
