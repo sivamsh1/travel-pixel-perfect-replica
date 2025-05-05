@@ -36,19 +36,24 @@ class SocketService {
     });
 
     this.setupListeners();
+
+    // Add a raw message logger for debugging
+    this.socket.onAny((event, ...args) => {
+      console.log(`⚡️ SOCKET RECEIVED EVENT: ${event}`, args);
+    });
   }
 
   private setupListeners(): void {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('Socket.IO connected');
+      console.log('Socket.IO connected ✅');
       this.connectionStatus = 'connected';
       this.reconnectAttempts = 0;
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log(`Socket.IO disconnected: ${reason}`);
+      console.log(`Socket.IO disconnected ❌: ${reason}`);
       this.connectionStatus = 'disconnected';
       
       if (reason === 'io server disconnect') {
@@ -74,6 +79,7 @@ class SocketService {
 
   public connect(): void {
     if (this.connectionStatus === 'disconnected' && this.socket) {
+      console.log('Attempting to connect Socket.IO...');
       this.connectionStatus = 'connecting';
       this.socket.connect();
     }
@@ -98,28 +104,36 @@ class SocketService {
 
   public emit<T>(event: string, data: T, callback?: (response: any) => void): void {
     if (!this.socket || this.connectionStatus !== 'connected') {
+      console.log(`Socket not connected yet, attempting to connect before emitting ${event}`);
       this.connect();
       setTimeout(() => {
         if (this.socket && this.connectionStatus === 'connected') {
+          console.log(`Emitting event: ${event}`, data);
           this.socket.emit(event, data, callback);
         } else {
-          console.error('Failed to emit event, socket not connected');
+          console.error(`Failed to emit event ${event}, socket not connected`);
         }
       }, 1000);
       return;
     }
 
+    console.log(`Emitting event: ${event}`, data);
     this.socket.emit(event, data, callback);
   }
 
   public on<T>(event: string, callback: (data: T) => void): () => void {
+    console.log(`Registering listener for event: ${event}`);
+    
     if (!this.eventListeners[event]) {
       this.eventListeners[event] = [];
     }
     this.eventListeners[event].push(callback);
 
     if (this.socket) {
-      this.socket.on(event, callback);
+      this.socket.on(event, (data) => {
+        console.log(`Received event: ${event}`, data);
+        callback(data);
+      });
     }
 
     // Return function to remove listener

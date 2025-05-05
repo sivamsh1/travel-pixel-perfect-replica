@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, Info } from 'lucide-react';
 
 interface ConnectionWarningProps {
   isConnected: boolean;
@@ -23,6 +23,9 @@ const ConnectionWarning: React.FC<ConnectionWarningProps> = ({ isConnected, isLo
           <p className="text-yellow-600 text-sm">
             This may take a few moments. Socket.IO connection in progress.
           </p>
+          <p className="text-yellow-600 text-sm mt-1">
+            <strong>Troubleshooting:</strong> If you've been waiting more than 30 seconds, try refreshing the page.
+          </p>
         </div>
       </div>
     );
@@ -38,6 +41,9 @@ const ConnectionWarning: React.FC<ConnectionWarningProps> = ({ isConnected, isLo
         </p>
         <p className="text-blue-600 text-sm">
           Socket.IO connected. Waiting for quote data...
+        </p>
+        <p className="text-blue-600 text-sm mt-1 flex items-center">
+          <Info className="h-3 w-3 mr-1" /> Check the debug information at the bottom of the page for status details.
         </p>
       </div>
     </div>
