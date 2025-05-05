@@ -1,9 +1,9 @@
 
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { toast } from "@/components/ui/use-toast";
-import { useQuery } from '@tanstack/react-query';
+import { socketService } from '@/services/socketService';
 import { getFromLocalStorage } from '@/utils/localStorageUtils';
 
 const LOGO_PATHS = {
@@ -29,6 +29,11 @@ export const useInsuranceQuotes = () => {
     travellersCount,
     travellers
   } = useTravelForm();
+
+  const [quotes, setQuotes] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [socketConnected, setSocketConnected] = useState<boolean>(false);
 
   const requestPayload = useMemo(() => {
     const storageData = getFromLocalStorage();
@@ -83,110 +88,173 @@ export const useInsuranceQuotes = () => {
       dob: dob.length ? dob : ["17/08/1997"],
       startDate: startDate || "19/06/2025",
       returnDate: endDate || "29/07/2025",
+      trackBaggage: false,
+      tripDelay: false,
+      tripType: "single",
+      bodyCount: travellersCount || 1,
+      ped: false,
+      adventureSportsCover: false,
+      sportsCover: false,
+      visaRefund: false,
+      emergencyCover: false,
+      staffReplacementCover: false,
+      isCitizen: true,
+      isIndianResident: true,
+      si: "50-60"
     };
-  }, [travellers]);
+  }, [travellersCount, travellers]);
 
-  const { data: apiQuotes, isLoading, error } = useQuery({
-    queryKey: ['insuranceQuotes', requestPayload],
-    queryFn: async () => {
-      try {
-        const response = await fetch('https://gyaantree.com/api/travel/v1/quickQuote/fetch-quotes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestPayload),
-        });
-        
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
+  useEffect(() => {
+    // Initialize socket connection
+    socketService.connect();
+
+    // Check connection status
+    const checkConnection = setInterval(() => {
+      setSocketConnected(socketService.isConnected());
+    }, 1000);
+
+    // Handle socket connection status change
+    const handleConnectionChange = () => {
+      setSocketConnected(socketService.isConnected());
+    };
+
+    // Set up listener for socket connection
+    const onConnect = socketService.on('connect', handleConnectionChange);
+    const onDisconnect = socketService.on('disconnect', handleConnectionChange);
+
+    return () => {
+      // Clean up
+      clearInterval(checkConnection);
+      onConnect();
+      onDisconnect();
+      // Don't disconnect as it might be used elsewhere
+    };
+  }, []);
+
+  // Process quotes data
+  const processQuotesData = (data: any) => {
+    if (!data || !data.result) return [];
+    
+    return Object.entries(data.result || {}).map(([key, value]: [string, any]) => {
+      let planName = value?.planName || key;
+      planName = planName.replace(/_/g, ' ');
+
+      let provider = value?.companyName || 'Reliance';
+      const insurer = getInsurerFromKey(key);
+      
+      let logo: LogoPath = LOGO_PATHS.reliance; // Default to Reliance logo
+      if (insurer && LOGO_PATHS[insurer]) {
+        logo = LOGO_PATHS[insurer];
+      }
+      const details = "Overseas Travel | Excluding USA and CANADA";
+      let netPremium = 0;
+      if (value && value.netPremium !== undefined && value.netPremium !== null) {
+        netPremium = typeof value.netPremium === 'string' 
+          ? parseFloat(value.netPremium)
+          : value.netPremium;
+      }
+
+      // Ensure covers is always an array
+      const covers = Array.isArray(value?.covers) ? value.covers : [];
+      
+      // Extract sumInsured from covers or use a default value
+      let sumInsured = 50000; // Default value
+      if (covers.length > 0 && covers[0]?.coverAmount) {
+        const coverAmount = covers[0].coverAmount;
+        if (typeof coverAmount === 'string') {
+          // Try to extract numeric value from string like "50,000" or "50000"
+          const numericValue = coverAmount.replace(/[^0-9]/g, '');
+          sumInsured = parseInt(numericValue, 10) || 50000;
+        } else if (typeof coverAmount === 'number') {
+          sumInsured = coverAmount;
         }
-        
-        const data = await response.json();
-        
-        if (data && data.result) {
-          return Object.entries(data.result || {}).map(([key, value]: [string, any]) => {
-            let planName = value?.planName || key;
-            planName = planName.replace(/_/g, ' ');
+      }
+      
+      // Create standardized benefit names that match the reference design
+      const standardBenefits = [
+        { icon: "ambulance", text: "Emergency Medical Assistance" },
+        { icon: "heart", text: "Lifestyle Assistance" },
+        { icon: "car", text: "Domestic Roadside Assistance" }
+      ];
 
-            let provider = value?.companyName || 'Reliance';
-            const insurer = getInsurerFromKey(key);
-            
-            let logo: LogoPath = LOGO_PATHS.reliance; // Default to Reliance logo
-            if (insurer && LOGO_PATHS[insurer]) {
-              logo = LOGO_PATHS[insurer];
-            }
-            const details = "Overseas Travel | Excluding USA and CANADA";
-            let netPremium = 0;
-            if (value && value.netPremium !== undefined && value.netPremium !== null) {
-              netPremium = typeof value.netPremium === 'string' 
-                ? parseFloat(value.netPremium)
-                : value.netPremium;
-            }
+      // Format coverage points to match the design
+      const coveragePoints = covers.map(
+        (cover) => `$ ${cover?.coverAmount || '0'} ${cover?.coverName || ''}`
+      );
 
-            // Ensure covers is always an array
-            const covers = Array.isArray(value?.covers) ? value.covers : [];
-            
-            // Extract sumInsured from covers or use a default value
-            let sumInsured = 50000; // Default value
-            if (covers.length > 0 && covers[0]?.coverAmount) {
-              const coverAmount = covers[0].coverAmount;
-              if (typeof coverAmount === 'string') {
-                // Try to extract numeric value from string like "50,000" or "50000"
-                const numericValue = coverAmount.replace(/[^0-9]/g, '');
-                sumInsured = parseInt(numericValue, 10) || 50000;
-              } else if (typeof coverAmount === 'number') {
-                sumInsured = coverAmount;
-              }
-            }
-            
-            // Create standardized benefit names that match the reference design
-            const standardBenefits = [
-              { icon: "ambulance", text: "Emergency Medical Assistance" },
-              { icon: "heart", text: "Lifestyle Assistance" },
-              { icon: "car", text: "Domestic Roadside Assistance" }
-            ];
+      return {
+        id: key,
+        name: planName,
+        provider: provider,
+        logo: logo,
+        description: `${planName} Insurance Plan`,
+        details: details,
+        price: netPremium > 0 ? `₹ ${netPremium}` : '₹0',
+        benefits: standardBenefits,
+        coveragePoints: coveragePoints,
+        travellersCount,
+        netPremium: netPremium,
+        sumInsured: sumInsured
+      };
+    });
+  };
 
-            // Format coverage points to match the design
-            const coveragePoints = covers.map(
-              (cover) => `$ ${cover?.coverAmount || '0'} ${cover?.coverName || ''}`
-            );
+  // Effect for fetching quotes via Socket.IO
+  useEffect(() => {
+    if (!socketConnected) {
+      return;
+    }
 
-            return {
-              id: key,
-              name: planName,
-              provider: provider,
-              logo: logo,
-              description: `${planName} Insurance Plan`,
-              details: details,
-              price: netPremium > 0 ? `₹ ${netPremium}` : '₹0',
-              benefits: standardBenefits,
-              coveragePoints: coveragePoints,
-              travellersCount,
-              netPremium: netPremium,
-              sumInsured: sumInsured // Add the sumInsured property
-            };
+    setIsLoading(true);
+    setError(null);
+
+    console.log("Requesting quotes with payload:", requestPayload);
+
+    // Set up listener for receiving quotes
+    const handleQuotes = (data: any) => {
+      console.log("Received quotes:", data);
+      if (data && data.result) {
+        const processedQuotes = processQuotesData(data);
+        setQuotes(prev => {
+          // Merge new quotes with existing ones, replacing any duplicates
+          const existingQuoteIds = new Set(prev.map(q => q.id));
+          const newQuotes = processedQuotes.filter(q => !existingQuoteIds.has(q.id));
+          return [...prev, ...newQuotes];
+        });
+      }
+      setIsLoading(false);
+    };
+
+    // Register listener for quotes
+    const removeListener = socketService.on('getLiveQuotes', handleQuotes);
+
+    // Emit request for quotes
+    socketService.emit('getLiveQuotes', requestPayload);
+
+    // Set a timeout to stop loading state even if no quotes are received
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        setIsLoading(false);
+        if (quotes.length === 0) {
+          toast({
+            title: "No Quotes Available",
+            description: "Couldn't retrieve insurance quotes. Please try again later.",
+            variant: "destructive",
           });
         }
-        return [];
-      } catch (error) {
-        console.error('Error fetching quotes:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch insurance quotes. Please try again.",
-          variant: "destructive",
-        });
-        return []; // Return empty array on error
       }
-    },
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    retry: 1,
-  });
+    }, 10000);
+
+    return () => {
+      removeListener();
+      clearTimeout(timeout);
+    };
+  }, [requestPayload, socketConnected]);
 
   return {
-    quotes: apiQuotes || [], // Ensure we always return an array
+    quotes,
     isLoading,
-    error: error instanceof Error ? error.message : null
+    error,
+    isConnected: socketConnected
   };
 };

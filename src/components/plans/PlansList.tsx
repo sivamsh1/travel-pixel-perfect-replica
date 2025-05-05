@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+
+import React, { useEffect, useRef, useState } from 'react';
 import PlanCard, { InsurancePlan } from '@/components/PlanCard';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 import FlightLoader from "../../../public/lovable-uploads/Flightloader-ezgif.com-speed.gif";
+import { toast } from "@/components/ui/use-toast";
 
 interface PlansListProps {
   apiQuotes: InsurancePlan[];
@@ -11,6 +13,7 @@ interface PlansListProps {
   isSelectedForComparison: (planId: string) => boolean;
   onToggleCompare: (plan: InsurancePlan) => void;
   isLoading?: boolean;
+  isConnected?: boolean;
 }
 
 const PlansList: React.FC<PlansListProps> = ({ 
@@ -19,11 +22,31 @@ const PlansList: React.FC<PlansListProps> = ({
   onBuyNow,
   isSelectedForComparison,
   onToggleCompare,
-  isLoading = false
+  isLoading = false,
+  isConnected = true
 }) => {
   const isMobile = useIsMobile();
-  
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [newPlanAdded, setNewPlanAdded] = useState<boolean>(false);
+  const prevQuoteCountRef = useRef<number>(0);
+  
+  useEffect(() => {
+    // Check if we've received new quotes
+    if (apiQuotes.length > prevQuoteCountRef.current) {
+      prevQuoteCountRef.current = apiQuotes.length;
+      setNewPlanAdded(true);
+      
+      toast({
+        title: "New Quotes Available",
+        description: `${apiQuotes.length - prevQuoteCountRef.current + 1} new insurance quotes received.`,
+      });
+      
+      // Reset notification after 3 seconds
+      setTimeout(() => {
+        setNewPlanAdded(false);
+      }, 3000);
+    }
+  }, [apiQuotes]);
 
   useEffect(() => {
     if (isLoading && messagesEndRef.current) {
@@ -51,7 +74,9 @@ const PlansList: React.FC<PlansListProps> = ({
             }
           }}
         />
-        <p className="text-gray-500 text-center">Loading available plans...</p>
+        <p className="text-gray-500 text-center">
+          {isConnected ? 'Loading available plans...' : 'Connecting to quote service...'}
+        </p>
         <div ref={messagesEndRef} />
       </div>
     );
@@ -75,6 +100,12 @@ const PlansList: React.FC<PlansListProps> = ({
 
   return (
     <div className="w-full space-y-6 mb-20">
+      {newPlanAdded && (
+        <div className="fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-md shadow-lg z-50 animate-pulse">
+          New insurance quotes available!
+        </div>
+      )}
+      
       {nonZeroPlans.map((plan) => (
         <PlanCard
           key={plan.id}

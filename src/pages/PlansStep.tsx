@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import Layout from '@/components/Layout';
@@ -13,6 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Progress } from "@/components/ui/progress";
 import { getFromLocalStorage, saveToLocalStorage } from '@/utils/localStorageUtils';
 import { InsurancePlan } from '@/components/PlanCard';
+import { toast } from "@/components/ui/use-toast";
 
 const steps = [
   { id: 1, name: "Trip Details" },
@@ -51,7 +51,7 @@ const PlansStep = () => {
   };
   
   const isMobile = useIsMobile();
-  const { quotes, isLoading, error } = useInsuranceQuotes();
+  const { quotes, isLoading, error, isConnected } = useInsuranceQuotes();
   
   // Get data from localStorage for display
   const storageData = getFromLocalStorage();
@@ -187,6 +187,14 @@ const PlansStep = () => {
       <div className="flex flex-1 flex-col items-center px-6 max-w-5xl mx-auto w-full">
         <h2 className="text-2xl md:text-3xl font-bold mb-6">Select Your Plan</h2>
         
+        {!isConnected && !isLoading && (
+          <div className="w-full p-4 mb-4 bg-yellow-50 border border-yellow-200 rounded-md">
+            <p className="text-yellow-700">
+              Connecting to quote service... Please wait.
+            </p>
+          </div>
+        )}
+        
         <PlanFilters 
           travellersCount={travellersCount}
           formattedStartDate={formattedStartDate}
@@ -211,6 +219,7 @@ const PlansStep = () => {
               isSelectedForComparison={isSelectedForComparison}
               onToggleCompare={togglePlanComparison}
               isLoading={isLoading}
+              isConnected={isConnected}
             />
           )}
         </PlanComparisonManager>
