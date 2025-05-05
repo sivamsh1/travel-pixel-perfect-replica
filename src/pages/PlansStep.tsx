@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import Layout from '@/components/Layout';
 import PlansHeader from '@/components/plans/PlansHeader';
@@ -12,6 +13,7 @@ import { useDateFormatter } from '@/components/plans/useDateFormatter';
 import { usePlansFilter } from '@/components/plans/usePlansFilter';
 import { useBuyNowHandler } from '@/components/plans/useBuyNowHandler';
 import { socketService } from '@/services/socketService';
+
 const PlansStep = () => {
   const {
     travellersCount
@@ -42,18 +44,28 @@ const PlansStep = () => {
     handleBuyNow
   } = useBuyNowHandler();
 
-  // Auto-scroll functionality
+  // Auto-scroll functionality with improved scrolling behavior
   const autoScrollRef = useRef({
     scrollInterval: null as NodeJS.Timeout | null,
-    userInteracted: false
+    userInteracted: false,
+    scrollSpeed: 1, // Default scroll speed (pixels per interval)
+    maxScrollSpeed: 2 // Maximum scroll speed
   });
+  
   useEffect(() => {
-    // Start auto-scrolling when component mounts
+    // Start auto-scrolling when component mounts with smooth acceleration
+    let currentSpeed = 0.5; // Start with a slower speed
+    
     autoScrollRef.current.scrollInterval = setInterval(() => {
       if (!autoScrollRef.current.userInteracted) {
+        // Gradually increase scrolling speed up to maxScrollSpeed
+        if (currentSpeed < autoScrollRef.current.maxScrollSpeed) {
+          currentSpeed += 0.1;
+        }
+        
         window.scrollBy({
-          top: 1,
-          behavior: 'smooth'
+          top: currentSpeed,
+          behavior: 'auto' // Using 'auto' for smoother continuous scrolling
         });
       }
     }, 20);
@@ -63,6 +75,7 @@ const PlansStep = () => {
       if (autoScrollRef.current.scrollInterval) {
         clearInterval(autoScrollRef.current.scrollInterval);
         autoScrollRef.current.userInteracted = true;
+        console.log('User interaction detected, auto-scroll stopped');
       }
     };
 
@@ -72,6 +85,7 @@ const PlansStep = () => {
     document.addEventListener('scroll', handleUserInteraction);
     document.addEventListener('keydown', handleUserInteraction);
     document.addEventListener('touchstart', handleUserInteraction);
+    
     return () => {
       // Clean up on component unmount
       if (autoScrollRef.current.scrollInterval) {
@@ -142,4 +156,5 @@ const PlansStep = () => {
       </div>
     </Layout>;
 };
+
 export default PlansStep;
