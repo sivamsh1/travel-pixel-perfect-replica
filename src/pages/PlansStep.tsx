@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import Layout from '@/components/Layout';
 import PlansHeader from '@/components/plans/PlansHeader';
@@ -12,6 +13,7 @@ import { useDateFormatter } from '@/components/plans/useDateFormatter';
 import { usePlansFilter } from '@/components/plans/usePlansFilter';
 import { useBuyNowHandler } from '@/components/plans/useBuyNowHandler';
 import { socketService } from '@/services/socketService';
+
 const PlansStep = () => {
   const {
     travellersCount
@@ -114,7 +116,10 @@ const PlansStep = () => {
   const showConnectionWarning = !isConnected || isLoading && isConnected;
 
   // Status text for plans count
-  const plansFoundText = isLoading && filteredQuotes.length === 0 ? "Fetching quotes..." : `${filteredQuotes.length} ${filteredQuotes.length === 1 ? "Plan" : "Plans"} Found`;
+  const plansFoundText = isLoading || filteredQuotes.length === 0 
+    ? "Fetching quotes..." 
+    : `${filteredQuotes.length} ${filteredQuotes.length === 1 ? "Plan" : "Plans"} Found`;
+
   return <Layout>
       <PlansHeader />
       
@@ -125,7 +130,10 @@ const PlansStep = () => {
         
         <PlanFilters travellersCount={travellersCount} formattedStartDate={formattedStartDate} formattedEndDate={formattedEndDate} selectedInsurer={selectedInsurer} selectedPriceSort={selectedPriceSort} selectedCoverage={selectedCoverage} onInsurerChange={setSelectedInsurer} onPriceSortChange={setSelectedPriceSort} onCoverageChange={setSelectedCoverage} onResetFilters={handleResetFilters} filteredPlansCount={filteredQuotes.length} isAnyFilterActive={isAnyFilterActive} />
         
-        
+        {/* Display the plans found text */}
+        <div className="w-full text-left my-4 font-semibold text-lg">
+          {plansFoundText}
+        </div>
         
         {showLoading ? <LoadingPlans isConnected={isConnected} message="We're searching for the best insurance plans for your journey. This may take a few moments." /> : <PlanComparisonManager>
             {({
