@@ -18,7 +18,7 @@ const LoadingPlans: React.FC<LoadingPlansProps> = ({
       <img 
         src={FlightLoader} 
         alt="Loading" 
-        className="w-40 h-40 mb-4"
+        className="w-80 h-80 mb-4"
         onError={(e) => {
           e.currentTarget.style.display = 'none';
         }}
