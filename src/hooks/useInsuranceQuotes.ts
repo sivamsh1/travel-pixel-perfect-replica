@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -34,6 +35,7 @@ export const useInsuranceQuotes = () => {
   const [error, setError] = useState<string | null>(null);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
   const [receivedFirstBatch, setReceivedFirstBatch] = useState<boolean>(false);
+  const [socketResponses, setSocketResponses] = useState<any[]>([]);
 
   const requestPayload = useMemo(() => {
     const storageData = getFromLocalStorage();
@@ -133,16 +135,37 @@ export const useInsuranceQuotes = () => {
 
   // Process quotes data
   const processQuotesData = (data: any) => {
-    console.log("Processing quotes data:", data);
+    console.log("===== SOCKET.IO RESPONSE START =====");
+    console.log("Raw Socket.IO response:", JSON.stringify(data, null, 2));
+    console.log("Response type:", typeof data);
+    console.log("Is Array:", Array.isArray(data));
+    
+    if (Array.isArray(data)) {
+      console.log("Array length:", data.length);
+      console.log("First element:", data[0]);
+      if (data.length > 1) {
+        console.log("Second element type:", typeof data[1]);
+        console.log("Second element has data prop:", data[1] && 'data' in data[1]);
+      }
+    } else if (data && typeof data === 'object') {
+      console.log("Object keys:", Object.keys(data));
+      console.log("Has result prop:", 'result' in data);
+    }
+    console.log("===== SOCKET.IO RESPONSE END =====");
+    
+    // Store the response for debugging
+    setSocketResponses(prev => [...prev, data]);
     
     // Handle the new array format response
     if (Array.isArray(data) && data.length > 1 && data[0] === "QuickQuote" && data[1]?.data) {
       // New format: ["QuickQuote", { data: {...} }]
+      console.log("Processing new format response");
       return processQuoteItems(data[1].data);
     } 
     // Handle the old format response
     else if (data?.result) {
       // Old format: { result: {...} }
+      console.log("Processing old format response");
       return processQuoteItems(data.result);
     }
     
@@ -153,7 +176,12 @@ export const useInsuranceQuotes = () => {
   
   // Helper function to process quote items
   const processQuoteItems = (quoteItems: any) => {
-    if (!quoteItems) return [];
+    if (!quoteItems) {
+      console.error("No quote items to process");
+      return [];
+    }
+    
+    console.log("Quote items to process:", Object.keys(quoteItems || {}));
     
     return Object.entries(quoteItems || {}).map(([key, value]: [string, any]) => {
       // Skip any boolean false or empty objects
@@ -161,6 +189,7 @@ export const useInsuranceQuotes = () => {
           (typeof value === 'object' && 
            value !== null && 
            Object.keys(value).length === 0)) {
+        console.log(`Skipping item ${key} - value is false or empty`);
         return null;
       }
       
@@ -168,6 +197,7 @@ export const useInsuranceQuotes = () => {
       if (value?.status === true && 
           value?.responseCode === 204 && 
           (!value?.data || (Array.isArray(value.data) && value.data.length === 0))) {
+        console.log(`Skipping item ${key} - Care item with no data`);
         return null;
       }
       
@@ -218,6 +248,8 @@ export const useInsuranceQuotes = () => {
         (cover) => `$ ${cover?.coverAmount || '0'} ${cover?.coverName || ''}`
       );
 
+      console.log(`Processed plan: ${key} - ${planName} - ${netPremium}`);
+
       return {
         id: key,
         name: planName,
@@ -244,11 +276,11 @@ export const useInsuranceQuotes = () => {
     setIsLoading(true);
     setError(null);
 
-    console.log("Requesting quotes with payload:", requestPayload);
+    console.log("Requesting quotes with payload:", JSON.stringify(requestPayload, null, 2));
 
     // Set up listener for receiving quotes
     const handleQuotes = (data: any) => {
-      console.log("Received quotes:", data);
+      console.log("Received quotes from socket:", typeof data);
       
       try {
         if (data) {
@@ -261,6 +293,8 @@ export const useInsuranceQuotes = () => {
               // Merge new quotes with existing ones, replacing any duplicates
               const existingQuoteIds = new Set(prev.map(q => q.id));
               const newQuotes = processedQuotes.filter(q => !existingQuoteIds.has(q.id));
+              
+              console.log(`Adding ${newQuotes.length} new quotes to existing ${prev.length} quotes`);
               
               // Show a toast notification for new quotes if this isn't the first batch
               if (prev.length > 0 && newQuotes.length > 0) {
@@ -323,6 +357,7 @@ export const useInsuranceQuotes = () => {
     isLoading,
     error,
     isConnected: socketConnected,
-    receivedFirstBatch
+    receivedFirstBatch,
+    socketResponses // Expose the socket responses for debugging
   };
 };

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Layout from '@/components/Layout';
 import PlansHeader from '@/components/plans/PlansHeader';
 import PlanFilters from '@/components/PlanFilters';
@@ -14,7 +14,7 @@ import { useBuyNowHandler } from '@/components/plans/useBuyNowHandler';
 
 const PlansStep = () => {
   const { travellersCount } = useTravelForm();
-  const { quotes, isLoading, isConnected, receivedFirstBatch } = useInsuranceQuotes();
+  const { quotes, isLoading, isConnected, receivedFirstBatch, socketResponses } = useInsuranceQuotes();
   const { formattedStartDate, formattedEndDate } = useDateFormatter();
   
   const {
@@ -30,6 +30,23 @@ const PlansStep = () => {
   } = usePlansFilter(quotes);
   
   const { handleBuyNow } = useBuyNowHandler();
+  
+  // Log socket responses whenever they change
+  useEffect(() => {
+    if (socketResponses && socketResponses.length > 0) {
+      console.log("All socket responses:", socketResponses);
+      console.log("Latest socket response:", socketResponses[socketResponses.length - 1]);
+    }
+  }, [socketResponses]);
+  
+  // Log quotes whenever they change
+  useEffect(() => {
+    console.log("Current quotes count:", quotes.length);
+    console.log("Filtered quotes count:", filteredQuotes.length);
+    if (quotes.length > 0) {
+      console.log("Sample quote:", quotes[0]);
+    }
+  }, [quotes, filteredQuotes]);
   
   return (
     <Layout>
@@ -69,6 +86,19 @@ const PlansStep = () => {
             />
           )}
         </PlanComparisonManager>
+
+        {/* Debug Information - Hidden in Production */}
+        {process.env.NODE_ENV !== 'production' && (
+          <div className="mt-8 p-4 border border-gray-300 rounded-md w-full">
+            <h3 className="font-bold">Debug Information:</h3>
+            <p>Socket Connected: {isConnected ? 'Yes' : 'No'}</p>
+            <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
+            <p>Received First Batch: {receivedFirstBatch ? 'Yes' : 'No'}</p>
+            <p>Total Quotes: {quotes.length}</p>
+            <p>Filtered Quotes: {filteredQuotes.length}</p>
+            <p>Socket Responses: {socketResponses?.length || 0}</p>
+          </div>
+        )}
       </div>
     </Layout>
   );
