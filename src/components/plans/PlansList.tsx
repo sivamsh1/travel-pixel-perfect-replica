@@ -14,6 +14,7 @@ interface PlansListProps {
   onToggleCompare: (plan: InsurancePlan) => void;
   isLoading?: boolean;
   isConnected?: boolean;
+  receivedFirstBatch?: boolean;
 }
 
 const PlansList: React.FC<PlansListProps> = ({ 
@@ -23,7 +24,8 @@ const PlansList: React.FC<PlansListProps> = ({
   isSelectedForComparison,
   onToggleCompare,
   isLoading = false,
-  isConnected = true
+  isConnected = true,
+  receivedFirstBatch = false
 }) => {
   const isMobile = useIsMobile();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -32,20 +34,16 @@ const PlansList: React.FC<PlansListProps> = ({
   
   useEffect(() => {
     // Check if we've received new quotes
-    if (apiQuotes.length > prevQuoteCountRef.current) {
-      prevQuoteCountRef.current = apiQuotes.length;
+    if (apiQuotes.length > prevQuoteCountRef.current && prevQuoteCountRef.current > 0) {
       setNewPlanAdded(true);
-      
-      toast({
-        title: "New Quotes Available",
-        description: `${apiQuotes.length - prevQuoteCountRef.current + 1} new insurance quotes received.`,
-      });
       
       // Reset notification after 3 seconds
       setTimeout(() => {
         setNewPlanAdded(false);
       }, 3000);
     }
+    
+    prevQuoteCountRef.current = apiQuotes.length;
   }, [apiQuotes]);
 
   useEffect(() => {
@@ -54,8 +52,8 @@ const PlansList: React.FC<PlansListProps> = ({
     }
   }, [isLoading]);
 
-  // First check if we're in a loading state
-  if (isLoading) {
+  // First check if we're in a loading state with no quotes
+  if (isLoading && apiQuotes.length === 0) {
     return (
       <div className="w-full flex flex-col items-center justify-center">
         <img 
@@ -91,6 +89,21 @@ const PlansList: React.FC<PlansListProps> = ({
   );
 
   if (safeApiQuotes.length === 0 || nonZeroPlans.length === 0) {
+    if (isLoading || !isConnected) {
+      return (
+        <div className="w-full py-10 text-center">
+          <img 
+            src={FlightLoader} 
+            alt="Loading" 
+            className="w-40 h-40 mx-auto mb-4"
+          />
+          <p className="text-gray-500">
+            {!isConnected ? 'Connecting to quote service...' : 'Fetching plans...'}
+          </p>
+        </div>
+      );
+    }
+    
     return (
       <div className="w-full py-10 text-center">
         <p className="text-gray-500">No plans available. Please try again later.</p>
@@ -103,6 +116,12 @@ const PlansList: React.FC<PlansListProps> = ({
       {newPlanAdded && (
         <div className="fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-md shadow-lg z-50 animate-pulse">
           New insurance quotes available!
+        </div>
+      )}
+      
+      {isLoading && (
+        <div className="w-full text-center text-sm text-blue-500">
+          More quotes are being loaded...
         </div>
       )}
       

@@ -14,7 +14,7 @@ import { useBuyNowHandler } from '@/components/plans/useBuyNowHandler';
 
 const PlansStep = () => {
   const { travellersCount } = useTravelForm();
-  const { quotes, isLoading, isConnected } = useInsuranceQuotes();
+  const { quotes, isLoading, isConnected, receivedFirstBatch } = useInsuranceQuotes();
   const { formattedStartDate, formattedEndDate } = useDateFormatter();
   
   const {
@@ -65,6 +65,7 @@ const PlansStep = () => {
               onToggleCompare={togglePlanComparison}
               isLoading={isLoading}
               isConnected={isConnected}
+              receivedFirstBatch={receivedFirstBatch}
             />
           )}
         </PlanComparisonManager>

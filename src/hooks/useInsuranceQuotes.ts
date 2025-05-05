@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -34,6 +33,7 @@ export const useInsuranceQuotes = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
+  const [receivedFirstBatch, setReceivedFirstBatch] = useState<boolean>(false);
 
   const requestPayload = useMemo(() => {
     const storageData = getFromLocalStorage();
@@ -133,9 +133,44 @@ export const useInsuranceQuotes = () => {
 
   // Process quotes data
   const processQuotesData = (data: any) => {
-    if (!data || !data.result) return [];
+    console.log("Processing quotes data:", data);
     
-    return Object.entries(data.result || {}).map(([key, value]: [string, any]) => {
+    // Handle the new array format response
+    if (Array.isArray(data) && data.length > 1 && data[0] === "QuickQuote" && data[1]?.data) {
+      // New format: ["QuickQuote", { data: {...} }]
+      return processQuoteItems(data[1].data);
+    } 
+    // Handle the old format response
+    else if (data?.result) {
+      // Old format: { result: {...} }
+      return processQuoteItems(data.result);
+    }
+    
+    // If we can't determine the format, return an empty array
+    console.error("Unknown quotes data format:", data);
+    return [];
+  };
+  
+  // Helper function to process quote items
+  const processQuoteItems = (quoteItems: any) => {
+    if (!quoteItems) return [];
+    
+    return Object.entries(quoteItems || {}).map(([key, value]: [string, any]) => {
+      // Skip any boolean false or empty objects
+      if (value === false || 
+          (typeof value === 'object' && 
+           value !== null && 
+           Object.keys(value).length === 0)) {
+        return null;
+      }
+      
+      // Skip Care items with no data
+      if (value?.status === true && 
+          value?.responseCode === 204 && 
+          (!value?.data || (Array.isArray(value.data) && value.data.length === 0))) {
+        return null;
+      }
+      
       let planName = value?.planName || key;
       planName = planName.replace(/_/g, ' ');
 
@@ -148,6 +183,7 @@ export const useInsuranceQuotes = () => {
       }
       const details = "Overseas Travel | Excluding USA and CANADA";
       let netPremium = 0;
+      
       if (value && value.netPremium !== undefined && value.netPremium !== null) {
         netPremium = typeof value.netPremium === 'string' 
           ? parseFloat(value.netPremium)
@@ -196,7 +232,7 @@ export const useInsuranceQuotes = () => {
         netPremium: netPremium,
         sumInsured: sumInsured
       };
-    });
+    }).filter(Boolean); // Filter out null values
   };
 
   // Effect for fetching quotes via Socket.IO
@@ -213,16 +249,47 @@ export const useInsuranceQuotes = () => {
     // Set up listener for receiving quotes
     const handleQuotes = (data: any) => {
       console.log("Received quotes:", data);
-      if (data && data.result) {
-        const processedQuotes = processQuotesData(data);
-        setQuotes(prev => {
-          // Merge new quotes with existing ones, replacing any duplicates
-          const existingQuoteIds = new Set(prev.map(q => q.id));
-          const newQuotes = processedQuotes.filter(q => !existingQuoteIds.has(q.id));
-          return [...prev, ...newQuotes];
+      
+      try {
+        if (data) {
+          const processedQuotes = processQuotesData(data);
+          
+          if (processedQuotes && processedQuotes.length > 0) {
+            setReceivedFirstBatch(true);
+            
+            setQuotes(prev => {
+              // Merge new quotes with existing ones, replacing any duplicates
+              const existingQuoteIds = new Set(prev.map(q => q.id));
+              const newQuotes = processedQuotes.filter(q => !existingQuoteIds.has(q.id));
+              
+              // Show a toast notification for new quotes if this isn't the first batch
+              if (prev.length > 0 && newQuotes.length > 0) {
+                toast({
+                  title: "New Quotes Available",
+                  description: `${newQuotes.length} new insurance quotes received.`,
+                });
+              }
+              
+              return [...prev, ...newQuotes];
+            });
+          }
+          
+          // Stop loading if we've received quotes or if first batch was already received
+          if (receivedFirstBatch || (processedQuotes && processedQuotes.length > 0)) {
+            setIsLoading(false);
+          }
+        }
+      } catch (err) {
+        console.error("Error processing quotes:", err);
+        setError("Failed to process quotes data");
+        setIsLoading(false);
+        
+        toast({
+          title: "Error Processing Quotes",
+          description: "There was a problem processing the insurance quotes.",
+          variant: "destructive",
         });
       }
-      setIsLoading(false);
     };
 
     // Register listener for quotes
@@ -255,6 +322,7 @@ export const useInsuranceQuotes = () => {
     quotes,
     isLoading,
     error,
-    isConnected: socketConnected
+    isConnected: socketConnected,
+    receivedFirstBatch
   };
 };
