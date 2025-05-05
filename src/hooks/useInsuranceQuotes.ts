@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -178,11 +177,15 @@ export const useInsuranceQuotes = () => {
           isLoading: false
         }));
         
-        toast({
-          title: "Error Processing Quotes",
-          description: "There was a problem processing the insurance quotes.",
-          variant: "destructive",
-        });
+        // Only show toast for errors if we've received the first batch already
+        // This prevents showing error messages during initial loading
+        if (state.receivedFirstBatch) {
+          toast({
+            title: "Error Processing Quotes",
+            description: "There was a problem processing the insurance quotes.",
+            variant: "destructive",
+          });
+        }
       }
     };
 
@@ -193,27 +196,24 @@ export const useInsuranceQuotes = () => {
     socketService.emit('getLiveQuotes', requestPayload);
 
     // Set a timeout to stop loading state even if no quotes are received
+    // But don't show error message automatically
     const timeout = setTimeout(() => {
       setState(prev => {
         if (!prev.isLoading) return prev;
         
-        if (prev.quotes.length === 0) {
-          toast({
-            title: "No Quotes Available",
-            description: "Couldn't retrieve insurance quotes. Please try again later.",
-            variant: "destructive",
-          });
-        }
-        
-        return { ...prev, isLoading: false };
+        return { 
+          ...prev, 
+          isLoading: false,
+          receivedFirstBatch: true  // Consider it received so we don't keep showing loading
+        };
       });
-    }, 10000);
+    }, 20000); // Extended timeout for better user experience
 
     return () => {
       removeListener();
       clearTimeout(timeout);
     };
-  }, [requestPayload, state.isConnected, travellersCount]);
+  }, [requestPayload, state.isConnected, travellersCount, state.receivedFirstBatch]);
 
   return {
     quotes: state.quotes,

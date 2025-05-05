@@ -89,24 +89,25 @@ const PlansList: React.FC<PlansListProps> = ({
   );
 
   if (safeApiQuotes.length === 0 || nonZeroPlans.length === 0) {
-    if (isLoading || !isConnected) {
+    // Only show "No plans" if we're not loading and connection is good
+    if (!isLoading && isConnected && receivedFirstBatch) {
       return (
         <div className="w-full py-10 text-center">
-          <img 
-            src={FlightLoader} 
-            alt="Loading" 
-            className="w-40 h-40 mx-auto mb-4"
-          />
-          <p className="text-gray-500">
-            {!isConnected ? 'Connecting to quote service...' : 'Fetching plans...'}
-          </p>
+          <p className="text-gray-500">No plans available. Please try adjusting your filters.</p>
         </div>
       );
     }
     
     return (
       <div className="w-full py-10 text-center">
-        <p className="text-gray-500">No plans available. Please try again later.</p>
+        <img 
+          src={FlightLoader} 
+          alt="Loading" 
+          className="w-40 h-40 mx-auto mb-4"
+        />
+        <p className="text-gray-500">
+          {!isConnected ? 'Connecting to quote service...' : 'Fetching plans...'}
+        </p>
       </div>
     );
   }

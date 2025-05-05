@@ -161,7 +161,7 @@ export const processQuoteItems = (quoteItems: Record<string, any>, travellersCou
         netPremium: netPremium,
         sumInsured: sumInsured
       };
-    }).filter(Boolean) as InsuranceQuote[]; // Filter out null values
+    }).filter(Boolean) as InsuranceQuote[]; 
     
     console.log(`Processed ${processedQuotes.length} valid quotes`);
     return processedQuotes;
