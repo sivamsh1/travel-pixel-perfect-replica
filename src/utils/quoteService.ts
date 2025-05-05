@@ -1,10 +1,10 @@
-
 import { toast } from "@/hooks/use-toast";
 import { TravelFormData } from './localStorageUtils';
 import { QuoteResponse } from './apiTypes';
 import { determineProvider } from './insuranceProviderUtils';
 import { createGoDigitQuotePayload } from './goDigitQuoteService';
 import { createRelianceQuotePayload } from './relianceQuoteService';
+import { createBajajQuotePayload } from './bajajQuoteService';
 
 /**
  * Submit the quote to create a policy
@@ -21,6 +21,9 @@ export const createQuote = async (formData: TravelFormData): Promise<QuoteRespon
   if (provider === 'GoDigit') {
     apiEndpoint = 'https://gyaantree.com/api/travel/v1/quickQuote/createQuote/godigit';
     payload = createGoDigitQuotePayload(formData);
+  } else if (provider === 'Bajaj') {
+    apiEndpoint = 'https://gyaantree.com/api/travel/v1/quickQuote/createQuote/bajaj';
+    payload = createBajajQuotePayload(formData);
   } else {
     apiEndpoint = 'https://gyaantree.com/api/travel/v1/quickQuote/createQuote/Reliance';
     payload = createRelianceQuotePayload(formData);
@@ -48,12 +51,24 @@ export const createQuote = async (formData: TravelFormData): Promise<QuoteRespon
     if (provider === 'GoDigit') {
       console.log('GoDigit API Response:', data.result.paymentUrl, "payment url");
       window.location.href = data.result.paymentUrl;
+    } else if (provider === 'Bajaj') {
+      console.log('Bajaj API Response:', data);
+      if (data.message === "Bajaj RequestId Successful" && data.url) {
+        console.log('Redirecting to Bajaj payment URL:', data.url);
+        window.location.href = data.url;
+      } else {
+        console.error('Unexpected Bajaj response format:', data);
+        toast({
+          title: "Payment Error",
+          description: "Failed to process your payment. Please try again.",
+          variant: "destructive",
+        });
+      }
     } else {
       console.log('API Response:', data);
-    }
-    
-    if (data.url) {
-      window.location.href = data.url;
+      if (data.url) {
+        window.location.href = data.url;
+      }
     }
     
     return data;
@@ -72,3 +87,4 @@ export const createQuote = async (formData: TravelFormData): Promise<QuoteRespon
 export { determineProvider } from './insuranceProviderUtils';
 export { createGoDigitQuotePayload } from './goDigitQuoteService';
 export { createRelianceQuotePayload as createQuotePayload } from './relianceQuoteService';
+export { createBajajQuotePayload } from './bajajQuoteService';
