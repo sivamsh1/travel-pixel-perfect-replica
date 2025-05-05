@@ -32,7 +32,7 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
   isAnyFilterActive
 }) => {
   const isMobile = useIsMobile();
-  return <div className="w-full mb-8 py-0 my-px">
+  return <div className="w-full mb-8 py-0 my-0">
       <div className="border border-[#0FB1F6] rounded-lg p-4 mb-4">
         <div className="flex justify-between items-center mb-4">
           <div className="text-sm text-gray-700">
