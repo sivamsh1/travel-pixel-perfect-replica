@@ -53,9 +53,11 @@ const PlansStep = () => {
         console.log("📏 Array length:", lastResponse.length);
         if (lastResponse.length > 0) {
           console.log("🔑 First element:", lastResponse[0]);
-          if (lastResponse.length > 1) {
-            console.log("🔍 Second element type:", typeof lastResponse[1]);
-            console.log("🔍 Second element data:", lastResponse[1]);
+          if (typeof lastResponse[0] === 'object' && lastResponse[0] !== null) {
+            console.log("🔍 First element data keys:", Object.keys(lastResponse[0]));
+            if ('data' in lastResponse[0]) {
+              console.log("🔍 Sample data keys:", Object.keys(lastResponse[0].data).slice(0, 5));
+            }
           }
         }
       } else {
@@ -120,7 +122,7 @@ const PlansStep = () => {
           )}
         </PlanComparisonManager>
 
-        {/* Debug Information - Visible in All Environments for Troubleshooting */}
+        {/* Debug Information - Enhanced for Better Troubleshooting */}
         <div className="mt-8 p-4 border border-gray-300 rounded-md w-full">
           <h3 className="font-bold">Debug Information:</h3>
           <p>Socket Connected: {isConnected ? 'Yes' : 'No'}</p>
@@ -130,11 +132,39 @@ const PlansStep = () => {
           <p>Filtered Quotes: {filteredQuotes.length}</p>
           <p>Socket Responses: {socketResponses?.length || 0}</p>
           
+          {quotes.length > 0 && (
+            <div className="mt-2">
+              <h4 className="font-semibold">Available Insurance Companies:</h4>
+              <ul className="text-xs ml-4 list-disc">
+                {Array.from(new Set(quotes.map(q => q.provider))).map(
+                  (provider, idx) => <li key={idx}>{provider}</li>
+                )}
+              </ul>
+            </div>
+          )}
+          
           {socketResponses && socketResponses.length > 0 && (
             <div className="mt-4">
-              <h4 className="font-semibold">Latest Socket Response:</h4>
+              <h4 className="font-semibold">Latest Socket Response Structure:</h4>
               <pre className="text-xs bg-gray-100 p-2 mt-1 overflow-x-auto max-h-40 overflow-y-auto">
-                {JSON.stringify(socketResponses[socketResponses.length - 1], null, 2)}
+                {typeof socketResponses[socketResponses.length - 1] === 'object' 
+                  ? JSON.stringify(
+                      Array.isArray(socketResponses[socketResponses.length - 1]) 
+                        ? { 
+                            type: 'array', 
+                            length: socketResponses[socketResponses.length - 1].length,
+                            sample: socketResponses[socketResponses.length - 1][0]?.data 
+                              ? 'Has data property' 
+                              : 'No data property'
+                          } 
+                        : { 
+                            type: 'object',
+                            keys: Object.keys(socketResponses[socketResponses.length - 1])
+                          }, 
+                      null, 2
+                    )
+                  : 'Non-object response'
+                }
               </pre>
             </div>
           )}

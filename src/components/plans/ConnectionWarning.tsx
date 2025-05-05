@@ -40,7 +40,7 @@ const ConnectionWarning: React.FC<ConnectionWarningProps> = ({ isConnected, isLo
           Loading quotes... More quotes will appear as they become available.
         </p>
         <p className="text-blue-600 text-sm">
-          Socket.IO connected. Waiting for quote data...
+          Socket.IO connected. Listening for "QuickQuote" events...
         </p>
         <p className="text-blue-600 text-sm mt-1 flex items-center">
           <Info className="h-3 w-3 mr-1" /> Check the debug information at the bottom of the page for status details.
