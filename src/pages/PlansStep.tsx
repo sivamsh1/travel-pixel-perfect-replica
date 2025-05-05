@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import Layout from '@/components/Layout';
 import PlansHeader from '@/components/plans/PlansHeader';
@@ -13,7 +12,6 @@ import { useDateFormatter } from '@/components/plans/useDateFormatter';
 import { usePlansFilter } from '@/components/plans/usePlansFilter';
 import { useBuyNowHandler } from '@/components/plans/useBuyNowHandler';
 import { socketService } from '@/services/socketService';
-
 const PlansStep = () => {
   const {
     travellersCount
@@ -47,14 +45,16 @@ const PlansStep = () => {
   // Auto-scroll functionality
   const autoScrollRef = useRef({
     scrollInterval: null as NodeJS.Timeout | null,
-    userInteracted: false,
+    userInteracted: false
   });
-
   useEffect(() => {
     // Start auto-scrolling when component mounts
     autoScrollRef.current.scrollInterval = setInterval(() => {
       if (!autoScrollRef.current.userInteracted) {
-        window.scrollBy({ top: 1, behavior: 'smooth' });
+        window.scrollBy({
+          top: 1,
+          behavior: 'smooth'
+        });
       }
     }, 20);
 
@@ -72,7 +72,6 @@ const PlansStep = () => {
     document.addEventListener('scroll', handleUserInteraction);
     document.addEventListener('keydown', handleUserInteraction);
     document.addEventListener('touchstart', handleUserInteraction);
-
     return () => {
       // Clean up on component unmount
       if (autoScrollRef.current.scrollInterval) {
@@ -113,12 +112,9 @@ const PlansStep = () => {
 
   // Determine if we should show connection warning
   const showConnectionWarning = !isConnected || isLoading && isConnected;
-  
+
   // Status text for plans count
-  const plansFoundText = isLoading && filteredQuotes.length === 0 
-    ? "Fetching quotes..." 
-    : `${filteredQuotes.length} ${filteredQuotes.length === 1 ? "Plan" : "Plans"} Found`;
-    
+  const plansFoundText = isLoading && filteredQuotes.length === 0 ? "Fetching quotes..." : `${filteredQuotes.length} ${filteredQuotes.length === 1 ? "Plan" : "Plans"} Found`;
   return <Layout>
       <PlansHeader />
       
@@ -129,20 +125,7 @@ const PlansStep = () => {
         
         <PlanFilters travellersCount={travellersCount} formattedStartDate={formattedStartDate} formattedEndDate={formattedEndDate} selectedInsurer={selectedInsurer} selectedPriceSort={selectedPriceSort} selectedCoverage={selectedCoverage} onInsurerChange={setSelectedInsurer} onPriceSortChange={setSelectedPriceSort} onCoverageChange={setSelectedCoverage} onResetFilters={handleResetFilters} filteredPlansCount={filteredQuotes.length} isAnyFilterActive={isAnyFilterActive} />
         
-        <div className="text-xl font-bold text-black mb-4 flex items-center">
-          {isLoading && filteredQuotes.length === 0 ? (
-            <div className="flex items-center">
-              <span>Fetching quotes</span>
-              <span className="inline-flex ml-2">
-                <span className="animate-ping h-2 w-2 rounded-full bg-blue-500 opacity-75 mr-1"></span>
-                <span className="animate-ping h-2 w-2 rounded-full bg-blue-500 opacity-75 mr-1" style={{ animationDelay: '0.2s' }}></span>
-                <span className="animate-ping h-2 w-2 rounded-full bg-blue-500 opacity-75" style={{ animationDelay: '0.4s' }}></span>
-              </span>
-            </div>
-          ) : (
-            `${filteredQuotes.length} ${filteredQuotes.length === 1 ? "Plan" : "Plans"} Found`
-          )}
-        </div>
+        
         
         {showLoading ? <LoadingPlans isConnected={isConnected} message="We're searching for the best insurance plans for your journey. This may take a few moments." /> : <PlanComparisonManager>
             {({
