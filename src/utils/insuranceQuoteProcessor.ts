@@ -100,10 +100,14 @@ export const processQuoteItems = (quoteItems: Record<string, any>, travellersCou
       let provider = value?.companyName || 'Reliance';
       const insurer = getInsurerFromKey(key);
       
-      let logo = LOGO_PATHS.reliance; // Default to Reliance logo
-      if (insurer && LOGO_PATHS[insurer]) {
+      // Default logo
+      let logo = '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png'; 
+      
+      // Set the appropriate logo if we identified the insurer
+      if (insurer) {
         logo = LOGO_PATHS[insurer];
       }
+      
       const details = "Overseas Travel | Excluding USA and CANADA";
       let netPremium = 0;
       

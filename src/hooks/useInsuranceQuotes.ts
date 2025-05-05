@@ -18,7 +18,7 @@ export const useInsuranceQuotes = () => {
     quotes: [],
     isLoading: true,
     error: null,
-    socketConnected: false,
+    isConnected: false,
     receivedFirstBatch: false,
     socketResponses: []
   });
@@ -98,12 +98,12 @@ export const useInsuranceQuotes = () => {
 
     // Check connection status
     const checkConnection = setInterval(() => {
-      setState(prev => ({ ...prev, socketConnected: socketService.isConnected() }));
+      setState(prev => ({ ...prev, isConnected: socketService.isConnected() }));
     }, 1000);
 
     // Handle socket connection status change
     const handleConnectionChange = () => {
-      setState(prev => ({ ...prev, socketConnected: socketService.isConnected() }));
+      setState(prev => ({ ...prev, isConnected: socketService.isConnected() }));
     };
 
     // Set up listener for socket connection
@@ -121,7 +121,7 @@ export const useInsuranceQuotes = () => {
 
   // Effect for fetching quotes via Socket.IO
   useEffect(() => {
-    if (!state.socketConnected) {
+    if (!state.isConnected) {
       return;
     }
 
@@ -213,13 +213,13 @@ export const useInsuranceQuotes = () => {
       removeListener();
       clearTimeout(timeout);
     };
-  }, [requestPayload, state.socketConnected, travellersCount]);
+  }, [requestPayload, state.isConnected, travellersCount]);
 
   return {
     quotes: state.quotes,
     isLoading: state.isLoading,
     error: state.error,
-    isConnected: state.socketConnected,
+    isConnected: state.isConnected,
     receivedFirstBatch: state.receivedFirstBatch,
     socketResponses: state.socketResponses
   };
