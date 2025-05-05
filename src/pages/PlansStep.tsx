@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useRef } from 'react';
 import Layout from '@/components/Layout';
 import PlansHeader from '@/components/plans/PlansHeader';
 import PlanFilters from '@/components/PlanFilters';
@@ -12,6 +13,7 @@ import { useDateFormatter } from '@/components/plans/useDateFormatter';
 import { usePlansFilter } from '@/components/plans/usePlansFilter';
 import { useBuyNowHandler } from '@/components/plans/useBuyNowHandler';
 import { socketService } from '@/services/socketService';
+
 const PlansStep = () => {
   const {
     travellersCount
@@ -41,6 +43,48 @@ const PlansStep = () => {
   const {
     handleBuyNow
   } = useBuyNowHandler();
+
+  // Auto-scroll functionality
+  const autoScrollRef = useRef({
+    scrollInterval: null as NodeJS.Timeout | null,
+    userInteracted: false,
+  });
+
+  useEffect(() => {
+    // Start auto-scrolling when component mounts
+    autoScrollRef.current.scrollInterval = setInterval(() => {
+      if (!autoScrollRef.current.userInteracted) {
+        window.scrollBy({ top: 1, behavior: 'smooth' });
+      }
+    }, 20);
+
+    // Add event listeners to detect user interaction
+    const handleUserInteraction = () => {
+      if (autoScrollRef.current.scrollInterval) {
+        clearInterval(autoScrollRef.current.scrollInterval);
+        autoScrollRef.current.userInteracted = true;
+      }
+    };
+
+    // Listen for mouse movement, clicks, scroll, and keyboard events
+    document.addEventListener('mousemove', handleUserInteraction);
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('scroll', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
+    document.addEventListener('touchstart', handleUserInteraction);
+
+    return () => {
+      // Clean up on component unmount
+      if (autoScrollRef.current.scrollInterval) {
+        clearInterval(autoScrollRef.current.scrollInterval);
+      }
+      document.removeEventListener('mousemove', handleUserInteraction);
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('scroll', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
+  }, []);
 
   // Advanced debugging - log socket connection status
   useEffect(() => {
