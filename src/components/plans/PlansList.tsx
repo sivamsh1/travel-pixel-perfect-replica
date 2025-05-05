@@ -3,8 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import PlanCard, { InsurancePlan } from '@/components/PlanCard';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
-import FlightLoader from "../../../public/lovable-uploads/Flightloader-ezgif.com-speed.gif";
-import { toast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface PlansListProps {
   apiQuotes: InsurancePlan[];
@@ -52,34 +51,6 @@ const PlansList: React.FC<PlansListProps> = ({
     }
   }, [isLoading]);
 
-  // First check if we're in a loading state with no quotes
-  if (isLoading && apiQuotes.length === 0) {
-    return (
-      <div className="w-full flex flex-col items-center justify-center">
-        <img 
-          src={FlightLoader} 
-          alt="Loading" 
-          className="w-80 h-80 mb-4"
-          onError={(e) => {
-            // Fallback if image fails to load
-            e.currentTarget.style.display = 'none';
-            const parent = e.currentTarget.parentElement;
-            if (parent) {
-              const loadingText = document.createElement('p');
-              loadingText.textContent = 'Loading...';
-              loadingText.className = 'text-xl font-medium text-gray-500';
-              parent.appendChild(loadingText);
-            }
-          }}
-        />
-        <p className="text-gray-500 text-center">
-          {isConnected ? 'Loading available plans...' : 'Connecting to quote service...'}
-        </p>
-        <div ref={messagesEndRef} />
-      </div>
-    );
-  }
-
   // Ensure apiQuotes is always an array
   const safeApiQuotes = Array.isArray(apiQuotes) ? apiQuotes : [];
   
@@ -98,16 +69,18 @@ const PlansList: React.FC<PlansListProps> = ({
       );
     }
     
+    // Show "Fetching quotes" when loading
     return (
       <div className="w-full py-10 text-center">
-        <img 
-          src={FlightLoader} 
-          alt="Loading" 
-          className="w-40 h-40 mx-auto mb-4"
-        />
-        <p className="text-gray-500">
-          {!isConnected ? 'Connecting to quote service...' : 'Fetching plans...'}
-        </p>
+        <div className="flex flex-col items-center justify-center">
+          <div className="flex items-center justify-center gap-2 text-primary mb-2">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span className="text-lg font-medium">Fetching quotes...</span>
+          </div>
+          <p className="text-gray-500">
+            {!isConnected ? 'Connecting to quote service...' : 'We\'re searching for the best plans for you.'}
+          </p>
+        </div>
       </div>
     );
   }
@@ -121,8 +94,11 @@ const PlansList: React.FC<PlansListProps> = ({
       )}
       
       {isLoading && (
-        <div className="w-full text-center text-sm text-blue-500">
-          More quotes are being loaded...
+        <div className="w-full text-center text-sm text-blue-500 mb-4">
+          <div className="flex items-center justify-center gap-2">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            <span>More quotes are being loaded...</span>
+          </div>
         </div>
       )}
       

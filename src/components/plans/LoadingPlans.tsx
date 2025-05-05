@@ -1,8 +1,7 @@
 
 import React from 'react';
-import FlightLoader from "../../../public/lovable-uploads/Flightloader-ezgif.com-speed.gif";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface LoadingPlansProps {
   isConnected: boolean;
@@ -15,14 +14,40 @@ const LoadingPlans: React.FC<LoadingPlansProps> = ({
 }) => {
   return (
     <div className="w-full flex flex-col items-center justify-center py-8">
-      <img 
-        src={FlightLoader} 
-        alt="Loading" 
-        className="w-80 h-80 mb-4"
-        onError={(e) => {
-          e.currentTarget.style.display = 'none';
-        }}
-      />
+      <div className="w-full max-w-3xl space-y-6 mb-10">
+        {/* Skeleton loading animations for 3 plan cards */}
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="w-full border border-gray-200 rounded-lg p-4 space-y-4">
+            <div className="flex justify-between items-start">
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <Skeleton className="h-12 w-12 rounded-md" />
+            </div>
+            <div className="flex gap-2">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-4/5" />
+              <Skeleton className="h-3 w-3/4" />
+            </div>
+            <div className="flex justify-between items-center">
+              <div>
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-7 w-28 mt-1" />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-10 w-28 rounded-md" />
+                <Skeleton className="h-10 w-28 rounded-md" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
       
       <h3 className="text-xl font-medium text-gray-700 mb-2">
         {isConnected ? 'Searching Plans' : 'Connecting to Service'}
@@ -36,15 +61,6 @@ const LoadingPlans: React.FC<LoadingPlansProps> = ({
         <Loader2 className="h-4 w-4 animate-spin" />
         <span className="text-sm">Please wait...</span>
       </div>
-      
-      {!isConnected && (
-        <Alert className="mt-6 max-w-md">
-          <AlertTitle>Connection Status</AlertTitle>
-          <AlertDescription>
-            We're connecting to our quote service. This may take a few moments.
-          </AlertDescription>
-        </Alert>
-      )}
     </div>
   );
 };

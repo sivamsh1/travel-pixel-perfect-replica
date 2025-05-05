@@ -113,6 +113,12 @@ const PlansStep = () => {
 
   // Determine if we should show connection warning
   const showConnectionWarning = !isConnected || isLoading && isConnected;
+  
+  // Status text for plans count
+  const plansFoundText = isLoading && filteredQuotes.length === 0 
+    ? "Fetching quotes..." 
+    : `${filteredQuotes.length} ${filteredQuotes.length === 1 ? "Plan" : "Plans"} Found`;
+    
   return <Layout>
       <PlansHeader />
       
@@ -122,6 +128,21 @@ const PlansStep = () => {
         {showConnectionWarning && <ConnectionWarning isConnected={isConnected} isLoading={isLoading} />}
         
         <PlanFilters travellersCount={travellersCount} formattedStartDate={formattedStartDate} formattedEndDate={formattedEndDate} selectedInsurer={selectedInsurer} selectedPriceSort={selectedPriceSort} selectedCoverage={selectedCoverage} onInsurerChange={setSelectedInsurer} onPriceSortChange={setSelectedPriceSort} onCoverageChange={setSelectedCoverage} onResetFilters={handleResetFilters} filteredPlansCount={filteredQuotes.length} isAnyFilterActive={isAnyFilterActive} />
+        
+        <div className="text-xl font-bold text-black mb-4 flex items-center">
+          {isLoading && filteredQuotes.length === 0 ? (
+            <div className="flex items-center">
+              <span>Fetching quotes</span>
+              <span className="inline-flex ml-2">
+                <span className="animate-ping h-2 w-2 rounded-full bg-blue-500 opacity-75 mr-1"></span>
+                <span className="animate-ping h-2 w-2 rounded-full bg-blue-500 opacity-75 mr-1" style={{ animationDelay: '0.2s' }}></span>
+                <span className="animate-ping h-2 w-2 rounded-full bg-blue-500 opacity-75" style={{ animationDelay: '0.4s' }}></span>
+              </span>
+            </div>
+          ) : (
+            `${filteredQuotes.length} ${filteredQuotes.length === 1 ? "Plan" : "Plans"} Found`
+          )}
+        </div>
         
         {showLoading ? <LoadingPlans isConnected={isConnected} message="We're searching for the best insurance plans for your journey. This may take a few moments." /> : <PlanComparisonManager>
             {({
