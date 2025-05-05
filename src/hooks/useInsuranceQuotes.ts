@@ -1,27 +1,12 @@
+
 import { useState, useEffect, useMemo } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { toast } from "@/components/ui/use-toast";
 import { socketService } from '@/services/socketService';
 import { getFromLocalStorage } from '@/utils/localStorageUtils';
-
-const LOGO_PATHS = {
-  reliance: '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png',
-  godigit: '/lovable-uploads/afa69947-6425-48b3-bba8-6af4da608ab1.png',
-  bajaj: '/lovable-uploads/Bajaj.png.png'
-} as const;
-
-type LogoPath = string;
-
-const getInsurerFromKey = (key: string): keyof typeof LOGO_PATHS | null => {
-  const keyLower = key.toLowerCase();
-  for (const insurer of Object.keys(LOGO_PATHS)) {
-    if (keyLower.includes(insurer)) {
-      return insurer as keyof typeof LOGO_PATHS;
-    }
-  }
-  return null;
-};
+import { processQuotesData, notifyNewQuotes } from '@/utils/insuranceQuoteProcessor';
+import { InsuranceQuotesState, QuoteRequestPayload } from '@/types/insuranceTypes';
 
 export const useInsuranceQuotes = () => {
   const { 
@@ -29,12 +14,14 @@ export const useInsuranceQuotes = () => {
     travellers
   } = useTravelForm();
 
-  const [quotes, setQuotes] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [socketConnected, setSocketConnected] = useState<boolean>(false);
-  const [receivedFirstBatch, setReceivedFirstBatch] = useState<boolean>(false);
-  const [socketResponses, setSocketResponses] = useState<any[]>([]);
+  const [state, setState] = useState<InsuranceQuotesState>({
+    quotes: [],
+    isLoading: true,
+    error: null,
+    socketConnected: false,
+    receivedFirstBatch: false,
+    socketResponses: []
+  });
 
   const requestPayload = useMemo(() => {
     const storageData = getFromLocalStorage();
@@ -102,7 +89,7 @@ export const useInsuranceQuotes = () => {
       isCitizen: true,
       isIndianResident: true,
       si: "50-60"
-    };
+    } as QuoteRequestPayload;
   }, [travellersCount, travellers]);
 
   useEffect(() => {
@@ -111,12 +98,12 @@ export const useInsuranceQuotes = () => {
 
     // Check connection status
     const checkConnection = setInterval(() => {
-      setSocketConnected(socketService.isConnected());
+      setState(prev => ({ ...prev, socketConnected: socketService.isConnected() }));
     }, 1000);
 
     // Handle socket connection status change
     const handleConnectionChange = () => {
-      setSocketConnected(socketService.isConnected());
+      setState(prev => ({ ...prev, socketConnected: socketService.isConnected() }));
     };
 
     // Set up listener for socket connection
@@ -132,215 +119,64 @@ export const useInsuranceQuotes = () => {
     };
   }, []);
 
-  // Process quotes data - UPDATED to handle the new format
-  const processQuotesData = (data: any) => {
-    console.log("===== SOCKET.IO RESPONSE START =====");
-    console.log("Raw Socket.IO response:", JSON.stringify(data, null, 2));
-    console.log("Response type:", typeof data);
-    console.log("Is Array:", Array.isArray(data));
-    
-    // Store the response for debugging
-    setSocketResponses(prev => [...prev, data]);
-    
-    try {
-      // Handle the new format from logs: ["QuickQuote", [{ data: {...} }]]
-      if (Array.isArray(data) && data.length > 0) {
-        console.log("Processing array format response with length:", data.length);
-        
-        // Check if it's the ["QuickQuote", [{ data: {...} }]] format or similar
-        if (data[0] && typeof data[0] === 'object' && 'data' in data[0]) {
-          console.log("Found data property in first array element");
-          const quoteData = data[0].data;
-          return processQuoteItems(quoteData);
-        }
-        
-        // If we can't directly access data[0].data, log more details to debug
-        for (let i = 0; i < Math.min(data.length, 3); i++) {
-          console.log(`Data[${i}] type:`, typeof data[i]);
-          if (typeof data[i] === 'object' && data[i] !== null) {
-            console.log(`Data[${i}] keys:`, Object.keys(data[i]));
-          }
-        }
-        
-        // Try to find the quotes data in the structure
-        if (data[0] && typeof data[0] === 'object') {
-          if ('data' in data[0]) {
-            console.log("Found data property in array[0]");
-            return processQuoteItems(data[0].data);
-          }
-        }
-      } 
-      // Handle direct object format if that's what we get
-      else if (data && typeof data === 'object' && !Array.isArray(data)) {
-        console.log("Processing object format response");
-        if ('result' in data) {
-          return processQuoteItems(data.result);
-        } else if ('data' in data) {
-          return processQuoteItems(data.data);
-        }
-      }
-      
-      console.error("Couldn't identify the quotes data structure:", data);
-      return [];
-    } catch (err) {
-      console.error("Error in processQuotesData:", err);
-      return [];
-    }
-  };
-  
-  // Helper function to process quote items
-  const processQuoteItems = (quoteItems: any) => {
-    if (!quoteItems) {
-      console.error("No quote items to process");
-      return [];
-    }
-    
-    console.log("Quote items to process:", Object.keys(quoteItems || {}));
-    
-    try {
-      const processedQuotes = Object.entries(quoteItems || {}).map(([key, value]: [string, any]) => {
-        // Skip any boolean false or empty objects
-        if (value === false || 
-            (typeof value === 'object' && 
-             value !== null && 
-             Object.keys(value).length === 0)) {
-          console.log(`Skipping item ${key} - value is false or empty`);
-          return null;
-        }
-        
-        // Skip Care items with no data
-        if (value?.status === true && 
-            value?.responseCode === 204 && 
-            (!value?.data || (Array.isArray(value.data) && value.data.length === 0))) {
-          console.log(`Skipping item ${key} - Care item with no data`);
-          return null;
-        }
-        
-        console.log(`Processing plan ${key}:`, value);
-        
-        let planName = value?.planName || key;
-        planName = planName.replace(/_/g, ' ');
-
-        let provider = value?.companyName || 'Reliance';
-        const insurer = getInsurerFromKey(key);
-        
-        let logo: LogoPath = LOGO_PATHS.reliance; // Default to Reliance logo
-        if (insurer && LOGO_PATHS[insurer]) {
-          logo = LOGO_PATHS[insurer];
-        }
-        const details = "Overseas Travel | Excluding USA and CANADA";
-        let netPremium = 0;
-        
-        if (value && value.netPremium !== undefined && value.netPremium !== null) {
-          netPremium = typeof value.netPremium === 'string' 
-            ? parseFloat(value.netPremium)
-            : value.netPremium;
-        }
-
-        // Ensure covers is always an array
-        const covers = Array.isArray(value?.covers) ? value.covers : [];
-        
-        // Extract sumInsured from covers or use a default value
-        let sumInsured = 50000; // Default value
-        if (covers.length > 0 && covers[0]?.coverAmount) {
-          const coverAmount = covers[0].coverAmount;
-          if (typeof coverAmount === 'string') {
-            // Try to extract numeric value from string like "50,000" or "50000"
-            const numericValue = coverAmount.replace(/[^0-9]/g, '');
-            sumInsured = parseInt(numericValue, 10) || 50000;
-          } else if (typeof coverAmount === 'number') {
-            sumInsured = coverAmount;
-          }
-        }
-        
-        // Create standardized benefit names that match the reference design
-        const standardBenefits = [
-          { icon: "ambulance", text: "Emergency Medical Assistance" },
-          { icon: "heart", text: "Lifestyle Assistance" },
-          { icon: "car", text: "Domestic Roadside Assistance" }
-        ];
-
-        // Format coverage points to match the design
-        const coveragePoints = covers.map(
-          (cover) => `$ ${cover?.coverAmount || '0'} ${cover?.coverName || ''}`
-        );
-
-        console.log(`Processed plan: ${key} - ${planName} - ${netPremium}`);
-
-        return {
-          id: key,
-          name: planName,
-          provider: provider,
-          logo: logo,
-          description: `${planName} Insurance Plan`,
-          details: details,
-          price: netPremium > 0 ? `₹ ${netPremium}` : '₹0',
-          benefits: standardBenefits,
-          coveragePoints: coveragePoints,
-          travellersCount,
-          netPremium: netPremium,
-          sumInsured: sumInsured
-        };
-      }).filter(Boolean); // Filter out null values
-      
-      console.log(`Processed ${processedQuotes.length} valid quotes`);
-      return processedQuotes;
-    } catch (err) {
-      console.error("Error processing quote items:", err);
-      return [];
-    }
-  };
-
   // Effect for fetching quotes via Socket.IO
   useEffect(() => {
-    if (!socketConnected) {
+    if (!state.socketConnected) {
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
+    setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     console.log("Requesting quotes with payload:", JSON.stringify(requestPayload, null, 2));
 
-    // Set up listener for receiving quotes
+    // Handle receiving quotes
     const handleQuotes = (data: any) => {
       console.log("Received quotes from socket:", typeof data);
       
       try {
         if (data) {
-          const processedQuotes = processQuotesData(data);
+          const processedQuotes = processQuotesData(data, travellersCount);
           
           if (processedQuotes && processedQuotes.length > 0) {
-            setReceivedFirstBatch(true);
-            
-            setQuotes(prev => {
+            setState(prev => {
+              const receivedFirstBatch = true;
               // Merge new quotes with existing ones, replacing any duplicates
-              const existingQuoteIds = new Set(prev.map(q => q.id));
+              const existingQuoteIds = new Set(prev.quotes.map(q => q.id));
               const newQuotes = processedQuotes.filter(q => !existingQuoteIds.has(q.id));
               
-              console.log(`Adding ${newQuotes.length} new quotes to existing ${prev.length} quotes`);
+              console.log(`Adding ${newQuotes.length} new quotes to existing ${prev.quotes.length} quotes`);
               
               // Show a toast notification for new quotes if this isn't the first batch
-              if (prev.length > 0 && newQuotes.length > 0) {
-                toast({
-                  title: "New Quotes Available",
-                  description: `${newQuotes.length} new insurance quotes received.`,
-                });
+              if (prev.quotes.length > 0 && newQuotes.length > 0) {
+                notifyNewQuotes(newQuotes.length);
               }
               
-              return [...prev, ...newQuotes];
+              return { 
+                ...prev,
+                quotes: [...prev.quotes, ...newQuotes],
+                receivedFirstBatch,
+                socketResponses: [...prev.socketResponses, data],
+                isLoading: false
+              };
             });
           }
-          
-          // Stop loading if we've received quotes or if first batch was already received
-          if (receivedFirstBatch || (processedQuotes && processedQuotes.length > 0)) {
-            setIsLoading(false);
+          else {
+            // Add to socketResponses even if we didn't get valid quotes
+            setState(prev => ({
+              ...prev,
+              socketResponses: [...prev.socketResponses, data],
+              // Stop loading if we've already received a first batch
+              isLoading: !prev.receivedFirstBatch
+            }));
           }
         }
       } catch (err) {
         console.error("Error processing quotes:", err);
-        setError("Failed to process quotes data");
-        setIsLoading(false);
+        setState(prev => ({ 
+          ...prev, 
+          error: "Failed to process quotes data",
+          isLoading: false
+        }));
         
         toast({
           title: "Error Processing Quotes",
@@ -358,30 +194,33 @@ export const useInsuranceQuotes = () => {
 
     // Set a timeout to stop loading state even if no quotes are received
     const timeout = setTimeout(() => {
-      if (isLoading) {
-        setIsLoading(false);
-        if (quotes.length === 0) {
+      setState(prev => {
+        if (!prev.isLoading) return prev;
+        
+        if (prev.quotes.length === 0) {
           toast({
             title: "No Quotes Available",
             description: "Couldn't retrieve insurance quotes. Please try again later.",
             variant: "destructive",
           });
         }
-      }
+        
+        return { ...prev, isLoading: false };
+      });
     }, 10000);
 
     return () => {
       removeListener();
       clearTimeout(timeout);
     };
-  }, [requestPayload, socketConnected]);
+  }, [requestPayload, state.socketConnected, travellersCount]);
 
   return {
-    quotes,
-    isLoading,
-    error,
-    isConnected: socketConnected,
-    receivedFirstBatch,
-    socketResponses // Expose the socket responses for debugging
+    quotes: state.quotes,
+    isLoading: state.isLoading,
+    error: state.error,
+    isConnected: state.socketConnected,
+    receivedFirstBatch: state.receivedFirstBatch,
+    socketResponses: state.socketResponses
   };
 };
