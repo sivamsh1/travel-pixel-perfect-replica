@@ -169,14 +169,15 @@ const DatesStep = () => {
               error=""
             />
             
-            {/* End Date Picker - Adding disabled prop */}
+            {/* End Date Picker - Adding disabled prop and ascendingYears */}
             <TravelDatePicker
               label="End Date"
               selectedDate={endDateObj}
               onDateSelect={handleEndDateSelect}
               minDate={startDateObj || today}
               error=""
-              disabled={!startDateObj} // Disable if no start date is selected
+              disabled={!startDateObj}
+              ascendingYears={true}
             />
           </div>
           

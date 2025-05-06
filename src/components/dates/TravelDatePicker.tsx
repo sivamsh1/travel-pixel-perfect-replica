@@ -13,6 +13,7 @@ interface TravelDatePickerProps {
   maxDate?: Date;
   error?: string;
   disabled?: boolean;
+  ascendingYears?: boolean;
 }
 
 const TravelDatePicker = ({
@@ -22,7 +23,8 @@ const TravelDatePicker = ({
   minDate,
   maxDate,
   error,
-  disabled = false
+  disabled = false,
+  ascendingYears = false
 }: TravelDatePickerProps) => {
   const [open, setOpen] = useState(false);
 
@@ -70,6 +72,7 @@ const TravelDatePicker = ({
             }} 
             initialFocus 
             className={cn("p-3 pointer-events-auto")} 
+            ascendingYears={ascendingYears}
           />
         </PopoverContent>
       </Popover>
