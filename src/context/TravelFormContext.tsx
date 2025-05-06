@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface LocationData {
@@ -92,7 +91,7 @@ export const TravelFormProvider: React.FC<{ children: ReactNode }> = ({ children
   const [travellers, setTravellers] = useState<TravellerDetails[]>([{}]);
   const [contactEmail, setContactEmail] = useState<string>('');
   const [contactPhone, setContactPhone] = useState<string>('');
-  const [agreeToContact, setAgreeToContact] = useState<boolean>(false);
+  const [agreeToContact, setAgreeToContact] = useState<boolean>(true);
   const [selectedPlan, setSelectedPlan] = useState<string>('Icon Plan');
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [nominee, setNominee] = useState<NomineeDetails>({});

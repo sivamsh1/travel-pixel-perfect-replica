@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { format, isValid, differenceInYears } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
@@ -23,6 +22,9 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
   handleDateChange,
   error
 }) => {
+  // Add state to control the popover
+  const [open, setOpen] = useState(false);
+  
   const parseDOB = (dateString?: string): Date | undefined => {
     if (!dateString) return undefined;
     
@@ -37,6 +39,11 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
 
   const handleSelect = (date: Date | undefined) => {
     handleDateChange(index, date);
+    
+    // If a date was selected, close the popover
+    if (date) {
+      setOpen(false); // This will close the popover
+    }
   };
 
   const dateValue = parseDOB(dob);
@@ -44,7 +51,7 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
   return (
     <div className="flex gap-4">
       <div className="flex-1 min-w-[240px] max-w-[320px]">
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"

@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { format, differenceInDays, addDays, isAfter } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from "@/components/ui/calendar";
@@ -13,6 +12,7 @@ interface TravelDatePickerProps {
   minDate?: Date;
   maxDate?: Date;
   error?: string;
+  disabled?: boolean;
 }
 
 const TravelDatePicker = ({
@@ -21,19 +21,41 @@ const TravelDatePicker = ({
   onDateSelect,
   minDate,
   maxDate,
-  error
+  error,
+  disabled = false
 }: TravelDatePickerProps) => {
+  const [open, setOpen] = useState(false);
+
+  const handleDateSelect = (date: Date | undefined) => {
+    onDateSelect(date);
+    if (date) {
+      setOpen(false);
+    }
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!disabled) {
+      setOpen(!open);
+    }
+  };
+
   return (
     <div className="flex flex-col">
       <span className="text-sm text-gray-500 mb-1">{label}</span>
-      <Popover>
+      <Popover open={open && !disabled} onOpenChange={(isOpen) => !disabled && setOpen(isOpen)}>
         <PopoverTrigger asChild>
-          <button className={cn(
-            "flex h-12 items-center justify-between rounded-md border border-primary bg-background px-3 py-2 text-sm w-full", 
-            !selectedDate && "text-muted-foreground", 
-            error && "border-destructive"
-          )}>
-            {selectedDate ? format(selectedDate, "dd MMM yyyy") : <span className="text-muted-foreground">Select date</span>}
+          <button 
+            className={cn(
+              "flex h-12 items-center justify-between rounded-md border border-primary bg-background px-3 py-2 text-sm w-full", 
+              !selectedDate && "text-muted-foreground", 
+              error && "border-destructive",
+              disabled && "opacity-50 cursor-not-allowed"
+            )}
+            disabled={disabled}
+            onClick={handleButtonClick}
+          >
+            {selectedDate ? format(selectedDate, "dd MMM yyyy") : <span className="text-muted-foreground">{disabled ? "Select start date first" : "Select date"}</span>}
             <CalendarIcon className="h-5 w-5 ml-2 text-gray-400" />
           </button>
         </PopoverTrigger>
@@ -41,7 +63,7 @@ const TravelDatePicker = ({
           <Calendar 
             mode="single" 
             selected={selectedDate} 
-            onSelect={onDateSelect} 
+            onSelect={handleDateSelect} 
             disabled={{
               before: minDate,
               after: maxDate

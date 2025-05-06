@@ -52,12 +52,12 @@ const ContactStep = () => {
       isValid = false;
     }
 
-    // Validate phone number - must be exactly 10 digits
+    // Validate phone number - must be a valid Indian mobile number
     if (!contactPhone) {
       newErrors.phone = 'Phone number is required';
       isValid = false;
     } else if (!isValidPhone(contactPhone)) {
-      newErrors.phone = 'Please enter a valid 10-digit phone number';
+      newErrors.phone = 'Please enter a valid Indian mobile number (10 digits starting with 6-9)';
       isValid = false;
     }
 
@@ -161,7 +161,7 @@ const ContactStep = () => {
               </div>
             )}
             <div className="text-xs text-gray-500 px-1">
-              Please enter exactly 10 digits without spaces or special characters
+              Please enter a valid Indian mobile number (10 digits starting with 6, 7, 8, or 9)
             </div>
           </div>
           

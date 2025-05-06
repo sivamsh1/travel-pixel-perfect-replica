@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
@@ -22,9 +21,10 @@ function Calendar({
   const [isMonthSelectOpen, setIsMonthSelectOpen] = React.useState(false);
   const [isYearSelectOpen, setIsYearSelectOpen] = React.useState(false);
 
-  // Generate years for selection (100 years back from current year plus 20 years forward)
+  // Generate years for selection (100 years back from current year plus 5 years forward)
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 121 }, (_, i) => currentYear - 100 + i);
+  // Create array in descending order starting from 2025
+  const years = Array.from({ length: 101 }, (_, i) => 2025 - i);
 
   // Generate months for selection
   const months = [
@@ -260,6 +260,16 @@ function Calendar({
         IconLeft: () => <ChevronLeft className="h-4 w-4" />,
         IconRight: () => <ChevronRight className="h-4 w-4" />,
         Caption: CustomCaption,
+      }}
+      captionLayout="buttons"
+      onDayClick={(_, { selected }) => {
+        if (selected && props.onSelect) {
+          props.onSelect(selected);
+          
+          setTimeout(() => {
+            document.body.click();
+          }, 0);
+        }
       }}
       month={currentMonth}
       onMonthChange={setCurrentMonth}

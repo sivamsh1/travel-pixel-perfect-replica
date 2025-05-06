@@ -4,21 +4,45 @@
  * @returns True if the email is valid, false otherwise
  */
 export const isValidEmail = (email: string): boolean => {
-  // RFC 5322 compliant email regex
-  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  return emailRegex.test(email);
+  // More comprehensive email validation
+  // Checks for: local part @ domain . tld
+  // - Local part can contain letters, numbers, and certain special characters
+  // - Domain can contain letters, numbers, dots, and hyphens
+  // - TLD must be at least 2 characters
+  const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return emailRegex.test(String(email).toLowerCase());
 };
 
 /**
- * Validates a phone number (requires exactly 10 digits)
+ * Validates an Indian phone number
+ * Rules:
+ * - Must be exactly 10 digits
+ * - Must start with a digit between 6-9 (as per Indian mobile number standards)
+ * - Cannot have all digits the same (e.g., 9999999999)
+ * 
  * @param phone The phone number to validate
  * @returns True if the phone number is valid, false otherwise
  */
 export const isValidPhone = (phone: string): boolean => {
   // Remove all non-digit characters
   const digitsOnly = phone.replace(/\D/g, '');
+  
   // Check if exactly 10 digits
-  return digitsOnly.length === 10;
+  if (digitsOnly.length !== 10) {
+    return false;
+  }
+  
+  // Check if the number starts with a valid digit (6, 7, 8, or 9)
+  if (!/^[6-9]/.test(digitsOnly)) {
+    return false;
+  }
+  
+  // Check if all digits are the same (e.g., 9999999999)
+  if (/^(\d)\1{9}$/.test(digitsOnly)) {
+    return false;
+  }
+  
+  return true;
 };
 
 /**

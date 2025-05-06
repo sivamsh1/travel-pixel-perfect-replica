@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { NomineeDetails } from '@/context/TravelFormContext';
 import {
@@ -50,14 +49,15 @@ const NomineeForm: React.FC<NomineeFormProps> = React.memo(({
       const age = differenceInYears(new Date(), date);
       
       if (age < 18) {
-        setDobError("Nominee must be at least 18 years old.");
+        setDobError("`");
         toast({
           title: "Age Restriction",
           description: "Nominee must be at least 18 years old.",
           variant: "destructive"
         });
-        updateNominee({ dob: undefined });
-        return;
+        // Still update the DOB value even if under 18, to show the selection to the user
+        const formattedDate = date.toLocaleDateString('en-GB'); // Format as DD/MM/YYYY
+        updateNominee({ dob: formattedDate });
       } else {
         setDobError("");
         const formattedDate = date.toLocaleDateString('en-GB'); // Format as DD/MM/YYYY
@@ -124,7 +124,6 @@ const NomineeForm: React.FC<NomineeFormProps> = React.memo(({
               error={errors.nomineeDob || dobError}
               className={`w-full h-12 ${errors.nomineeDob || dobError ? 'border-red-500 ring-1 ring-red-500' : ''}`}
               minDate={subYears(new Date(), 100)} // 100 years ago
-              maxDate={subYears(new Date(), 18)}  // 18 years ago
               disableFuture
               id="nomineeDob"
             />

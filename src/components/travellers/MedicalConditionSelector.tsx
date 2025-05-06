@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,6 +7,7 @@ interface MedicalConditionSelectorProps {
   traveller: TravellerDetails;
   updateTraveller: (index: number, details: Partial<TravellerDetails>) => void;
   travellerIndex: number;
+  errors?: { [key: string]: string };
 }
 
 const medicalConditions = ["Cardiac ailments", "Cancer / Leukemia / Malignant Tumor", "Kidney Ailment", "Liver Disease", "COPD", "HIV / AIDS", "Thalassemia", "Neurological Disorder / Stroke / Paralysis", "Insulin Dependent Diabetes"];
@@ -15,7 +15,8 @@ const medicalConditions = ["Cardiac ailments", "Cancer / Leukemia / Malignant Tu
 const MedicalConditionSelector: React.FC<MedicalConditionSelectorProps> = ({
   traveller,
   updateTraveller,
-  travellerIndex
+  travellerIndex,
+  errors
 }) => {
   return (
     <div className="mb-8 space-y-4">

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, differenceInDays, addDays, isBefore, isAfter } from 'date-fns';
@@ -30,7 +29,7 @@ const DatesStep = () => {
   } = useTravelForm();
   
   const [dateError, setDateError] = useState<string>('');
-  const [isIndianCitizen, setIsIndianCitizen] = useState<boolean | undefined>(undefined);
+  const [isIndianCitizen, setIsIndianCitizen] = useState<boolean>(true);
   const [eligibilityError, setEligibilityError] = useState<string>('');
 
   // State for calendar date objects
@@ -170,13 +169,14 @@ const DatesStep = () => {
               error=""
             />
             
-            {/* End Date Picker - Removed error prop since we're handling the error in TripDurationDisplay */}
+            {/* End Date Picker - Adding disabled prop */}
             <TravelDatePicker
               label="End Date"
               selectedDate={endDateObj}
               onDateSelect={handleEndDateSelect}
               minDate={startDateObj || today}
               error=""
+              disabled={!startDateObj} // Disable if no start date is selected
             />
           </div>
           

@@ -59,18 +59,37 @@ export const validateTraveller = (traveller: TravellerDetail, index: number, err
     newErrors[`traveller${index}Pincode`] = "Pincode should be 6 digits";
   }
 
+  // Validate pre-existing medical condition selection
+  if (traveller.hasPreExistingCondition === undefined) {
+    newErrors[`traveller${index}MedicalCondition`] = "Please indicate if the traveller has a pre-existing medical condition";
+  }
+  
+  // If yes is selected, ensure a condition is selected
+  if (traveller.hasPreExistingCondition === true && !traveller.medicalCondition) {
+    newErrors[`traveller${index}MedicalConditionType`] = "Please select a medical condition";
+  }
+
   return newErrors;
 };
 
 export const validateNominee = (nominee: NomineeData, errors: ValidationErrors = {}): ValidationErrors => {
   const newErrors = { ...errors };
   
-  if (nominee.name && !nominee.dob) {
-    newErrors.nomineeDob = "Nominee date of birth is required";
+  // Make nominee name required
+  if (!nominee.name) {
+    newErrors.nomineeName = "Nominee name is required";
+  } else if (nominee.name.trim().length < 2) {
+    newErrors.nomineeName = "Nominee name should be at least 2 characters";
   }
   
-  if (nominee.name && !nominee.relationship) {
+  // Make nominee relationship required
+  if (!nominee.relationship) {
     newErrors.nomineeRelationship = "Nominee relationship is required";
+  }
+  
+  // DOB validation (existing)
+  if (!nominee.dob) {
+    newErrors.nomineeDob = "Nominee date of birth is required";
   }
   
   return newErrors;
