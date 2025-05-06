@@ -51,18 +51,18 @@ const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({
     <>
       <SelectField
         id={`traveller${index}Salutation`}
-        label="Salutation"
+        label="Title"
         value={traveller.salutation || ''}
         onChange={onSalutationChange}
         options={salutationOptions}
-        placeholder="Select salutation"
+        placeholder="Select Title"
         required={true}
         error={errors[`traveller${index}Salutation`]}
       />
 
       <InputField
         id={`traveller${index}Forename`}
-        label="Forename"
+        label="First Name"
         value={traveller.forename || ''}
         onChange={onForenameChange}
         required={true}

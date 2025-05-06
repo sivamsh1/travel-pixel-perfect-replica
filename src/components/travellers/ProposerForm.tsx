@@ -49,13 +49,13 @@ const ProposerForm: React.FC<ProposerFormProps> = ({
       {proposer.type && proposer.type !== "Self" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Salutation</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
             <Select 
               value={proposer.salutation} 
               onValueChange={(value) => updateProposer({ salutation: value })}
             >
               <SelectTrigger className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-                <SelectValue placeholder="Select salutation" />
+                <SelectValue placeholder="Select Title" />
               </SelectTrigger>
               <SelectContent>
                 {salutations.map(salutation => (
