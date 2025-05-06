@@ -5,6 +5,8 @@ import { format, parse, isValid } from 'date-fns';
 import { Ambulance, HandHeart, Car, Check } from 'lucide-react';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 interface Benefit {
   icon: string;
   text: string;
@@ -36,13 +38,16 @@ const PlanCard: React.FC<PlanCardProps> = ({
   onToggleCompare
 }) => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const {
     destination,
     startDate,
     endDate,
     travellers
   } = useTravelForm();
+  
   const isPremiumValid = plan.netPremium !== null && plan.netPremium !== undefined && plan.netPremium > 0;
+  
   const handleBuyNow = () => {
     if (!isPremiumValid) return;
     const planData = {
@@ -97,10 +102,18 @@ const PlanCard: React.FC<PlanCardProps> = ({
     onBuyNow(plan.name);
     navigate('/addons');
   };
+  
   const renderBuyNowButton = () => {
-    const button = <button className={`bg-[#00B2FF] text-white py-3 px-6 rounded-md font-medium ${!isPremiumValid ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#00A0E6]'}`} onClick={isPremiumValid ? handleBuyNow : undefined} disabled={!isPremiumValid}>
-        Buy Now
-      </button>;
+    const buttonClasses = `${isMobile ? 'py-2.5 px-4 text-sm w-full' : 'py-3 px-6'} bg-[#00B2FF] text-white rounded-md font-medium ${!isPremiumValid ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#00A0E6]'}`;
+    
+    const button = <button 
+      className={buttonClasses}
+      onClick={isPremiumValid ? handleBuyNow : undefined} 
+      disabled={!isPremiumValid}
+    >
+      Buy Now
+    </button>;
+    
     if (!isPremiumValid) {
       return <TooltipProvider>
           <Tooltip>
@@ -120,13 +133,13 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const getBenefitIcon = (text: string) => {
     const textLower = text.toLowerCase();
     if (textLower.includes('medical') || textLower.includes('emergency')) {
-      return <Ambulance className="text-[#00B2FF] w-5 h-5" />;
+      return <Ambulance className={`text-[#00B2FF] ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />;
     } else if (textLower.includes('lifestyle') || textLower.includes('living')) {
-      return <HandHeart className="text-[#00B2FF] w-5 h-5" />;
+      return <HandHeart className={`text-[#00B2FF] ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />;
     } else if (textLower.includes('domestic') || textLower.includes('roadside') || textLower.includes('transportation')) {
-      return <Car className="text-[#00B2FF] w-5 h-5" />;
+      return <Car className={`text-[#00B2FF] ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />;
     } else {
-      return <Check className="text-[#00B2FF] w-5 h-5" />;
+      return <Check className={`text-[#00B2FF] ${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />;
     }
   };
 
@@ -153,72 +166,97 @@ const PlanCard: React.FC<PlanCardProps> = ({
       return words.length > 4 ? `${amount} ${words.slice(1, 3).join(' ')}` : point;
     }
   };
-  return <div className="border border-[#E5E7EB] rounded-2xl p-6 relative">
-      <div className="flex flex-col space-y-5">
+  
+  return (
+    <div className="border border-[#E5E7EB] rounded-2xl p-4 md:p-6 relative">
+      <div className="flex flex-col space-y-4 md:space-y-5">
         {/* Header section with logo, name, details, and price */}
-        <div className="flex justify-between">
+        <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'justify-between'}`}>
           {/* Logo and plan details */}
-          <div className="flex space-x-4">
+          <div className="flex space-x-3 md:space-x-4">
             <div className="flex items-center justify-center">
-              <img src={plan.logo} alt={`${plan.provider} logo`} className="h-10 w-auto object-contain max-w-[120px]" onError={e => {
-              e.currentTarget.src = '/placeholder.svg';
-            }} />
+              <img 
+                src={plan.logo} 
+                alt={`${plan.provider} logo`} 
+                className="h-8 md:h-10 w-auto object-contain max-w-[100px] md:max-w-[120px]" 
+                onError={e => {
+                  e.currentTarget.src = '/placeholder.svg';
+                }} 
+              />
             </div>
             <div className="flex flex-col">
-              <h3 className="font-bold text-xl text-[#FF6B35]">
+              <h3 className="font-bold text-lg md:text-xl text-[#FF6B35]">
                 {plan.name.replace(/_/g, ' ')}
               </h3>
-              <p className="text-gray-500 text-sm">{plan.details}</p>
+              <p className="text-xs md:text-sm text-gray-500">{plan.details}</p>
             </div>
           </div>
           
           {/* Travellers count and price */}
-          <div className="text-right">
-            {plan.travellersCount !== undefined && <div className="text-sm text-gray-500">{plan.travellersCount} Traveller(s)</div>}
-            <div className="text-2xl font-bold text-[#FF6B35]">{plan.price}</div>
+          <div className={`${isMobile ? 'flex justify-between items-center mt-2' : 'text-right'}`}>
+            {plan.travellersCount !== undefined && (
+              <div className="text-xs md:text-sm text-gray-500">
+                {plan.travellersCount} Traveller{plan.travellersCount !== 1 ? '(s)' : ''}
+              </div>
+            )}
+            <div className="text-xl md:text-2xl font-bold text-[#FF6B35]">{plan.price}</div>
           </div>
         </div>
         
-        {/* Benefits section */}
-        <div className="flex flex-wrap items-center gap-6">
-          {plan.benefits.slice(0, 3).map((benefit, index) => <div key={index} className="flex items-center gap-2">
+        {/* Benefits section - made more compact on mobile */}
+        <div className={`flex flex-wrap ${isMobile ? 'gap-3 md:gap-6' : 'gap-6'}`}>
+          {plan.benefits.slice(0, isMobile ? 3 : 3).map((benefit, index) => (
+            <div key={index} className="flex items-center gap-1.5 md:gap-2">
               {getBenefitIcon(benefit.text)}
-              <span className="text-[#00B2FF]">{benefit.text}</span>
-            </div>)}
+              <span className={`text-[#00B2FF] ${isMobile ? 'text-xs' : ''}`}>{benefit.text}</span>
+            </div>
+          ))}
         </div>
         
         {/* Plan benefits bar - REDESIGNED with fixed height and proper alignment */}
-        <div className="flex h-10 items-center border border-[#E5E7EB] rounded-md bg-gray-50">
-          <div className="bg-[#00B2FF] text-white h-full flex items-center px-4 whitespace-nowrap rounded-l-md">
+        <div className="flex h-9 md:h-10 items-center border border-[#E5E7EB] rounded-md bg-gray-50">
+          <div className="bg-[#00B2FF] text-white h-full flex items-center px-3 md:px-4 whitespace-nowrap rounded-l-md text-sm">
             Plan Benefits
           </div>
           
-          <div className="flex-1 px-4 flex items-center justify-between">
-            {/* Display only 2 benefits with proper spacing and shortened text */}
-            <div className="flex items-center gap-6">
-              {plan.coveragePoints.slice(0, 2).map((point, index) => <div key={index} className="text-gray-600 text-sm">
+          <div className="flex-1 px-2 md:px-4 flex items-center justify-between">
+            {/* Display only 1 benefit on mobile, 2 on desktop */}
+            <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
+              {plan.coveragePoints.slice(0, isMobile ? 1 : 2).map((point, index) => (
+                <div key={index} className="text-gray-600 text-xs md:text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                   {shortenCoveragePoint(point)}
-                </div>)}
+                </div>
+              ))}
             </div>
             
-            <div className="text-[#00B2FF] cursor-pointer whitespace-nowrap">
+            <div className="text-[#00B2FF] cursor-pointer whitespace-nowrap text-xs md:text-sm">
               View All &gt;
             </div>
           </div>
         </div>
         
         {/* Actions row: compare checkbox and buy now button */}
-        <div className="flex justify-between items-center">
+        <div className={`flex ${isMobile ? 'flex-col-reverse gap-3' : 'justify-between items-center'}`}>
           {/* Add to Compare checkbox */}
           <div className="flex items-center gap-2">
-            <input type="checkbox" id={`compare-${plan.id}`} checked={isSelectedForComparison} onChange={() => onToggleCompare(plan)} className="rounded border-gray-300 text-[#00B2FF] focus:ring-[#00B2FF]" />
-            <label htmlFor={`compare-${plan.id}`} className="text-sm">Add to Compare</label>
+            <input 
+              type="checkbox" 
+              id={`compare-${plan.id}`} 
+              checked={isSelectedForComparison} 
+              onChange={() => onToggleCompare(plan)} 
+              className="rounded border-gray-300 text-[#00B2FF] focus:ring-[#00B2FF]"
+            />
+            <label htmlFor={`compare-${plan.id}`} className="text-xs md:text-sm">Add to Compare</label>
           </div>
           
           {/* Buy Now button */}
-          {renderBuyNowButton()}
+          <div className={isMobile ? 'w-full' : ''}>
+            {renderBuyNowButton()}
+          </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default PlanCard;

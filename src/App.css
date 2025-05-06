@@ -57,4 +57,27 @@
   .card {
     padding: 1em;
   }
+  
+  /* Enhanced touch targets for mobile */
+  button, 
+  [role="button"],
+  input[type="checkbox"] + label {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Better spacing for mobile form elements */
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Adjust spacing for benefit icons on mobile */
+@media (max-width: 767px) {
+  .benefit-icon {
+    margin-right: 4px;
+  }
 }
