@@ -61,11 +61,11 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
             <label className="block text-sm font-medium text-[#0FB1F6] mb-1">Coverage</label>
             <Select value={selectedCoverage} onValueChange={onCoverageChange}>
               <SelectTrigger className="w-full md:w-72 border-[#0FB1F6]">
-                <SelectValue placeholder="Most Popular (1 Lakh USD)" className="text-[#0FB1F6]" />
+                <SelectValue placeholder="Most Popular (Highest Coverage)" className="text-[#0FB1F6]" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="show-all" className="font-semibold">Show All</SelectItem>
-                <SelectItem value="most-popular" className="font-semibold">Most Popular (1 Lakh USD)</SelectItem>
+                <SelectItem value="most-popular" className="font-semibold">Most Popular (Highest Coverage)</SelectItem>
                 <SelectItem value="30k-50k">30,000 USD to 50,000 USD</SelectItem>
                 <SelectItem value="50k-75k">50,000 USD to 75,000 USD</SelectItem>
                 <SelectItem value="75k-1L">75,000 USD to 1 Lakh USD</SelectItem>
