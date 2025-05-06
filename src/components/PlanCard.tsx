@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -220,16 +221,19 @@ const PlanCard: React.FC<PlanCardProps> = ({
           </div>
           
           <div className="flex-1 px-2 md:px-4 flex items-center justify-between">
-            {/* Display only 1 benefit on mobile, 2 on desktop */}
-            <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
-              {plan.coveragePoints.slice(0, isMobile ? 1 : 2).map((point, index) => (
-                <div key={index} className="text-gray-600 text-xs md:text-sm overflow-hidden text-ellipsis whitespace-nowrap">
-                  {shortenCoveragePoint(point)}
-                </div>
-              ))}
-            </div>
+            {/* Only display coverage points on desktop, hide on mobile */}
+            {!isMobile && (
+              <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
+                {plan.coveragePoints.slice(0, 2).map((point, index) => (
+                  <div key={index} className="text-gray-600 text-xs md:text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+                    {shortenCoveragePoint(point)}
+                  </div>
+                ))}
+              </div>
+            )}
             
-            <div className="text-[#00B2FF] cursor-pointer whitespace-nowrap text-xs md:text-sm">
+            {/* On mobile, push "View All" to left */}
+            <div className={`text-[#00B2FF] cursor-pointer whitespace-nowrap text-xs md:text-sm ${isMobile ? 'ml-0' : ''}`}>
               View All &gt;
             </div>
           </div>
