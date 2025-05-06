@@ -2,6 +2,7 @@
 import React from 'react';
 import InputField from './InputField';
 import PincodeField from './PincodeField';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ContactInfoFieldsProps {
   index: number;
@@ -30,6 +31,8 @@ const ContactInfoFields: React.FC<ContactInfoFieldsProps> = ({
   onEmailChange,
   isLoadingPincode
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
     <>
       <InputField
@@ -61,7 +64,7 @@ const ContactInfoFields: React.FC<ContactInfoFieldsProps> = ({
       <InputField
         id={`traveller${index}Mobile`}
         label="Mobile No."
-        type="tel"
+        type={isMobile ? "tel" : "tel"}
         value={traveller.mobileNo || ''}
         onChange={onMobileChange}
         maxLength={10}

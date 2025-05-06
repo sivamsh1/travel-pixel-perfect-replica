@@ -1,8 +1,10 @@
+
 import React, { useState, useCallback } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
 import PersonalInfoFields from './PersonalInfoFields';
 import ContactInfoFields from './ContactInfoFields';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TravellerFormProps {
   traveller: TravellerDetails;
@@ -22,6 +24,7 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
   const { searchCityByPincode, isLoading } = usePincodeSearch();
   const [autoFilled, setAutoFilled] = useState(false);
   const [lastFetchedPincode, setLastFetchedPincode] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   const handlePincodeChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const pincode = e.target.value.slice(0, 6);
@@ -97,10 +100,10 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
   }, [index, updateTraveller]);
 
   return (
-    <div className="mb-12">
-      <h3 className="text-xl font-medium mb-6">Traveller {index + 1} Details</h3>
+    <div className="mb-8 md:mb-12">
+      <h3 className="text-lg md:text-xl font-medium mb-4 md:mb-6">Traveller {index + 1} Details</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6" onClick={(e) => e.stopPropagation()}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6" onClick={(e) => e.stopPropagation()}>
         <PersonalInfoFields
           index={index}
           traveller={traveller}

@@ -2,6 +2,7 @@
 import React from 'react';
 import SelectField from './SelectField';
 import InputField from './InputField';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface PersonalInfoFieldsProps {
   index: number;
@@ -44,6 +45,8 @@ const PersonalInfoFields: React.FC<PersonalInfoFieldsProps> = ({
   onGenderChange,
   onPassportChange
 }) => {
+  const isMobile = useIsMobile();
+  
   return (
     <>
       <SelectField
