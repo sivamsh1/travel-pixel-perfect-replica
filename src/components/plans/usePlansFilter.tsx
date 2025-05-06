@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from 'react';
 import { InsurancePlan } from '@/components/PlanCard';
 
@@ -5,20 +6,20 @@ export const usePlansFilter = (quotes: any[]) => {
   // Filter state
   const [selectedInsurer, setSelectedInsurer] = useState('all');
   const [selectedPriceSort, setSelectedPriceSort] = useState('lowToHigh');
-  const [selectedCoverage, setSelectedCoverage] = useState('most-popular'); // Changed default to most-popular
+  const [selectedCoverage, setSelectedCoverage] = useState('show-all'); // Default to show all
   
   // Track if any filter is active for the Reset button
   const isAnyFilterActive = useMemo(() => {
     return selectedInsurer !== 'all' || 
            selectedPriceSort !== 'lowToHigh' || 
-           selectedCoverage !== 'most-popular'; // Updated this to match the new default
+           selectedCoverage !== 'show-all';
   }, [selectedInsurer, selectedPriceSort, selectedCoverage]);
   
   // Reset filters handler
   const handleResetFilters = () => {
     setSelectedInsurer('all');
     setSelectedPriceSort('lowToHigh');
-    setSelectedCoverage('most-popular'); // Updated reset value
+    setSelectedCoverage('show-all'); // Reset to show all
   };
   
   // Apply filters to quotes
@@ -37,30 +38,16 @@ export const usePlansFilter = (quotes: any[]) => {
     if (selectedCoverage && selectedCoverage !== 'show-all') {
       // Handle "Most Popular" option specially
       if (selectedCoverage === 'most-popular') {
-        // Group plans by provider
-        const providerGroups: Record<string, any[]> = {};
-        
-        filtered.forEach(plan => {
-          const provider = plan.provider || 'Unknown';
-          if (!providerGroups[provider]) {
-            providerGroups[provider] = [];
-          }
-          providerGroups[provider].push(plan);
+        filtered = filtered.filter(plan => {
+          const coverage = plan.sumInsured || 0;
+          // More flexible range for "Most Popular" - approximately around 100,000
+          return coverage >= 75000 && coverage <= 125000;
+        }).sort((a, b) => {
+          // Sort by highest premium first for "Most Popular"
+          const premiumA = a?.netPremium || 0;
+          const premiumB = b?.netPremium || 0;
+          return premiumB - premiumA;
         });
-        
-        // For each provider, select the plan with the highest coverage/value
-        let popularPlans: any[] = [];
-        Object.keys(providerGroups).forEach(provider => {
-          const providerPlans = providerGroups[provider];
-          // Sort by coverage (sumInsured) descending
-          providerPlans.sort((a, b) => (b.sumInsured || 0) - (a.sumInsured || 0));
-          // Add the highest coverage plan to the results
-          if (providerPlans.length > 0) {
-            popularPlans.push(providerPlans[0]);
-          }
-        });
-        
-        filtered = popularPlans;
       } else {
         // This is the regular coverage filtering
         const coverageMappings = {
