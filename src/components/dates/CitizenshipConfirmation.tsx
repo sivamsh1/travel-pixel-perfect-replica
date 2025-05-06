@@ -16,7 +16,7 @@ const CitizenshipConfirmation = ({
     <div className="p-4 rounded-md border border-gray-200 shadow-sm bg-white">
       <div className="space-y-3">
         <label className="text-sm font-medium leading-none">
-          Is the Traveller an Indian Citizen and currently in India whilst taking the policy?
+        Is the traveller an Indian citizen and currently in India while buying this policy?
         </label>
         
         <RadioGroup 
