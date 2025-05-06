@@ -160,7 +160,7 @@ const TravellersStep = () => {
       </div>
       
       <div className="flex flex-1 flex-col items-center px-6">
-        <h2 className="text-3xl font-bold mb-4">Number of travellers travelling?</h2>
+        <h2 className="text-3xl font-bold mb-4">Number of travellers ?</h2>
         <p className="text-gray-600 mb-8 text-center max-w-2xl">
           Overseas Travel Insurance is only valid for Indian passport holders, commencing their journey from India.*
         </p>
