@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
@@ -78,8 +77,20 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
   }, [index, updateTraveller]);
 
   const handleSalutationChange = useCallback((value: string) => {
-    updateTraveller(index, { salutation: value });
-  }, [index, updateTraveller]);
+    // Set the gender based on salutation
+    let gender = traveller.gender;
+    if (value === "Mr") {
+      gender = "Male";
+    } else if (value === "Mrs" || value === "Ms") {
+      gender = "Female";
+    }
+    
+    // Update both salutation and gender
+    updateTraveller(index, { 
+      salutation: value,
+      gender: gender
+    });
+  }, [index, updateTraveller, traveller.gender]);
 
   const handleGenderChange = useCallback((value: string) => {
     updateTraveller(index, { gender: value });

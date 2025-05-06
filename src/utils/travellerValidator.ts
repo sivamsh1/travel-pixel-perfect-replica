@@ -1,4 +1,3 @@
-
 import { TravellerDetail, NomineeData, ProposerData } from '@/utils/localStorageUtils';
 import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
 import { toast } from "@/components/ui/use-toast";
@@ -119,11 +118,20 @@ export const validateForm = (travellers: TravellerDetail[], nominee: NomineeData
   // Validate proposer
   errors = validateProposer(proposer, errors);
   
-  // If we have errors, show a gentle reminder toast
+  // If we have errors, show a specific error message instead of a generic one
   if (Object.keys(errors).length > 0) {
+    // Get the first few error messages to display
+    const errorMessages = Object.values(errors).slice(0, 3);
+    const hasMoreErrors = Object.values(errors).length > 3;
+    
+    let description = errorMessages.join('\n');
+    if (hasMoreErrors) {
+      description += `\n... and ${Object.values(errors).length - 3} more issues`;
+    }
+    
     toast({
-      title: "Please check your information",
-      description: "Please fill in all required fields correctly before continuing.",
+      title: "Please fix the following issues:",
+      description: description,
       variant: "destructive"
     });
   }

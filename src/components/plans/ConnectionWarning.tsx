@@ -18,13 +18,12 @@ const ConnectionWarning: React.FC<ConnectionWarningProps> = ({ isConnected, isLo
         <Loader2 className="h-4 w-4 text-yellow-700 animate-spin" />
         <div>
           <p className="text-yellow-700 font-medium">
-            Connecting to quote service... Please wait.
+          Fetching the best plans for you...
           </p>
           <p className="text-yellow-600 text-sm">
-            This may take a few moments. Socket.IO connection in progress.
-          </p>
+          This might take a few seconds.          </p>
           <p className="text-yellow-600 text-sm mt-1">
-            <strong>Troubleshooting:</strong> If you've been waiting more than 30 seconds, try refreshing the page.
+            <strong>Need help?</strong> If nothing shows up in 30 seconds, try refreshing the page.
           </p>
         </div>
       </div>
