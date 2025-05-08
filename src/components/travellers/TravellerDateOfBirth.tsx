@@ -86,7 +86,7 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
         <input
           type="text"
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder={`T ${index + 1} Age`}
+          placeholder={`T ${index + 1} Age (Years)`}
           value={age || ''}
           readOnly
         />

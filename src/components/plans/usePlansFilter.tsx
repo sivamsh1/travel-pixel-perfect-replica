@@ -1,4 +1,3 @@
-
 import { useMemo, useState } from 'react';
 import { InsurancePlan } from '@/components/PlanCard';
 
@@ -6,20 +5,20 @@ export const usePlansFilter = (quotes: any[]) => {
   // Filter state
   const [selectedInsurer, setSelectedInsurer] = useState('all');
   const [selectedPriceSort, setSelectedPriceSort] = useState('lowToHigh');
-  const [selectedCoverage, setSelectedCoverage] = useState('show-all'); // Default to show all
+  const [selectedCoverage, setSelectedCoverage] = useState('most-popular'); // Changed default to most-popular
   
   // Track if any filter is active for the Reset button
   const isAnyFilterActive = useMemo(() => {
     return selectedInsurer !== 'all' || 
            selectedPriceSort !== 'lowToHigh' || 
-           selectedCoverage !== 'show-all';
+           selectedCoverage !== 'most-popular'; // Updated to check against most-popular
   }, [selectedInsurer, selectedPriceSort, selectedCoverage]);
   
   // Reset filters handler
   const handleResetFilters = () => {
     setSelectedInsurer('all');
     setSelectedPriceSort('lowToHigh');
-    setSelectedCoverage('show-all'); // Reset to show all
+    setSelectedCoverage('most-popular'); // Reset to most-popular
   };
   
   // Apply filters to quotes

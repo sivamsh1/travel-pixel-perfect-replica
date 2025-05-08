@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTravelForm } from '@/context/TravelFormContext';
@@ -144,11 +143,11 @@ const PlanCard: React.FC<PlanCardProps> = ({
     }
   };
 
-  // New helper function to shorten coverage point text
+  // Updated helper function to format coverage point text
   const shortenCoveragePoint = (point: string): string => {
     // Extract the amount from the beginning
     const amountMatch = point.match(/\$\s*(\d+,?)+/);
-    const amount = amountMatch ? amountMatch[0] : '';
+    const amount = amountMatch ? amountMatch[0].replace('$', '$ ').trim() : '';
 
     // Identify common benefit types to extract the main part
     if (point.toLowerCase().includes('medical')) {
@@ -161,6 +160,14 @@ const PlanCard: React.FC<PlanCardProps> = ({
       return `${amount} Travel Delay`;
     } else if (point.toLowerCase().includes('repatriation')) {
       return `${amount} Repatriation`;
+    } else if (point.toLowerCase().includes('trip cancellation')) {
+      return `${amount} Trip Cancellation`;
+    } else if (point.toLowerCase().includes('personal accident')) {
+      return `${amount} Personal Accident`;
+    } else if (point.toLowerCase().includes('loss of passport')) {
+      return `${amount} Loss of Passport`;
+    } else if (point.toLowerCase().includes('bail bond')) {
+      return `${amount} Bail Bond`;
     } else {
       // For other cases, just take the first few words
       const words = point.split(' ');
@@ -224,7 +231,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
             {/* Only display coverage points on desktop, hide on mobile */}
             {!isMobile && (
               <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
-                {plan.coveragePoints.slice(0, 2).map((point, index) => (
+                {plan.coveragePoints.slice(0, 3).map((point, index) => (
                   <div key={index} className="text-gray-600 text-xs md:text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                     {shortenCoveragePoint(point)}
                   </div>

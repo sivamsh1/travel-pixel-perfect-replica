@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ProposerDetails } from '@/context/TravelFormContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -22,6 +21,26 @@ const ProposerForm: React.FC<ProposerFormProps> = ({
 
   const salutations = ["Mr", "Ms", "Mrs", "Dr"];
   const maritalStatuses = ["Single", "Married", "Widowed", "Divorced"];
+  const genderOptions = ["Male", "Female", "Other"];
+
+  const handleSalutationChange = (value: string) => {
+    let gender = proposer.gender;
+    if (value === "Mr") {
+      gender = "Male";
+    } else if (value === "Mrs" || value === "Ms") {
+      gender = "Female";
+    }
+    
+    updateProposer({ 
+      salutation: value,
+      gender: gender
+    });
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+    updateProposer({ name: value });
+  };
 
   return (
     <div className="mb-12">
@@ -52,7 +71,7 @@ const ProposerForm: React.FC<ProposerFormProps> = ({
             <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
             <Select 
               value={proposer.salutation} 
-              onValueChange={(value) => updateProposer({ salutation: value })}
+              onValueChange={handleSalutationChange}
             >
               <SelectTrigger className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
                 <SelectValue placeholder="Select Title" />
@@ -76,7 +95,7 @@ const ProposerForm: React.FC<ProposerFormProps> = ({
               type="text"
               className={`w-full p-3 border ${errors["proposerName"] ? 'border-destructive' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-primary`}
               value={proposer.name || ''}
-              onChange={(e) => updateProposer({ name: e.target.value })}
+              onChange={handleNameChange}
             />
             {errors["proposerName"] && (
               <p className="text-sm font-medium text-destructive mt-1">{errors["proposerName"]}</p>
@@ -85,24 +104,21 @@ const ProposerForm: React.FC<ProposerFormProps> = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-            <RadioGroup
-              value={proposer.gender || ""}
+            <Select 
+              value={proposer.gender} 
               onValueChange={(value) => updateProposer({ gender: value })}
-              className="flex space-x-6"
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="Male" id="gender-male" />
-                <Label htmlFor="gender-male">Male</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="Female" id="gender-female" />
-                <Label htmlFor="gender-female">Female</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="Other" id="gender-other" />
-                <Label htmlFor="gender-other">Other</Label>
-              </div>
-            </RadioGroup>
+              <SelectTrigger className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent>
+                {genderOptions.map(gender => (
+                  <SelectItem key={gender} value={gender}>
+                    {gender}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errors["proposerGender"] && (
               <p className="text-sm font-medium text-destructive mt-1">{errors["proposerGender"]}</p>
             )}

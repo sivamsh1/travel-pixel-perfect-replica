@@ -19,6 +19,8 @@ export const validateTraveller = (traveller: TravellerDetail, index: number, err
     newErrors[`traveller${index}Forename`] = "Forename is required";
   } else if (traveller.forename.length < 2) {
     newErrors[`traveller${index}Forename`] = "Forename should be at least 2 characters";
+  } else if (!/^[a-zA-Z\s]+$/.test(traveller.forename)) {
+    newErrors[`traveller${index}Forename`] = "Forename should only contain letters";
   }
   
   // Validate lastname
@@ -26,6 +28,8 @@ export const validateTraveller = (traveller: TravellerDetail, index: number, err
     newErrors[`traveller${index}Lastname`] = "Lastname is required";
   } else if (traveller.lastname.length < 2) {
     newErrors[`traveller${index}Lastname`] = "Lastname should be at least 2 characters";
+  } else if (!/^[a-zA-Z\s]+$/.test(traveller.lastname)) {
+    newErrors[`traveller${index}Lastname`] = "Lastname should only contain letters";
   }
   
   // Validate gender
@@ -45,9 +49,9 @@ export const validateTraveller = (traveller: TravellerDetail, index: number, err
     newErrors[`traveller${index}Dob`] = "Date of birth is required";
   }
   
-  // Validate mobile and email
-  if (traveller.mobileNo && !isValidPhone(traveller.mobileNo)) {
-    newErrors[`traveller${index}Mobile`] = "Please enter a valid 10-digit phone number";
+  // Validate mobile number
+  if (traveller.mobileNo && !/^\d{10}$/.test(traveller.mobileNo)) {
+    newErrors[`traveller${index}Mobile`] = "Mobile number should be exactly 10 digits";
   }
   
   if (traveller.email && !isValidEmail(traveller.email)) {
@@ -56,7 +60,7 @@ export const validateTraveller = (traveller: TravellerDetail, index: number, err
   
   // Validate pincode
   if (traveller.pincode && !/^\d{6}$/.test(traveller.pincode)) {
-    newErrors[`traveller${index}Pincode`] = "Pincode should be 6 digits";
+    newErrors[`traveller${index}Pincode`] = "Pincode should be exactly 6 digits";
   }
 
   // Validate pre-existing medical condition selection
@@ -75,11 +79,13 @@ export const validateTraveller = (traveller: TravellerDetail, index: number, err
 export const validateNominee = (nominee: NomineeData, errors: ValidationErrors = {}): ValidationErrors => {
   const newErrors = { ...errors };
   
-  // Make nominee name required
+  // Validate nominee name
   if (!nominee.name) {
     newErrors.nomineeName = "Nominee name is required";
   } else if (nominee.name.trim().length < 2) {
     newErrors.nomineeName = "Nominee name should be at least 2 characters";
+  } else if (!/^[a-zA-Z\s]+$/.test(nominee.name)) {
+    newErrors.nomineeName = "Nominee name should only contain letters";
   }
   
   // Make nominee relationship required
@@ -101,6 +107,8 @@ export const validateProposer = (proposer: ProposerData, errors: ValidationError
   if (proposer.type && proposer.type !== "Self") {
     if (!proposer.name) {
       newErrors.proposerName = "Name is required";
+    } else if (!/^[a-zA-Z\s]+$/.test(proposer.name)) {
+      newErrors.proposerName = "Name should only contain letters";
     }
     
     if (!proposer.gender) {

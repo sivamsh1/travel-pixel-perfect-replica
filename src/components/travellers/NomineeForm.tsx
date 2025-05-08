@@ -69,9 +69,11 @@ const NomineeForm: React.FC<NomineeFormProps> = React.memo(({
     }
   }, [updateNominee]);
 
-  // Handle name change
+  // Updated name change handler
   const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateNominee({ name: e.target.value });
+    // Only allow letters and spaces
+    const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+    updateNominee({ name: value });
   }, [updateNominee]);
 
   // Handle relationship change

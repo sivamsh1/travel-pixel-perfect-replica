@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, differenceInYears } from 'date-fns';
@@ -52,10 +51,10 @@ const TravellersStep = () => {
       const today = new Date();
       const age = differenceInYears(today, date);
 
-      // Update traveller with DOB and age
+      // Update traveller with DOB and age - add "Years" to the age string
       updateTraveller(index, { 
         dob: formattedDOB,
-        age: age.toString()
+        age: `${age} Years`
       });
 
       // Validate age range

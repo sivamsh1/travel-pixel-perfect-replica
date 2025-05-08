@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/use-toast";
 import { LOGO_PATHS, getInsurerFromKey } from './insuranceLogos';
 import { InsuranceQuote, QuoteResponse } from '@/types/insuranceTypes';
@@ -120,16 +119,33 @@ export const processQuoteItems = (quoteItems: Record<string, any>, travellersCou
       // Ensure covers is always an array
       const covers = Array.isArray(value?.covers) ? value.covers : [];
       
-      // Extract sumInsured from covers or use a default value
+      // Extract sumInsured based on provider
       let sumInsured = 50000; // Default value
-      if (covers.length > 0 && covers[0]?.coverAmount) {
-        const coverAmount = covers[0].coverAmount;
-        if (typeof coverAmount === 'string') {
-          // Try to extract numeric value from string like "50,000" or "50000"
-          const numericValue = coverAmount.replace(/[^0-9]/g, '');
-          sumInsured = parseInt(numericValue, 10) || 50000;
-        } else if (typeof coverAmount === 'number') {
-          sumInsured = coverAmount;
+      
+      if (provider === 'Reliance') {
+        // For Reliance, find the medical expenses coverage
+        const medicalCoverage = covers.find(cover => 
+          cover?.coverName?.toLowerCase().includes('medical expenses including transportation evacuation and repatriation of mortal remains')
+        );
+        if (medicalCoverage?.coverAmount) {
+          const coverAmount = medicalCoverage.coverAmount;
+          if (typeof coverAmount === 'string') {
+            const numericValue = coverAmount.replace(/[^0-9]/g, '');
+            sumInsured = parseInt(numericValue, 10) || 50000;
+          } else if (typeof coverAmount === 'number') {
+            sumInsured = coverAmount;
+          }
+        }
+      } else if (provider === 'GoDigit' || provider === 'Bajaj') {
+        // For GoDigit and Bajaj, use the SI key
+        if (value?.SI) {
+          const siValue = value.SI;
+          if (typeof siValue === 'string') {
+            const numericValue = siValue.replace(/[^0-9]/g, '');
+            sumInsured = parseInt(numericValue, 10) || 50000;
+          } else if (typeof siValue === 'number') {
+            sumInsured = siValue;
+          }
         }
       }
       

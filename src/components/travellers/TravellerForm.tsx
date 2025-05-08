@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { TravellerDetails } from '@/context/TravelFormContext';
 import { usePincodeSearch } from '@/hooks/usePincodeSearch';
@@ -27,15 +26,16 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
   const isMobile = useIsMobile();
 
   const handlePincodeChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const pincode = e.target.value.slice(0, 6);
-    updateTraveller(index, { pincode });
+    // Only allow digits
+    const value = e.target.value.replace(/[^\d]/g, '').slice(0, 6);
+    updateTraveller(index, { pincode: value });
 
     if (
-      pincode.length === 6 &&
-      pincode !== lastFetchedPincode
+      value.length === 6 &&
+      value !== lastFetchedPincode
     ) {
-      setLastFetchedPincode(pincode);
-      const locationData = await searchCityByPincode(pincode);
+      setLastFetchedPincode(value);
+      const locationData = await searchCityByPincode(value);
 
       if (locationData) {
         updateTraveller(index, {
@@ -54,13 +54,17 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
     }
   }, [index, lastFetchedPincode, searchCityByPincode, updateTraveller]);
 
-  // Create input change handlers
+  // Updated input handlers with validation
   const handleForenameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateTraveller(index, { forename: e.target.value });
+    // Only allow letters and spaces
+    const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+    updateTraveller(index, { forename: value });
   }, [index, updateTraveller]);
 
   const handleLastnameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateTraveller(index, { lastname: e.target.value });
+    // Only allow letters and spaces
+    const value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+    updateTraveller(index, { lastname: value });
   }, [index, updateTraveller]);
 
   const handlePassportChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +76,9 @@ const TravellerForm: React.FC<TravellerFormProps> = React.memo(({
   }, [index, updateTraveller]);
 
   const handleMobileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateTraveller(index, { mobileNo: e.target.value });
+    // Only allow digits
+    const value = e.target.value.replace(/[^\d]/g, '').slice(0, 10);
+    updateTraveller(index, { mobileNo: value });
   }, [index, updateTraveller]);
 
   const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
