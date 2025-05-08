@@ -1,4 +1,3 @@
-
 import { useNavigate } from 'react-router-dom';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
@@ -21,7 +20,8 @@ export const useBuyNowHandler = () => {
         price: selectedPlanData.price,
         details: selectedPlanData.details,
         insurer: `${selectedPlanData.provider} ${selectedPlanData.name}`,
-        sumInsured: 'USD 50000' // This would ideally come from the plan data
+        sumInsured: 'USD 50000',
+        planCode: selectedPlanData.planCode
       };
       
       saveToLocalStorage('selectedPlan', planData);

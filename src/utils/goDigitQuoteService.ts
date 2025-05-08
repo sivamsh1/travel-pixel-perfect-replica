@@ -1,4 +1,3 @@
-
 import { formatDateForAPI, formatDOBForAPI } from './dateFormatUtils';
 import { splitName, createAddressPayload, createAddressPayloadGodigit } from './dataTransformUtils';
 import { TravelFormData } from './localStorageUtils';
@@ -30,28 +29,25 @@ export const createGoDigitQuotePayload = (formData: TravelFormData): GoDigitQuot
     const priceMatch = formData.selectedPlan.price.match(/[\d.]+/);
     if (priceMatch && priceMatch[0]) {
       amount = parseFloat(priceMatch[0]);
-
-      amount = (amount * 0.18 ) + amount
+      amount = (amount * 0.18 ) + amount;
       amount = parseFloat(amount.toFixed(2));
     }
   }
   
-  const planName = formData.selectedPlan?.name; 
-
-
-
-
-const parts = planName.split("-");
-const result = parts[parts.length - 1];  // "RS5"
+  // Extract planCode from the plan name
+  const planName = formData.selectedPlan?.name || '';
+  const parts = planName.split("-");
+  const planCode = formData.selectedPlan?.planCode || "RS5"; // Default to RS5 if no plan code found
+  
   // Default university address that fits within 30 chars
   const defaultUniversityAddress = "DU Main Campus";
   
   return {
-    productName: result,
-    amount: amount,
+    productName: planCode, // Use planCode as the value for productName
+    amount,
     startDate: startDate || "20/05/2025",
     returnDate: returnDate || "20/06/2025",
-    destination: destination,
+    destination,
     bodyCount: formData.travellers?.count || 1,
     kycDetails: {
       kycDoc: "passport",

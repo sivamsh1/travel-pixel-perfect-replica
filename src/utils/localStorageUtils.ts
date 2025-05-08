@@ -1,4 +1,3 @@
-
 interface LocationData {
   region: string;
   destination: string;
@@ -76,6 +75,7 @@ interface PlanData {
   details?: string;
   insurer?: string;
   sumInsured?: string;
+  planCode?: string;
 }
 
 export interface TravelFormData {

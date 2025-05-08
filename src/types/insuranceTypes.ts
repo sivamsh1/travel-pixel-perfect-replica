@@ -1,4 +1,3 @@
-
 export interface InsuranceCover {
   coverName?: string;
   coverAmount?: string | number;
@@ -17,6 +16,7 @@ export interface InsuranceQuote {
   travellersCount: number;
   netPremium: number;
   sumInsured: number;
+  planCode?: string;
 }
 
 export interface QuoteResponse {

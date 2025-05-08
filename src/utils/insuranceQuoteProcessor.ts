@@ -99,6 +99,18 @@ export const processQuoteItems = (quoteItems: Record<string, any>, travellersCou
       let provider = value?.companyName || 'Reliance';
       const insurer = getInsurerFromKey(key);
       
+      // Extract planCode for GoDigit plans
+      let planCode;
+      if (provider === 'GoDigit') {
+        // Try to get planCode from the response first
+        planCode = value?.planCode || value?.productCode;
+        // If not found in response, extract from plan name
+        if (!planCode) {
+          const parts = planName.split("-");
+          planCode = parts[parts.length - 1];
+        }
+      }
+      
       // Default logo
       let logo = '/lovable-uploads/92e4cd3c-dbb1-4c01-ae16-8032d50630ba.png'; 
       
@@ -175,7 +187,8 @@ export const processQuoteItems = (quoteItems: Record<string, any>, travellersCou
         coveragePoints: coveragePoints,
         travellersCount,
         netPremium: netPremium,
-        sumInsured: sumInsured
+        sumInsured: sumInsured,
+        planCode: planCode
       };
     }).filter(Boolean) as InsuranceQuote[]; 
     
