@@ -6,7 +6,9 @@ import { DayPicker } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>
+export interface CalendarProps extends React.ComponentProps<typeof DayPicker> {
+  ascendingYears?: boolean;
+}
 
 function Calendar({
   className,
@@ -15,6 +17,10 @@ function Calendar({
   ascendingYears = false,
   ...props
 }: CalendarProps) {
+  // Create fromYear and toYear to manage the year navigation order
+  const fromYear = ascendingYears ? new Date().getFullYear() : new Date().getFullYear() - 10;
+  const toYear = ascendingYears ? new Date().getFullYear() + 10 : new Date().getFullYear();
+  
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -57,6 +63,9 @@ function Calendar({
         IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
+      captionLayout="dropdown-buttons"
+      fromYear={fromYear}
+      toYear={toYear}
       {...props}
     />
   )
