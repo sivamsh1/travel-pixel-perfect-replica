@@ -1,3 +1,4 @@
+
 import { useNavigate } from 'react-router-dom';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { saveToLocalStorage } from '@/utils/localStorageUtils';
@@ -13,6 +14,11 @@ export const useBuyNowHandler = () => {
     const selectedPlanData = quotes.find(plan => plan.name === planName);
     
     if (selectedPlanData) {
+      // Extract sumInsured from the plan if available or use a default value
+      const sumInsuredValue = selectedPlanData.sumInsured 
+        ? `USD ${selectedPlanData.sumInsured.toLocaleString()}`
+        : 'USD 50000';
+      
       // Store plan details in localStorage
       const planData = {
         name: selectedPlanData.name,
@@ -20,8 +26,8 @@ export const useBuyNowHandler = () => {
         price: selectedPlanData.price,
         details: selectedPlanData.details,
         insurer: `${selectedPlanData.provider} ${selectedPlanData.name}`,
-        sumInsured: 'USD 50000',
-        planCode: selectedPlanData.planCode
+        sumInsured: sumInsuredValue,
+        planCode: selectedPlanData.planCode || "RS5" // Ensure planCode is stored for API integration
       };
       
       saveToLocalStorage('selectedPlan', planData);
