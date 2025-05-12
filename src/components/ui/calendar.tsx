@@ -25,8 +25,18 @@ function Calendar({
   // Generate years for selection (100 years back from current year plus 5 years forward)
   const currentYear = new Date().getFullYear();
   
-  // Create array with years
-  const years = Array.from({ length: 101 }, (_, i) => currentYear - 75 + i);
+  // Create array with years - check for ascending or descending order
+  const ascendingYears = props.ascendingYears as boolean | undefined;
+  
+  // Set fromYear and toYear based on ascending mode
+  const fromYear = ascendingYears ? currentYear - 10 : currentYear - 75;
+  const toYear = ascendingYears ? currentYear + 30 : currentYear + 25;
+  
+  // Create years array in the correct order
+  const years = Array.from(
+    { length: toYear - fromYear + 1 }, 
+    (_, i) => ascendingYears ? fromYear + i : toYear - i
+  );
 
   // Generate months for selection
   const months = [
@@ -38,6 +48,8 @@ function Calendar({
   const calendarRef = React.useRef<HTMLDivElement>(null);
   const monthButtonRef = React.useRef<HTMLButtonElement>(null);
   const yearButtonRef = React.useRef<HTMLButtonElement>(null);
+  const monthDropdownRef = React.useRef<HTMLDivElement>(null);
+  const yearDropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Update calendar view when props.selected changes
   React.useEffect(() => {
@@ -73,6 +85,11 @@ function Calendar({
     }
   };
 
+  // Handle click events on dropdowns to prevent propagation
+  const handleDropdownClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   // Close dropdowns when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -90,8 +107,7 @@ function Calendar({
       if (isMonthSelectOpen && monthButtonRef.current) {
         const target = event.target as Node;
         if (target !== monthButtonRef.current && !monthButtonRef.current.contains(target)) {
-          const monthDropdown = document.getElementById('month-dropdown');
-          if (!monthDropdown || !monthDropdown.contains(target)) {
+          if (monthDropdownRef.current && !monthDropdownRef.current.contains(target)) {
             setIsMonthSelectOpen(false);
           }
         }
@@ -101,8 +117,7 @@ function Calendar({
       if (isYearSelectOpen && yearButtonRef.current) {
         const target = event.target as Node;
         if (target !== yearButtonRef.current && !yearButtonRef.current.contains(target)) {
-          const yearDropdown = document.getElementById('year-dropdown');
-          if (!yearDropdown || !yearDropdown.contains(target)) {
+          if (yearDropdownRef.current && !yearDropdownRef.current.contains(target)) {
             setIsYearSelectOpen(false);
           }
         }
@@ -156,9 +171,10 @@ function Calendar({
           
           {isMonthSelectOpen && (
             <div 
-              id="month-dropdown"
-              className="absolute top-full left-0 z-[150] w-[140px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
+              ref={monthDropdownRef}
+              className="absolute top-full left-0 z-[9999] w-[140px] mt-1 bg-white border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
               role="listbox"
+              onClick={handleDropdownClick}
             >
               {months.map((month, index) => (
                 <button
@@ -201,9 +217,10 @@ function Calendar({
           
           {isYearSelectOpen && (
             <div 
-              id="year-dropdown"
-              className="absolute top-full left-0 z-[150] w-[100px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
+              ref={yearDropdownRef}
+              className="absolute top-full left-0 z-[9999] w-[100px] mt-1 bg-white border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
               role="listbox"
+              onClick={handleDropdownClick}
             >
               {years.map((year) => (
                 <button
@@ -269,15 +286,6 @@ function Calendar({
         Caption: CustomCaption,
       }}
       captionLayout="buttons"
-      onDayClick={(_, { selected }) => {
-        if (selected && props.onSelect) {
-          props.onSelect(selected);
-          
-          setTimeout(() => {
-            document.body.click();
-          }, 0);
-        }
-      }}
       month={currentMonth}
       onMonthChange={setCurrentMonth}
       {...props}

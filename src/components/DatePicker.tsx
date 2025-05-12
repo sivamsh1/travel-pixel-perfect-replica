@@ -22,6 +22,7 @@ interface DatePickerProps {
   minDate?: Date;
   maxDate?: Date;
   id?: string;
+  ascendingYears?: boolean;
 }
 
 export function DatePicker({
@@ -35,6 +36,7 @@ export function DatePicker({
   minDate,
   maxDate,
   id,
+  ascendingYears = false,
 }: DatePickerProps) {
   // Create a ref for the popover trigger to manage focus
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -111,6 +113,13 @@ export function DatePicker({
             setTimeout(() => triggerRef.current?.focus(), 10);
           }}
           onClick={(e) => e.stopPropagation()}
+          onInteractOutside={(e) => {
+            // Prevent interactions outside from closing the popover when interacting with dropdowns
+            const target = e.target as Element;
+            if (target.closest('[role="listbox"]') || target.closest('[data-radix-calendar-root]')) {
+              e.preventDefault();
+            }
+          }}
         >
           <Calendar
             key={calendarKey}
@@ -139,6 +148,7 @@ export function DatePicker({
               return false;
             }}
             className="p-3 pointer-events-auto"
+            ascendingYears={ascendingYears}
           />
         </PopoverContent>
       </Popover>

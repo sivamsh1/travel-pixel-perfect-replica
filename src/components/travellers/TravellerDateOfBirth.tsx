@@ -53,6 +53,12 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
     }
   };
 
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(!open);
+  };
+
   const dateValue = parseDOB(dob);
 
   return (
@@ -62,11 +68,13 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
+              type="button"
               className={cn(
                 "w-full text-left font-normal border border-primary bg-background px-4 py-3 h-12 rounded-md",
                 !dateValue && "text-muted-foreground",
                 error ? "border-destructive focus:ring-destructive" : ""
               )}
+              onClick={handleButtonClick}
             >
               <CalendarIcon className="mr-2 h-4 w-4 opacity-60" />
               {dateValue && isValid(dateValue)
@@ -75,13 +83,25 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
               }
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start" sideOffset={8}>
+          <PopoverContent 
+            className="w-auto p-0" 
+            align="start" 
+            sideOffset={8}
+            onInteractOutside={(e) => {
+              // Prevent interactions outside from closing the popover when interacting with dropdowns
+              const target = e.target as Element;
+              if (target.closest('[role="listbox"]') || target.closest('[data-radix-calendar-root]')) {
+                e.preventDefault();
+              }
+            }}
+          >
             <Calendar
               mode="single"
               selected={dateValue}
               onSelect={handleSelect}
               initialFocus
               className="p-3 pointer-events-auto"
+              ascendingYears={false}
             />
           </PopoverContent>
         </Popover>

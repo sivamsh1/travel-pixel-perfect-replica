@@ -14,6 +14,7 @@ interface TravelDatePickerProps {
   maxDate?: Date;
   error?: string;
   disabled?: boolean;
+  ascendingYears?: boolean;
 }
 
 const TravelDatePicker = ({
@@ -23,7 +24,8 @@ const TravelDatePicker = ({
   minDate,
   maxDate,
   error,
-  disabled = false
+  disabled = false,
+  ascendingYears = false
 }: TravelDatePickerProps) => {
   const [open, setOpen] = useState(false);
 
@@ -36,6 +38,7 @@ const TravelDatePicker = ({
 
   const handleButtonClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!disabled) {
       setOpen(!open);
     }
@@ -76,7 +79,17 @@ const TravelDatePicker = ({
             <CalendarIcon className="h-5 w-5 ml-2 text-gray-400" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent 
+          className="w-auto p-0" 
+          align="start" 
+          onInteractOutside={(e) => {
+            // Prevent interactions outside from closing the popover when interacting with dropdowns
+            const target = e.target as Element;
+            if (target.closest('[role="listbox"]') || target.closest('[data-radix-calendar-root]')) {
+              e.preventDefault();
+            }
+          }}
+        >
           <Calendar 
             mode="single" 
             selected={selectedDate} 
@@ -86,7 +99,8 @@ const TravelDatePicker = ({
               after: maxDate
             }} 
             initialFocus 
-            className={cn("p-3 pointer-events-auto")} 
+            className="p-3 pointer-events-auto"
+            ascendingYears={ascendingYears}
           />
         </PopoverContent>
       </Popover>
