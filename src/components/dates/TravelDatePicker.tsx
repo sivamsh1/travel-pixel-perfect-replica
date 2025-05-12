@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { format, differenceInDays, addDays, isAfter, isValid } from 'date-fns';
+import { format, differenceInDays, addDays, isAfter } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -43,31 +42,9 @@ const TravelDatePicker = ({
     }
   };
 
-  // Enhanced date validation
-  const isValidDate = (date: any): date is Date => {
-    return date instanceof Date && !isNaN(date.getTime()) && isValid(date);
-  };
-
-  // Format date with validation
-  const getFormattedDate = (): string => {
-    if (!selectedDate) return '';
-    if (!isValidDate(selectedDate)) {
-      console.warn('Invalid date provided to TravelDatePicker:', selectedDate);
-      return '';
-    }
-    try {
-      return format(selectedDate, "dd MMM yyyy");
-    } catch (error) {
-      console.error('Error formatting date:', error);
-      return '';
-    }
-  };
-
-  const formattedDate = getFormattedDate();
-
   return (
     <div className="flex flex-col">
-      {label && <span className="text-sm text-gray-500 mb-1">{label}</span>}
+      <span className="text-sm text-gray-500 mb-1">{label}</span>
       <Popover open={open && !disabled} onOpenChange={(isOpen) => !disabled && setOpen(isOpen)}>
         <PopoverTrigger asChild>
           <button 
@@ -80,14 +57,14 @@ const TravelDatePicker = ({
             disabled={disabled}
             onClick={handleButtonClick}
           >
-            {formattedDate ? formattedDate : <span className="text-muted-foreground">{disabled ? "Select start date first" : "Select date"}</span>}
+            {selectedDate ? format(selectedDate, "dd MMM yyyy") : <span className="text-muted-foreground">{disabled ? "Select start date first" : "Select date"}</span>}
             <CalendarIcon className="h-5 w-5 ml-2 text-gray-400" />
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar 
             mode="single" 
-            selected={isValidDate(selectedDate) ? selectedDate : undefined} 
+            selected={selectedDate} 
             onSelect={handleDateSelect} 
             disabled={{
               before: minDate,
@@ -95,6 +72,7 @@ const TravelDatePicker = ({
             }} 
             initialFocus 
             className={cn("p-3 pointer-events-auto")} 
+            ascendingYears={ascendingYears}
           />
         </PopoverContent>
       </Popover>
