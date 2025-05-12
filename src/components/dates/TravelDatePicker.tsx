@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { format, differenceInDays, addDays, isAfter } from 'date-fns';
+import { format, differenceInDays, addDays, isAfter, isValid } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -42,6 +43,11 @@ const TravelDatePicker = ({
     }
   };
 
+  // Check if selectedDate is valid before formatting
+  const formattedDate = selectedDate && isValid(selectedDate) 
+    ? format(selectedDate, "dd MMM yyyy") 
+    : '';
+
   return (
     <div className="flex flex-col">
       <span className="text-sm text-gray-500 mb-1">{label}</span>
@@ -57,7 +63,7 @@ const TravelDatePicker = ({
             disabled={disabled}
             onClick={handleButtonClick}
           >
-            {selectedDate ? format(selectedDate, "dd MMM yyyy") : <span className="text-muted-foreground">{disabled ? "Select start date first" : "Select date"}</span>}
+            {formattedDate ? formattedDate : <span className="text-muted-foreground">{disabled ? "Select start date first" : "Select date"}</span>}
             <CalendarIcon className="h-5 w-5 ml-2 text-gray-400" />
           </button>
         </PopoverTrigger>
