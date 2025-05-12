@@ -91,7 +91,6 @@ const TravelDatePicker = ({
           }}
         >
           <Calendar 
-            mode="single" 
             selected={selectedDate} 
             onSelect={handleDateSelect} 
             disabled={{
