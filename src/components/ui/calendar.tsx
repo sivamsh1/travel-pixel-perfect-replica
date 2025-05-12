@@ -12,6 +12,7 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  ascendingYears = false,
   ...props
 }: CalendarProps) {
   return (
