@@ -67,7 +67,7 @@ const TravelDatePicker = ({
 
   return (
     <div className="flex flex-col">
-      <span className="text-sm text-gray-500 mb-1">{label}</span>
+      {label && <span className="text-sm text-gray-500 mb-1">{label}</span>}
       <Popover open={open && !disabled} onOpenChange={(isOpen) => !disabled && setOpen(isOpen)}>
         <PopoverTrigger asChild>
           <button 
@@ -95,7 +95,6 @@ const TravelDatePicker = ({
             }} 
             initialFocus 
             className={cn("p-3 pointer-events-auto")} 
-            ascendingYears={ascendingYears}
           />
         </PopoverContent>
       </Popover>

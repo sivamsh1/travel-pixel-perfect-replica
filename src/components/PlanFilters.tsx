@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { useIsMobile } from '@/hooks/use-mobile';
 import EditTravelDetailsDialog from './plans/EditTravelDetailsDialog';
+
 interface PlanFiltersProps {
   travellersCount: number;
   formattedStartDate: string;
@@ -18,6 +20,7 @@ interface PlanFiltersProps {
   filteredPlansCount: number;
   isAnyFilterActive: boolean;
 }
+
 const PlanFilters: React.FC<PlanFiltersProps> = ({
   travellersCount,
   formattedStartDate,
@@ -34,11 +37,24 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
 }) => {
   const isMobile = useIsMobile();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsEditDialogOpen(true);
+  };
+
   return <div className="w-full py-0 my-0">
       <div className="border border-[#0FB1F6] rounded-lg p-4 mb-4">
         <div className="flex justify-between items-center mb-4 my-0 mx-0 py-[5px]">
           <div className="text-sm text-gray-700">
-            Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} <span onClick={() => setIsEditDialogOpen(true)} className="text-[#0FB1F6] cursor-pointer font-semibold text-base">Edit &gt;</span>
+            Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} 
+            <span 
+              onClick={handleEditClick} 
+              className="text-[#0FB1F6] cursor-pointer font-semibold text-base ml-2 hover:underline"
+            >
+              Edit &gt;
+            </span>
           </div>
           <div className="text-xs text-gray-500">
             All prices are inclusive of GST

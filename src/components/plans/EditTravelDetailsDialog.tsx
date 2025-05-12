@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import TravelDatePicker from '@/components/dates/TravelDatePicker';
 import { calculateAge } from '@/utils/travellerUtils';
 import { toast } from '@/hooks/use-toast';
+import { socketService } from '@/services/socketService';
 
 interface EditTravelDetailsDialogProps {
   open: boolean;
@@ -45,6 +46,7 @@ const EditTravelDetailsDialog = ({
   const [localDuration, setLocalDuration] = useState<number>(duration || 7);
   const [localDob, setLocalDob] = useState<Date | undefined>(undefined);
   const [localAge, setLocalAge] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Helper functions for parsing dates safely
   const parseDateString = (dateStr: string | undefined): Date | undefined => {
@@ -77,6 +79,7 @@ const EditTravelDetailsDialog = ({
       // Set basic values
       setLocalRegion(region || '');
       setLocalDestination(destination || '');
+      setIsSubmitting(false);
       
       // Parse dates from context and localStorage
       try {
@@ -182,7 +185,7 @@ const EditTravelDetailsDialog = ({
   };
 
   // Handle form submission
-  const handleSave = () => {
+  const handleSave = async () => {
     // Validation
     if (!localRegion) {
       toast({ description: "Please select a travel region", variant: "destructive" });
@@ -206,6 +209,8 @@ const EditTravelDetailsDialog = ({
     }
 
     try {
+      setIsSubmitting(true);
+      
       // Update context values
       setRegion(localRegion);
       setDestination(localDestination);
@@ -255,13 +260,22 @@ const EditTravelDetailsDialog = ({
       // Close dialog
       onOpenChange(false);
       
-      // Redirect to get fresh quotes based on updated information
-      navigate('/plans');
+      // Reset socket connection to get fresh quotes
+      if (socketService.isConnected()) {
+        socketService.disconnect();
+        await new Promise(resolve => setTimeout(resolve, 300)); // Short delay before reconnecting
+        socketService.connect();
+      }
       
+      // Show loading state
       toast({ 
         title: "Travel details updated",
-        description: "Your travel details have been updated successfully",
+        description: "Fetching new quotes based on your updated details...",
       });
+      
+      // Refresh the page to trigger new quotes fetch with updated parameters
+      navigate('/plans', { replace: true });
+      
     } catch (error) {
       console.error('Error saving data:', error);
       toast({ 
@@ -269,11 +283,16 @@ const EditTravelDetailsDialog = ({
         description: "Failed to update travel details. Please try again.",
         variant: "destructive"
       });
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      if (!isSubmitting) {
+        onOpenChange(isOpen);
+      }
+    }}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Edit Travel Details</DialogTitle>
@@ -363,6 +382,7 @@ const EditTravelDetailsDialog = ({
             variant="outline" 
             onClick={() => onOpenChange(false)}
             className="sm:w-auto w-full"
+            disabled={isSubmitting}
           >
             Cancel
           </Button>
@@ -370,8 +390,9 @@ const EditTravelDetailsDialog = ({
             variant="default" 
             onClick={handleSave}
             className="sm:w-auto w-full bg-primary hover:bg-primary/90 mt-2 sm:mt-0"
+            disabled={isSubmitting}
           >
-            Update & Get Quotes
+            {isSubmitting ? "Updating..." : "Update & Get Quotes"}
           </Button>
         </DialogFooter>
       </DialogContent>
