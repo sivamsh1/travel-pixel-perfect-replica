@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
@@ -268,7 +269,8 @@ function Calendar({
       }}
       captionLayout="buttons"
       onDayClick={(_, { selected }) => {
-        if (selected && props.onSelect) {
+        // Fix: Only call onSelect if it exists in props
+        if (selected && 'onSelect' in props && typeof props.onSelect === 'function') {
           props.onSelect(selected);
           
           setTimeout(() => {
