@@ -36,7 +36,7 @@ const PlanFilters: React.FC<PlanFiltersProps> = ({
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   return <div className="w-full py-0 my-0">
       <div className="border border-[#0FB1F6] rounded-lg p-4 mb-4">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 my-0 mx-0 py-[5px]">
           <div className="text-sm text-gray-700">
             Summary: {travellersCount} Traveller(s) | {formattedStartDate} - {formattedEndDate} <span onClick={() => setIsEditDialogOpen(true)} className="text-[#0FB1F6] cursor-pointer font-semibold text-base">Edit &gt;</span>
           </div>
