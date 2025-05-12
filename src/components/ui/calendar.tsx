@@ -1,12 +1,12 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, DayPickerProps } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-// Extend CalendarProps to include our custom props
-export interface CalendarProps extends React.ComponentProps<typeof DayPicker> {
+// Extend DayPickerProps to include our custom props
+export interface CalendarProps extends DayPickerProps {
   ascendingYears?: boolean;
 }
 
@@ -26,7 +26,7 @@ function Calendar({
   const [isMonthSelectOpen, setIsMonthSelectOpen] = React.useState(false);
   const [isYearSelectOpen, setIsYearSelectOpen] = React.useState(false);
 
-  // Generate years for selection (100 years back from current year plus 5 years forward)
+  // Generate years for selection
   const currentYear = new Date().getFullYear();
   
   // Set fromYear and toYear based on ascending mode

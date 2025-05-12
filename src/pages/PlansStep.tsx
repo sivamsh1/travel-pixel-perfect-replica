@@ -23,7 +23,8 @@ const PlansStep = () => {
     isLoading,
     isConnected,
     receivedFirstBatch,
-    socketResponses
+    socketResponses,
+    refreshQuotes
   } = useInsuranceQuotes();
   const {
     formattedStartDate,
@@ -121,6 +122,12 @@ const PlansStep = () => {
     console.log("🔍 Filtered quotes count:", filteredQuotes.length);
   }, [quotes, filteredQuotes]);
 
+  // When PlansStep mounts or the route is updated, refresh quotes
+  useEffect(() => {
+    // Refresh quotes when component mounts
+    refreshQuotes();
+  }, [refreshQuotes]);
+
   // Determine if we should show loading state
   const showLoading = isLoading && filteredQuotes.length === 0;
 
@@ -129,6 +136,7 @@ const PlansStep = () => {
 
   // Status text for plans count
   const plansFoundText = isLoading || filteredQuotes.length === 0 ? "Fetching quotes..." : `${filteredQuotes.length} ${filteredQuotes.length === 1 ? "Plan" : "Plans"} Found`;
+  
   return <Layout>
       <PlansHeader />
       

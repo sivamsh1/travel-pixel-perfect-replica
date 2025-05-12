@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { useTravelForm } from '@/context/TravelFormContext';
 import { toast } from "@/components/ui/use-toast";
@@ -90,6 +91,29 @@ export const useInsuranceQuotes = () => {
       si: "50-60"
     } as QuoteRequestPayload;
   }, [travellersCount, travellers]);
+
+  // Function to refresh quotes by resetting state and reconnecting
+  const refreshQuotes = useCallback(() => {
+    console.log("Refreshing quotes...");
+    
+    // Reset state
+    setState(prev => ({ 
+      ...prev, 
+      quotes: [], 
+      isLoading: true, 
+      error: null,
+      receivedFirstBatch: false,
+      socketResponses: []
+    }));
+    
+    // Reconnect socket if not connected
+    if (!socketService.isConnected()) {
+      socketService.connect();
+    } else {
+      // If already connected, re-emit the request
+      socketService.emit('getLiveQuotes', requestPayload);
+    }
+  }, [requestPayload]);
 
   useEffect(() => {
     // Initialize socket connection
@@ -221,6 +245,7 @@ export const useInsuranceQuotes = () => {
     error: state.error,
     isConnected: state.isConnected,
     receivedFirstBatch: state.receivedFirstBatch,
-    socketResponses: state.socketResponses
+    socketResponses: state.socketResponses,
+    refreshQuotes
   };
 };

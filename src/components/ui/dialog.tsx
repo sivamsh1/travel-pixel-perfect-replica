@@ -52,7 +52,17 @@ const DialogContent = React.forwardRef<
         // Prevent closing when interacting with calendar dropdowns outside the dialog content
         if (e.target instanceof Element && 
             (e.target.closest('[role="listbox"]') || 
-             e.target.closest('[data-radix-calendar-root]'))) {
+             e.target.closest('[data-radix-calendar-root]') ||
+             e.target.closest('[data-state="open"]'))) {
+          e.preventDefault();
+        }
+      }}
+      onInteractOutside={(e) => {
+        // Additional safeguard for all types of interactions
+        if (e.target instanceof Element && 
+            (e.target.closest('[role="listbox"]') || 
+             e.target.closest('[data-radix-calendar-root]') ||
+             e.target.closest('[data-state="open"]'))) {
           e.preventDefault();
         }
       }}

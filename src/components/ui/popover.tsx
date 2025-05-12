@@ -34,7 +34,8 @@ const PopoverContent = React.forwardRef<
         // Prevent the popover from closing when clicking inside the calendar
         if (e.target instanceof Element && 
             (e.target.closest('[data-radix-calendar-root]') || 
-             e.target.closest('[role="listbox"]'))) {
+             e.target.closest('[role="listbox"]') ||
+             e.target.closest('[data-state="open"]'))) {
           e.preventDefault();
         }
       }}

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { format, differenceInDays, addDays, isAfter, isValid } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -94,10 +94,11 @@ const TravelDatePicker = ({
             mode="single" 
             selected={selectedDate} 
             onSelect={handleDateSelect} 
-            disabled={{
-              before: minDate,
-              after: maxDate
-            }} 
+            disabled={(date) => {
+              if (minDate && date < minDate) return true;
+              if (maxDate && date > maxDate) return true;
+              return false;
+            }}
             initialFocus 
             className="p-3 pointer-events-auto"
             ascendingYears={ascendingYears}

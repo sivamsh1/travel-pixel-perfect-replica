@@ -124,7 +124,7 @@ export function DatePicker({
           <Calendar
             key={calendarKey}
             mode="single"
-            selected={value && isValid(value) ? value : undefined}
+            selected={value}
             onSelect={handleSelect}
             initialFocus
             disabled={(date) => {

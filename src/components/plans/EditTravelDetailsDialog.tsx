@@ -49,6 +49,13 @@ const EditTravelDetailsDialog = ({
   // Set up initial values from context when dialog opens
   useEffect(() => {
     if (open) {
+      console.log("Dialog opened, loading data...");
+      console.log("Current region:", region);
+      console.log("Current destination:", destination);
+      console.log("Current startDate:", startDate);
+      console.log("Current endDate:", endDate);
+      console.log("Current travellers:", travellers);
+      
       setLocalRegion(region);
       setLocalDestination(destination);
       
@@ -56,6 +63,7 @@ const EditTravelDetailsDialog = ({
       try {
         if (startDate) {
           const parsedStartDate = parse(startDate, 'yyyy-MM-dd', new Date());
+          console.log("Parsed startDate:", parsedStartDate, isValid(parsedStartDate));
           setLocalStartDate(isValid(parsedStartDate) ? parsedStartDate : undefined);
         } else {
           setLocalStartDate(undefined);
@@ -63,6 +71,7 @@ const EditTravelDetailsDialog = ({
         
         if (endDate) {
           const parsedEndDate = parse(endDate, 'yyyy-MM-dd', new Date());
+          console.log("Parsed endDate:", parsedEndDate, isValid(parsedEndDate));
           setLocalEndDate(isValid(parsedEndDate) ? parsedEndDate : undefined);
         } else {
           setLocalEndDate(undefined);
@@ -80,6 +89,7 @@ const EditTravelDetailsDialog = ({
       if (traveller.dob) {
         try {
           const dobDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
+          console.log("Parsed DOB:", dobDate, isValid(dobDate));
           setLocalDob(isValid(dobDate) ? dobDate : undefined);
           setLocalAge(traveller.age || '');
         } catch (error) {
@@ -271,6 +281,7 @@ const EditTravelDetailsDialog = ({
               selectedDate={localStartDate}
               onDateSelect={handleStartDateChange}
               minDate={new Date()}
+              ascendingYears={true}
             />
             
             {/* End Date */}
@@ -280,6 +291,7 @@ const EditTravelDetailsDialog = ({
               onDateSelect={handleEndDateChange}
               minDate={localStartDate}
               disabled={!localStartDate || !isValid(localStartDate)}
+              ascendingYears={true}
             />
           </div>
           
@@ -307,6 +319,7 @@ const EditTravelDetailsDialog = ({
                   selectedDate={localDob}
                   onDateSelect={handleDobChange}
                   maxDate={new Date()}
+                  ascendingYears={false}
                 />
               </div>
             </div>
