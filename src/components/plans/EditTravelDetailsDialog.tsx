@@ -323,7 +323,6 @@ const EditTravelDetailsDialog = ({
               selectedDate={localStartDate}
               onDateSelect={handleStartDateChange}
               minDate={new Date()}
-              ascendingYears={true}
             />
             
             {/* End Date */}
@@ -333,7 +332,6 @@ const EditTravelDetailsDialog = ({
               onDateSelect={handleEndDateChange}
               minDate={localStartDate || new Date()}
               disabled={!localStartDate}
-              ascendingYears={true}
             />
           </div>
           

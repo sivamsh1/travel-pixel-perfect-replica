@@ -14,7 +14,6 @@ interface TravelDatePickerProps {
   maxDate?: Date;
   error?: string;
   disabled?: boolean;
-  ascendingYears?: boolean;
 }
 
 const TravelDatePicker = ({
@@ -24,8 +23,7 @@ const TravelDatePicker = ({
   minDate,
   maxDate,
   error,
-  disabled = false,
-  ascendingYears = false
+  disabled = false
 }: TravelDatePickerProps) => {
   const [open, setOpen] = useState(false);
 
