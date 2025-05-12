@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { addDays, differenceInDays, format, parse } from 'date-fns';
+import { addDays, differenceInDays, format, parse, isValid } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { 
   Dialog,
@@ -40,12 +40,8 @@ const EditTravelDetailsDialog = ({
   // Local state for form values
   const [localRegion, setLocalRegion] = useState(region);
   const [localDestination, setLocalDestination] = useState(destination);
-  const [localStartDate, setLocalStartDate] = useState<Date | undefined>(
-    startDate ? parse(startDate, 'yyyy-MM-dd', new Date()) : undefined
-  );
-  const [localEndDate, setLocalEndDate] = useState<Date | undefined>(
-    endDate ? parse(endDate, 'yyyy-MM-dd', new Date()) : undefined
-  );
+  const [localStartDate, setLocalStartDate] = useState<Date | undefined>(undefined);
+  const [localEndDate, setLocalEndDate] = useState<Date | undefined>(undefined);
   const [localDuration, setLocalDuration] = useState<number>(duration);
   const [localDob, setLocalDob] = useState<Date | undefined>(undefined);
   const [localAge, setLocalAge] = useState<string>('');
@@ -56,9 +52,27 @@ const EditTravelDetailsDialog = ({
       setLocalRegion(region);
       setLocalDestination(destination);
       
-      // Parse dates from string format to Date objects
-      setLocalStartDate(startDate ? parse(startDate, 'yyyy-MM-dd', new Date()) : undefined);
-      setLocalEndDate(endDate ? parse(endDate, 'yyyy-MM-dd', new Date()) : undefined);
+      // Parse dates from string format to Date objects safely
+      try {
+        if (startDate) {
+          const parsedStartDate = parse(startDate, 'yyyy-MM-dd', new Date());
+          setLocalStartDate(isValid(parsedStartDate) ? parsedStartDate : undefined);
+        } else {
+          setLocalStartDate(undefined);
+        }
+        
+        if (endDate) {
+          const parsedEndDate = parse(endDate, 'yyyy-MM-dd', new Date());
+          setLocalEndDate(isValid(parsedEndDate) ? parsedEndDate : undefined);
+        } else {
+          setLocalEndDate(undefined);
+        }
+      } catch (error) {
+        console.error("Error parsing dates:", error);
+        setLocalStartDate(undefined);
+        setLocalEndDate(undefined);
+      }
+      
       setLocalDuration(duration);
       
       // Get traveller's DOB if available
@@ -66,7 +80,7 @@ const EditTravelDetailsDialog = ({
       if (traveller.dob) {
         try {
           const dobDate = parse(traveller.dob, 'yyyy-MM-dd', new Date());
-          setLocalDob(dobDate);
+          setLocalDob(isValid(dobDate) ? dobDate : undefined);
           setLocalAge(traveller.age || '');
         } catch (error) {
           console.error('Error parsing DOB:', error);
@@ -79,7 +93,7 @@ const EditTravelDetailsDialog = ({
 
   // Calculate duration when dates change
   useEffect(() => {
-    if (localStartDate && localEndDate) {
+    if (localStartDate && localEndDate && isValid(localStartDate) && isValid(localEndDate)) {
       const days = differenceInDays(localEndDate, localStartDate) + 1;
       setLocalDuration(days > 0 ? days : 0);
     }
@@ -87,16 +101,21 @@ const EditTravelDetailsDialog = ({
 
   // Calculate age when DOB changes
   useEffect(() => {
-    if (localDob) {
-      const formattedDob = format(localDob, 'yyyy-MM-dd');
-      const age = calculateAge(formattedDob);
-      setLocalAge(age !== null ? age.toString() : '');
+    if (localDob && isValid(localDob)) {
+      try {
+        const formattedDob = format(localDob, 'yyyy-MM-dd');
+        const age = calculateAge(formattedDob);
+        setLocalAge(age !== null ? age.toString() : '');
+      } catch (error) {
+        console.error('Error calculating age:', error);
+        setLocalAge('');
+      }
     }
   }, [localDob]);
 
   const handleStartDateChange = (date: Date | undefined) => {
     setLocalStartDate(date);
-    if (date && !localEndDate) {
+    if (date && isValid(date) && (!localEndDate || !isValid(localEndDate))) {
       // If end date is not set, set it to start date + 7 days
       setLocalEndDate(addDays(date, 7));
     }
@@ -108,10 +127,14 @@ const EditTravelDetailsDialog = ({
 
   const handleDobChange = (date: Date | undefined) => {
     setLocalDob(date);
-    if (date) {
-      const formattedDob = format(date, 'yyyy-MM-dd');
-      const age = calculateAge(formattedDob);
-      setLocalAge(age !== null ? age.toString() : '');
+    if (date && isValid(date)) {
+      try {
+        const formattedDob = format(date, 'yyyy-MM-dd');
+        const age = calculateAge(formattedDob);
+        setLocalAge(age !== null ? age.toString() : '');
+      } catch (error) {
+        console.error('Error formatting DOB:', error);
+      }
     }
   };
 
@@ -125,31 +148,43 @@ const EditTravelDetailsDialog = ({
       toast({ description: "Please enter a destination", variant: "destructive" });
       return;
     }
-    if (!localStartDate) {
-      toast({ description: "Please select a start date", variant: "destructive" });
+    if (!localStartDate || !isValid(localStartDate)) {
+      toast({ description: "Please select a valid start date", variant: "destructive" });
       return;
     }
-    if (!localEndDate) {
-      toast({ description: "Please select an end date", variant: "destructive" });
+    if (!localEndDate || !isValid(localEndDate)) {
+      toast({ description: "Please select a valid end date", variant: "destructive" });
       return;
     }
-    if (!localDob) {
-      toast({ description: "Please select date of birth", variant: "destructive" });
+    if (!localDob || !isValid(localDob)) {
+      toast({ description: "Please select a valid date of birth", variant: "destructive" });
       return;
     }
 
-    // Update context values
+    // Update context values with safe formatting
     setRegion(localRegion);
     setDestination(localDestination);
-    setStartDate(localStartDate ? format(localStartDate, 'yyyy-MM-dd') : '');
-    setEndDate(localEndDate ? format(localEndDate, 'yyyy-MM-dd') : '');
+    
+    try {
+      setStartDate(localStartDate && isValid(localStartDate) ? format(localStartDate, 'yyyy-MM-dd') : '');
+      setEndDate(localEndDate && isValid(localEndDate) ? format(localEndDate, 'yyyy-MM-dd') : '');
+    } catch (error) {
+      console.error("Error formatting dates:", error);
+      toast({ description: "Error processing dates. Please try again.", variant: "destructive" });
+      return;
+    }
+    
     setDuration(localDuration);
     
     // Update traveller info
-    updateTraveller(0, {
-      dob: localDob ? format(localDob, 'yyyy-MM-dd') : '',
-      age: localAge
-    });
+    try {
+      updateTraveller(0, {
+        dob: localDob && isValid(localDob) ? format(localDob, 'yyyy-MM-dd') : '',
+        age: localAge
+      });
+    } catch (error) {
+      console.error("Error updating traveller:", error);
+    }
     
     // Save to localStorage
     const storageData = getFromLocalStorage() || {};
@@ -161,22 +196,30 @@ const EditTravelDetailsDialog = ({
       destinationId: storageData.location?.destinationId || ''
     });
     
-    // Update dates data
-    saveToLocalStorage('dates', {
-      startDate: localStartDate ? format(localStartDate, 'yyyy-MM-dd') : '',
-      endDate: localEndDate ? format(localEndDate, 'yyyy-MM-dd') : '',
-      duration: localDuration
-    });
+    // Update dates data safely
+    try {
+      saveToLocalStorage('dates', {
+        startDate: localStartDate && isValid(localStartDate) ? format(localStartDate, 'yyyy-MM-dd') : '',
+        endDate: localEndDate && isValid(localEndDate) ? format(localEndDate, 'yyyy-MM-dd') : '',
+        duration: localDuration
+      });
+    } catch (error) {
+      console.error("Error saving dates to localStorage:", error);
+    }
     
     // Update traveller data
     if (storageData.travellers) {
       const updatedTravellers = [...(storageData.travellers.details || [])];
       if (updatedTravellers[0]) {
-        updatedTravellers[0] = {
-          ...updatedTravellers[0],
-          dob: localDob ? format(localDob, 'yyyy-MM-dd') : '',
-          age: localAge
-        };
+        try {
+          updatedTravellers[0] = {
+            ...updatedTravellers[0],
+            dob: localDob && isValid(localDob) ? format(localDob, 'yyyy-MM-dd') : '',
+            age: localAge
+          };
+        } catch (error) {
+          console.error("Error updating traveller in localStorage:", error);
+        }
       }
       saveToLocalStorage('travellers', {
         ...storageData.travellers,
@@ -228,7 +271,6 @@ const EditTravelDetailsDialog = ({
               selectedDate={localStartDate}
               onDateSelect={handleStartDateChange}
               minDate={new Date()}
-              ascendingYears={true}
             />
             
             {/* End Date */}
@@ -236,9 +278,8 @@ const EditTravelDetailsDialog = ({
               label="End Date"
               selectedDate={localEndDate}
               onDateSelect={handleEndDateChange}
-              minDate={localStartDate ? localStartDate : new Date()}
-              disabled={!localStartDate}
-              ascendingYears={true}
+              minDate={localStartDate}
+              disabled={!localStartDate || !isValid(localStartDate)}
             />
           </div>
           

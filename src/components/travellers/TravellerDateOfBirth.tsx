@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { format, isValid, differenceInYears } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -28,13 +29,19 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
   const parseDOB = (dateString?: string): Date | undefined => {
     if (!dateString) return undefined;
     
-    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
-      const [day, month, year] = dateString.split('/').map(Number);
-      return new Date(year, month - 1, day);
+    try {
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+        const [day, month, year] = dateString.split('/').map(Number);
+        const date = new Date(year, month - 1, day);
+        return isValid(date) ? date : undefined;
+      }
+      
+      const date = new Date(dateString);
+      return isValid(date) ? date : undefined;
+    } catch (error) {
+      console.error("Error parsing date:", error);
+      return undefined;
     }
-    
-    const date = new Date(dateString);
-    return !isNaN(date.getTime()) ? date : undefined;
   };
 
   const handleSelect = (date: Date | undefined) => {

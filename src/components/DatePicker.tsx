@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { format, isValid, differenceInDays } from "date-fns";
+import { format, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ interface DatePickerProps {
   disableFuture?: boolean;
   minDate?: Date;
   maxDate?: Date;
-  id?: string; // Added id prop
+  id?: string;
 }
 
 export function DatePicker({
@@ -34,7 +34,7 @@ export function DatePicker({
   disableFuture = false,
   minDate,
   maxDate,
-  id, // Added id to destructuring
+  id,
 }: DatePickerProps) {
   // Create a ref for the popover trigger to manage focus
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -63,6 +63,19 @@ export function DatePicker({
     setOpen(!open);
   }, [open]);
 
+  // Format the date safely, checking for validity first
+  const getFormattedDate = React.useCallback(() => {
+    if (value && isValid(value)) {
+      try {
+        return format(value, "dd/MM/yyyy");
+      } catch (error) {
+        console.error("Error formatting date:", error);
+        return "";
+      }
+    }
+    return "";
+  }, [value]);
+
   return (
     <div className="w-full">
       <Popover open={open} onOpenChange={setOpen}>
@@ -79,11 +92,11 @@ export function DatePicker({
             disabled={disabled}
             type="button"
             onClick={handleButtonClick}
-            id={id} // Add id to the button
+            id={id}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value && isValid(value) ? (
-              format(value, "dd/MM/yyyy")
+              getFormattedDate()
             ) : (
               <span>{placeholder}</span>
             )}
@@ -102,10 +115,9 @@ export function DatePicker({
           <Calendar
             key={calendarKey}
             mode="single"
-            selected={value}
+            selected={value && isValid(value) ? value : undefined}
             onSelect={handleSelect}
             initialFocus
-            className="p-3 pointer-events-auto z-[9999]"
             disabled={(date) => {
               const today = new Date();
               
@@ -126,7 +138,7 @@ export function DatePicker({
               
               return false;
             }}
-            data-radix-calendar-root
+            className="p-3 pointer-events-auto"
           />
         </PopoverContent>
       </Popover>

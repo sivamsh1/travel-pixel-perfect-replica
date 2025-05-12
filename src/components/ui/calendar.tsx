@@ -1,12 +1,11 @@
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
-  ascendingYears?: boolean;
-};
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 function Calendar({
   className,
@@ -25,11 +24,9 @@ function Calendar({
 
   // Generate years for selection (100 years back from current year plus 5 years forward)
   const currentYear = new Date().getFullYear();
-
-  // Create array based on ascending or descending order
-  const years = props.ascendingYears
-    ? Array.from({ length: 30 }, (_, i) => currentYear + i) // 30 years ahead in ascending order
-    : Array.from({ length: 101 }, (_, i) => 2025 - i); // Default behavior (descending order)
+  
+  // Create array with years
+  const years = Array.from({ length: 101 }, (_, i) => currentYear - 75 + i);
 
   // Generate months for selection
   const months = [
@@ -44,10 +41,15 @@ function Calendar({
 
   // Update calendar view when props.selected changes
   React.useEffect(() => {
-    if (props.selected instanceof Date) {
+    if (props.selected instanceof Date && isValid(props.selected)) {
       setCurrentMonth(new Date(props.selected));
     }
   }, [props.selected]);
+
+  // Check if a date is valid
+  function isValid(date: any): boolean {
+    return date instanceof Date && !isNaN(date.getTime());
+  }
 
   // Handle month selection
   const handleMonthChange = (monthIndex: number) => {
