@@ -43,10 +43,27 @@ const TravelDatePicker = ({
     }
   };
 
-  // Check if selectedDate is valid before formatting
-  const formattedDate = selectedDate && isValid(selectedDate) 
-    ? format(selectedDate, "dd MMM yyyy") 
-    : '';
+  // Enhanced date validation
+  const isValidDate = (date: any): date is Date => {
+    return date instanceof Date && !isNaN(date.getTime()) && isValid(date);
+  };
+
+  // Format date with validation
+  const getFormattedDate = (): string => {
+    if (!selectedDate) return '';
+    if (!isValidDate(selectedDate)) {
+      console.warn('Invalid date provided to TravelDatePicker:', selectedDate);
+      return '';
+    }
+    try {
+      return format(selectedDate, "dd MMM yyyy");
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
+    }
+  };
+
+  const formattedDate = getFormattedDate();
 
   return (
     <div className="flex flex-col">
@@ -70,7 +87,7 @@ const TravelDatePicker = ({
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar 
             mode="single" 
-            selected={selectedDate} 
+            selected={isValidDate(selectedDate) ? selectedDate : undefined} 
             onSelect={handleDateSelect} 
             disabled={{
               before: minDate,

@@ -268,10 +268,12 @@ function Calendar({
         Caption: CustomCaption,
       }}
       captionLayout="buttons"
-      onDayClick={(_, { selected }) => {
-        // Fix: Only call onSelect if it exists in props
-        if (selected && 'onSelect' in props && typeof props.onSelect === 'function') {
-          props.onSelect(selected);
+      onDayClick={(date, modifiers, e) => {
+        // Fix: Only call onSelect if it exists in props and using the proper parameters
+        if ('onSelect' in props && typeof props.onSelect === 'function' && date) {
+          // Pass all the required arguments to onSelect
+          // This fixes the TS2554 error: Expected 4 arguments, but got 1
+          props.onSelect(date, modifiers, e);
           
           setTimeout(() => {
             document.body.click();
