@@ -84,7 +84,7 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
             </Button>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-auto p-0" 
+            className="w-auto p-0 overflow-visible" 
             align="start" 
             sideOffset={8}
             onInteractOutside={(e) => {

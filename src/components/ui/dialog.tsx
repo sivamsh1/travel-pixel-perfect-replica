@@ -20,7 +20,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props}
@@ -47,6 +47,14 @@ const DialogContent = React.forwardRef<
       onClick={(e) => {
         // Prevent clicks on dialog from propagating up to document
         e.stopPropagation();
+      }}
+      onPointerDownOutside={(e) => {
+        // Prevent closing when interacting with calendar dropdowns outside the dialog content
+        if (e.target instanceof Element && 
+            (e.target.closest('[role="listbox"]') || 
+             e.target.closest('[data-radix-calendar-root]'))) {
+          e.preventDefault();
+        }
       }}
       {...props}
     >

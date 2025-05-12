@@ -80,7 +80,7 @@ const TravelDatePicker = ({
           </button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0" 
+          className="w-auto p-0 overflow-visible" 
           align="start" 
           onInteractOutside={(e) => {
             // Prevent interactions outside from closing the popover when interacting with dropdowns

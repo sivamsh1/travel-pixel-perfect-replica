@@ -5,12 +5,16 @@ import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+// Extend CalendarProps to include our custom props
+export interface CalendarProps extends React.ComponentProps<typeof DayPicker> {
+  ascendingYears?: boolean;
+}
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  ascendingYears = false,
   ...props
 }: CalendarProps) {
   // Get current month and year when the calendar mounts or when selected date changes
@@ -24,9 +28,6 @@ function Calendar({
 
   // Generate years for selection (100 years back from current year plus 5 years forward)
   const currentYear = new Date().getFullYear();
-  
-  // Create array with years - check for ascending or descending order
-  const ascendingYears = props.ascendingYears as boolean | undefined;
   
   // Set fromYear and toYear based on ascending mode
   const fromYear = ascendingYears ? currentYear - 10 : currentYear - 75;
@@ -175,6 +176,7 @@ function Calendar({
               className="absolute top-full left-0 z-[9999] w-[140px] mt-1 bg-white border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
               role="listbox"
               onClick={handleDropdownClick}
+              style={{ zIndex: 9999 }}
             >
               {months.map((month, index) => (
                 <button
@@ -221,6 +223,7 @@ function Calendar({
               className="absolute top-full left-0 z-[9999] w-[100px] mt-1 bg-white border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
               role="listbox"
               onClick={handleDropdownClick}
+              style={{ zIndex: 9999 }}
             >
               {years.map((year) => (
                 <button

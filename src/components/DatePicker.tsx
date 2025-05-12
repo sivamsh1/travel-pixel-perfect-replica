@@ -105,7 +105,7 @@ export function DatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0 z-[9999]" 
+          className="w-auto p-0 z-[9999] overflow-visible" 
           align="start"
           sideOffset={8}
           onEscapeKeyDown={() => {
