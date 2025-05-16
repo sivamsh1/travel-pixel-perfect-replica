@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { format, isValid } from "date-fns";
+import { format, isValid, differenceInDays } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,7 @@ interface DatePickerProps {
   disableFuture?: boolean;
   minDate?: Date;
   maxDate?: Date;
-  id?: string;
-  ascendingYears?: boolean;
+  id?: string; // Added id prop
 }
 
 export function DatePicker({
@@ -35,8 +34,7 @@ export function DatePicker({
   disableFuture = false,
   minDate,
   maxDate,
-  id,
-  ascendingYears = false,
+  id, // Added id to destructuring
 }: DatePickerProps) {
   // Create a ref for the popover trigger to manage focus
   const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -65,19 +63,6 @@ export function DatePicker({
     setOpen(!open);
   }, [open]);
 
-  // Format the date safely, checking for validity first
-  const getFormattedDate = React.useCallback(() => {
-    if (value && isValid(value)) {
-      try {
-        return format(value, "dd/MM/yyyy");
-      } catch (error) {
-        console.error("Error formatting date:", error);
-        return "";
-      }
-    }
-    return "";
-  }, [value]);
-
   return (
     <div className="w-full">
       <Popover open={open} onOpenChange={setOpen}>
@@ -94,18 +79,18 @@ export function DatePicker({
             disabled={disabled}
             type="button"
             onClick={handleButtonClick}
-            id={id}
+            id={id} // Add id to the button
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {value && isValid(value) ? (
-              getFormattedDate()
+              format(value, "dd/MM/yyyy")
             ) : (
               <span>{placeholder}</span>
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-auto p-0 z-[9999] overflow-visible" 
+          className="w-auto p-0 z-[9999]" 
           align="start"
           sideOffset={8}
           onEscapeKeyDown={() => {
@@ -113,13 +98,6 @@ export function DatePicker({
             setTimeout(() => triggerRef.current?.focus(), 10);
           }}
           onClick={(e) => e.stopPropagation()}
-          onInteractOutside={(e) => {
-            // Prevent interactions outside from closing the popover when interacting with dropdowns
-            const target = e.target as Element;
-            if (target.closest('[role="listbox"]') || target.closest('[data-radix-calendar-root]')) {
-              e.preventDefault();
-            }
-          }}
         >
           <Calendar
             key={calendarKey}
@@ -127,6 +105,7 @@ export function DatePicker({
             selected={value}
             onSelect={handleSelect}
             initialFocus
+            className="p-3 pointer-events-auto z-[9999]"
             disabled={(date) => {
               const today = new Date();
               
@@ -147,8 +126,7 @@ export function DatePicker({
               
               return false;
             }}
-            className="p-3 pointer-events-auto"
-            ascendingYears={ascendingYears}
+            data-radix-calendar-root
           />
         </PopoverContent>
       </Popover>

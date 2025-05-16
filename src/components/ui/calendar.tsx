@@ -1,54 +1,35 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, DayPickerProps } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-// Define our own types for selected dates based on the mode
-type DateType = Date | undefined;
-type DateRange = { from: Date | undefined; to: Date | undefined };
-type SelectedDateType = DateType | DateType[] | DateRange | undefined;
-
-// Explicitly define our CalendarProps interface
-export interface CalendarProps extends Omit<DayPickerProps, "mode" | "selected" | "onSelect"> {
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   ascendingYears?: boolean;
-  // Re-add the props we need with correct types
-  mode?: "single" | "range" | "multiple";
-  selected?: Date | Date[] | { from: Date; to: Date } | undefined;
-  onSelect?: (date: Date | undefined) => void;
-}
+};
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  ascendingYears = false,
-  mode = "single",
-  selected,
-  onSelect,
   ...props
 }: CalendarProps) {
   // Get current month and year when the calendar mounts or when selected date changes
   const [currentMonth, setCurrentMonth] = React.useState<Date>(
-    selected instanceof Date ? new Date(selected) : new Date()
+    props.selected instanceof Date ? new Date(props.selected) : new Date()
   );
 
   // Track month/year select dropdown states
   const [isMonthSelectOpen, setIsMonthSelectOpen] = React.useState(false);
   const [isYearSelectOpen, setIsYearSelectOpen] = React.useState(false);
 
-  // Generate years for selection
+  // Generate years for selection (100 years back from current year plus 5 years forward)
   const currentYear = new Date().getFullYear();
-  
-  // Set fromYear and toYear based on ascending mode
-  const fromYear = ascendingYears ? currentYear - 10 : currentYear - 75;
-  const toYear = ascendingYears ? currentYear + 30 : currentYear + 25;
-  
-  // Create years array in the correct order
-  const years = Array.from(
-    { length: toYear - fromYear + 1 }, 
-    (_, i) => ascendingYears ? fromYear + i : toYear - i
-  );
+
+  // Create array based on ascending or descending order
+  const years = props.ascendingYears
+    ? Array.from({ length: 30 }, (_, i) => currentYear + i) // 30 years ahead in ascending order
+    : Array.from({ length: 101 }, (_, i) => 2025 - i); // Default behavior (descending order)
 
   // Generate months for selection
   const months = [
@@ -60,20 +41,13 @@ function Calendar({
   const calendarRef = React.useRef<HTMLDivElement>(null);
   const monthButtonRef = React.useRef<HTMLButtonElement>(null);
   const yearButtonRef = React.useRef<HTMLButtonElement>(null);
-  const monthDropdownRef = React.useRef<HTMLDivElement>(null);
-  const yearDropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Update calendar view when props.selected changes
   React.useEffect(() => {
-    if (selected instanceof Date && isValid(selected)) {
-      setCurrentMonth(new Date(selected));
+    if (props.selected instanceof Date) {
+      setCurrentMonth(new Date(props.selected));
     }
-  }, [selected]);
-
-  // Check if a date is valid
-  function isValid(date: any): boolean {
-    return date instanceof Date && !isNaN(date.getTime());
-  }
+  }, [props.selected]);
 
   // Handle month selection
   const handleMonthChange = (monthIndex: number) => {
@@ -97,11 +71,6 @@ function Calendar({
     }
   };
 
-  // Handle click events on dropdowns to prevent propagation
-  const handleDropdownClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
   // Close dropdowns when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -119,7 +88,8 @@ function Calendar({
       if (isMonthSelectOpen && monthButtonRef.current) {
         const target = event.target as Node;
         if (target !== monthButtonRef.current && !monthButtonRef.current.contains(target)) {
-          if (monthDropdownRef.current && !monthDropdownRef.current.contains(target)) {
+          const monthDropdown = document.getElementById('month-dropdown');
+          if (!monthDropdown || !monthDropdown.contains(target)) {
             setIsMonthSelectOpen(false);
           }
         }
@@ -129,7 +99,8 @@ function Calendar({
       if (isYearSelectOpen && yearButtonRef.current) {
         const target = event.target as Node;
         if (target !== yearButtonRef.current && !yearButtonRef.current.contains(target)) {
-          if (yearDropdownRef.current && !yearDropdownRef.current.contains(target)) {
+          const yearDropdown = document.getElementById('year-dropdown');
+          if (!yearDropdown || !yearDropdown.contains(target)) {
             setIsYearSelectOpen(false);
           }
         }
@@ -183,11 +154,9 @@ function Calendar({
           
           {isMonthSelectOpen && (
             <div 
-              ref={monthDropdownRef}
-              className="absolute top-full left-0 z-[9999] w-[140px] mt-1 bg-white border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
+              id="month-dropdown"
+              className="absolute top-full left-0 z-[150] w-[140px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
               role="listbox"
-              onClick={handleDropdownClick}
-              style={{ zIndex: 9999 }}
             >
               {months.map((month, index) => (
                 <button
@@ -230,11 +199,9 @@ function Calendar({
           
           {isYearSelectOpen && (
             <div 
-              ref={yearDropdownRef}
-              className="absolute top-full left-0 z-[9999] w-[100px] mt-1 bg-white border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
+              id="year-dropdown"
+              className="absolute top-full left-0 z-[150] w-[100px] mt-1 bg-background border rounded-md shadow-md max-h-[200px] overflow-y-auto pointer-events-auto"
               role="listbox"
-              onClick={handleDropdownClick}
-              style={{ zIndex: 9999 }}
             >
               {years.map((year) => (
                 <button
@@ -260,18 +227,11 @@ function Calendar({
     );
   };
 
-  // Create type-safe props for DayPicker
-  let dayPickerProps: DayPickerProps;
-  
-  // Handle different modes correctly
-  if (mode === "range") {
-    dayPickerProps = {
-      mode: "range",
-      selected: selected as { from: Date | undefined; to: Date | undefined } | undefined,
-      onSelect: onSelect as any,
-      showOutsideDays,
-      className: cn("p-3 pointer-events-auto", className),
-      classNames: {
+  return (
+    <DayPicker
+      showOutsideDays={showOutsideDays}
+      className={cn("p-3 pointer-events-auto", className)}
+      classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
@@ -299,116 +259,28 @@ function Calendar({
         day_disabled: "text-muted-foreground opacity-50",
         day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
-        ...(classNames || {}),
-      },
-      components: {
+        ...classNames,
+      }}
+      components={{
         IconLeft: () => <ChevronLeft className="h-4 w-4" />,
         IconRight: () => <ChevronRight className="h-4 w-4" />,
         Caption: CustomCaption,
-      },
-      captionLayout: "buttons",
-      month: currentMonth,
-      onMonthChange: setCurrentMonth,
-      ...props
-    };
-  } else if (mode === "multiple") {
-    dayPickerProps = {
-      mode: "multiple",
-      selected: selected as Date[] | undefined,
-      onSelect: onSelect as any,
-      showOutsideDays,
-      className: cn("p-3 pointer-events-auto", className),
-      classNames: {
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "hidden",
-        nav: "space-x-1 flex items-center",
-        nav_button: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
-        ),
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex",
-        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-        row: "flex w-full mt-2",
-        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9 pointer-events-auto",
-        day: cn(
-          buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 pointer-events-auto"
-        ),
-        day_range_end: "day-range-end",
-        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-        day_today: "bg-accent text-accent-foreground",
-        day_outside: "text-muted-foreground opacity-50",
-        day_disabled: "text-muted-foreground opacity-50",
-        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-        day_hidden: "invisible",
-        ...(classNames || {}),
-      },
-      components: {
-        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-        IconRight: () => <ChevronRight className="h-4 w-4" />,
-        Caption: CustomCaption,
-      },
-      captionLayout: "buttons",
-      month: currentMonth,
-      onMonthChange: setCurrentMonth,
-      ...props
-    };
-  } else {
-    // Default: single mode
-    dayPickerProps = {
-      mode: "single",
-      selected: selected as Date | undefined,
-      onSelect: onSelect as any,
-      showOutsideDays,
-      className: cn("p-3 pointer-events-auto", className),
-      classNames: {
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "hidden",
-        nav: "space-x-1 flex items-center",
-        nav_button: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
-        ),
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex",
-        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-        row: "flex w-full mt-2",
-        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9 pointer-events-auto",
-        day: cn(
-          buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 pointer-events-auto"
-        ),
-        day_range_end: "day-range-end",
-        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-        day_today: "bg-accent text-accent-foreground",
-        day_outside: "text-muted-foreground opacity-50",
-        day_disabled: "text-muted-foreground opacity-50",
-        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-        day_hidden: "invisible",
-        ...(classNames || {}),
-      },
-      components: {
-        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-        IconRight: () => <ChevronRight className="h-4 w-4" />,
-        Caption: CustomCaption,
-      },
-      captionLayout: "buttons",
-      month: currentMonth,
-      onMonthChange: setCurrentMonth,
-      ...props
-    };
-  }
-
-  return <DayPicker {...dayPickerProps} />;
+      }}
+      captionLayout="buttons"
+      onDayClick={(_, { selected }) => {
+        if (selected && props.onSelect) {
+          props.onSelect(selected);
+          
+          setTimeout(() => {
+            document.body.click();
+          }, 0);
+        }
+      }}
+      month={currentMonth}
+      onMonthChange={setCurrentMonth}
+      {...props}
+    />
+  );
 }
 
 Calendar.displayName = "Calendar";

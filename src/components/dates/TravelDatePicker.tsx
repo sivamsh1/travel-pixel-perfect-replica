@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { format, isValid } from 'date-fns';
+import { format, differenceInDays, addDays, isAfter } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -38,23 +37,9 @@ const TravelDatePicker = ({
 
   const handleButtonClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation();
     if (!disabled) {
       setOpen(!open);
     }
-  };
-
-  // Format the date safely, checking for validity first
-  const getFormattedDate = () => {
-    if (selectedDate && isValid(selectedDate)) {
-      try {
-        return format(selectedDate, "dd MMM yyyy");
-      } catch (error) {
-        console.error("Error formatting date:", error);
-        return "";
-      }
-    }
-    return "";
   };
 
   return (
@@ -72,35 +57,21 @@ const TravelDatePicker = ({
             disabled={disabled}
             onClick={handleButtonClick}
           >
-            {selectedDate && isValid(selectedDate) ? 
-              getFormattedDate() : 
-              <span className="text-muted-foreground">{disabled ? "Select start date first" : "Select date"}</span>
-            }
+            {selectedDate ? format(selectedDate, "dd MMM yyyy") : <span className="text-muted-foreground">{disabled ? "Select start date first" : "Select date"}</span>}
             <CalendarIcon className="h-5 w-5 ml-2 text-gray-400" />
           </button>
         </PopoverTrigger>
-        <PopoverContent 
-          className="w-auto p-0 overflow-visible" 
-          align="start" 
-          onInteractOutside={(e) => {
-            // Prevent interactions outside from closing the popover when interacting with dropdowns
-            const target = e.target as Element;
-            if (target.closest('[role="listbox"]') || target.closest('[data-radix-calendar-root]')) {
-              e.preventDefault();
-            }
-          }}
-        >
+        <PopoverContent className="w-auto p-0" align="start">
           <Calendar 
             mode="single" 
             selected={selectedDate} 
             onSelect={handleDateSelect} 
-            disabled={(date) => {
-              if (minDate && date < minDate) return true;
-              if (maxDate && date > maxDate) return true;
-              return false;
-            }}
+            disabled={{
+              before: minDate,
+              after: maxDate
+            }} 
             initialFocus 
-            className="p-3 pointer-events-auto"
+            className={cn("p-3 pointer-events-auto")} 
             ascendingYears={ascendingYears}
           />
         </PopoverContent>

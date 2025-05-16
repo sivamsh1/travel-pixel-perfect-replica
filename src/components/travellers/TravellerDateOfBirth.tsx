@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { format, isValid } from "date-fns";
+import { format, isValid, differenceInYears } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -29,19 +28,13 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
   const parseDOB = (dateString?: string): Date | undefined => {
     if (!dateString) return undefined;
     
-    try {
-      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
-        const [day, month, year] = dateString.split('/').map(Number);
-        const date = new Date(year, month - 1, day);
-        return isValid(date) ? date : undefined;
-      }
-      
-      const date = new Date(dateString);
-      return isValid(date) ? date : undefined;
-    } catch (error) {
-      console.error("Error parsing date:", error);
-      return undefined;
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+      const [day, month, year] = dateString.split('/').map(Number);
+      return new Date(year, month - 1, day);
     }
+    
+    const date = new Date(dateString);
+    return !isNaN(date.getTime()) ? date : undefined;
   };
 
   const handleSelect = (date: Date | undefined) => {
@@ -53,12 +46,6 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
     }
   };
 
-  const handleButtonClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setOpen(!open);
-  };
-
   const dateValue = parseDOB(dob);
 
   return (
@@ -68,13 +55,11 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              type="button"
               className={cn(
                 "w-full text-left font-normal border border-primary bg-background px-4 py-3 h-12 rounded-md",
                 !dateValue && "text-muted-foreground",
                 error ? "border-destructive focus:ring-destructive" : ""
               )}
-              onClick={handleButtonClick}
             >
               <CalendarIcon className="mr-2 h-4 w-4 opacity-60" />
               {dateValue && isValid(dateValue)
@@ -83,25 +68,13 @@ const TravellerDateOfBirth: React.FC<TravellerDateOfBirthProps> = ({
               }
             </Button>
           </PopoverTrigger>
-          <PopoverContent 
-            className="w-auto p-0 overflow-visible" 
-            align="start" 
-            sideOffset={8}
-            onInteractOutside={(e) => {
-              // Prevent interactions outside from closing the popover when interacting with dropdowns
-              const target = e.target as Element;
-              if (target.closest('[role="listbox"]') || target.closest('[data-radix-calendar-root]')) {
-                e.preventDefault();
-              }
-            }}
-          >
+          <PopoverContent className="w-auto p-0" align="start" sideOffset={8}>
             <Calendar
               mode="single"
               selected={dateValue}
               onSelect={handleSelect}
               initialFocus
               className="p-3 pointer-events-auto"
-              ascendingYears={false}
             />
           </PopoverContent>
         </Popover>

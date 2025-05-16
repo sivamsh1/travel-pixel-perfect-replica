@@ -1,4 +1,3 @@
-
 export interface InsuranceCover {
   coverName?: string;
   coverAmount?: string | number;

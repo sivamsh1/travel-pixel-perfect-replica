@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
@@ -20,7 +19,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props}
@@ -37,35 +36,9 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg overflow-visible",
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
         className
       )}
-      onOpenAutoFocus={(e) => {
-        // Don't automatically focus, as this can cause issues with dropdowns
-        e.preventDefault();
-      }}
-      onClick={(e) => {
-        // Prevent clicks on dialog from propagating up to document
-        e.stopPropagation();
-      }}
-      onPointerDownOutside={(e) => {
-        // Prevent closing when interacting with calendar dropdowns outside the dialog content
-        if (e.target instanceof Element && 
-            (e.target.closest('[role="listbox"]') || 
-             e.target.closest('[data-radix-calendar-root]') ||
-             e.target.closest('[data-state="open"]'))) {
-          e.preventDefault();
-        }
-      }}
-      onInteractOutside={(e) => {
-        // Additional safeguard for all types of interactions
-        if (e.target instanceof Element && 
-            (e.target.closest('[role="listbox"]') || 
-             e.target.closest('[data-radix-calendar-root]') ||
-             e.target.closest('[data-state="open"]'))) {
-          e.preventDefault();
-        }
-      }}
       {...props}
     >
       {children}

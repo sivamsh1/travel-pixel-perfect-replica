@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, differenceInDays, addDays, isBefore, isAfter } from 'date-fns';
@@ -170,7 +169,7 @@ const DatesStep = () => {
               error=""
             />
             
-            {/* End Date Picker */}
+            {/* End Date Picker - Adding disabled prop and ascendingYears */}
             <TravelDatePicker
               label="End Date"
               selectedDate={endDateObj}
@@ -178,6 +177,7 @@ const DatesStep = () => {
               minDate={startDateObj || today}
               error=""
               disabled={!startDateObj}
+              ascendingYears={true}
             />
           </div>
           
