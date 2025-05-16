@@ -1,13 +1,17 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, DayPickerProps } from "react-day-picker";
+import { DayPicker, SelectedDate, DayPickerProps } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-// Extend DayPickerProps to include our custom props
-export interface CalendarProps extends DayPickerProps {
+// Explicitly import and extend DayPickerProps
+export interface CalendarProps extends Omit<DayPickerProps, "mode" | "selected" | "onSelect"> {
   ascendingYears?: boolean;
+  // Re-add the props we need with correct types
+  mode?: "single" | "range" | "multiple" | undefined;
+  selected?: Date | Date[] | undefined;
+  onSelect?: (date: Date | undefined) => void; 
 }
 
 function Calendar({
@@ -15,11 +19,14 @@ function Calendar({
   classNames,
   showOutsideDays = true,
   ascendingYears = false,
+  mode = "single",
+  selected,
+  onSelect,
   ...props
 }: CalendarProps) {
   // Get current month and year when the calendar mounts or when selected date changes
   const [currentMonth, setCurrentMonth] = React.useState<Date>(
-    props.selected instanceof Date ? new Date(props.selected) : new Date()
+    selected instanceof Date ? new Date(selected) : new Date()
   );
 
   // Track month/year select dropdown states
@@ -54,10 +61,10 @@ function Calendar({
 
   // Update calendar view when props.selected changes
   React.useEffect(() => {
-    if (props.selected instanceof Date && isValid(props.selected)) {
-      setCurrentMonth(new Date(props.selected));
+    if (selected instanceof Date && isValid(selected)) {
+      setCurrentMonth(new Date(selected));
     }
-  }, [props.selected]);
+  }, [selected]);
 
   // Check if a date is valid
   function isValid(date: any): boolean {
@@ -249,51 +256,59 @@ function Calendar({
     );
   };
 
-  return (
-    <DayPicker
-      showOutsideDays={showOutsideDays}
-      className={cn("p-3 pointer-events-auto", className)}
-      classNames={{
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "hidden",  // Hide default caption label as we're using custom selectors
-        nav: "space-x-1 flex items-center",
-        nav_button: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
-        ),
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex",
-        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-        row: "flex w-full mt-2",
-        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9 pointer-events-auto",
-        day: cn(
-          buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 pointer-events-auto"
-        ),
-        day_range_end: "day-range-end",
-        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-        day_today: "bg-accent text-accent-foreground",
-        day_outside: "text-muted-foreground opacity-50",
-        day_disabled: "text-muted-foreground opacity-50",
-        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-        day_hidden: "invisible",
-        ...classNames,
-      }}
-      components={{
-        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-        IconRight: () => <ChevronRight className="h-4 w-4" />,
-        Caption: CustomCaption,
-      }}
-      captionLayout="buttons"
-      month={currentMonth}
-      onMonthChange={setCurrentMonth}
-      {...props}
-    />
-  );
+  // Prepare props for DayPicker, adapting to the expected types
+  const dayPickerProps: DayPickerProps = {
+    showOutsideDays,
+    className: cn("p-3 pointer-events-auto", className),
+    classNames: {
+      months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+      month: "space-y-4",
+      caption: "flex justify-center pt-1 relative items-center",
+      caption_label: "hidden",  // Hide default caption label as we're using custom selectors
+      nav: "space-x-1 flex items-center",
+      nav_button: cn(
+        buttonVariants({ variant: "outline" }),
+        "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
+      ),
+      nav_button_previous: "absolute left-1",
+      nav_button_next: "absolute right-1",
+      table: "w-full border-collapse space-y-1",
+      head_row: "flex",
+      head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+      row: "flex w-full mt-2",
+      cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9 pointer-events-auto",
+      day: cn(
+        buttonVariants({ variant: "ghost" }),
+        "h-9 w-9 p-0 font-normal aria-selected:opacity-100 pointer-events-auto"
+      ),
+      day_range_end: "day-range-end",
+      day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+      day_today: "bg-accent text-accent-foreground",
+      day_outside: "text-muted-foreground opacity-50",
+      day_disabled: "text-muted-foreground opacity-50",
+      day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+      day_hidden: "invisible",
+      ...(classNames || {}),
+    },
+    components: {
+      IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+      IconRight: () => <ChevronRight className="h-4 w-4" />,
+      Caption: CustomCaption,
+    },
+    captionLayout: "buttons",
+    month: currentMonth,
+    onMonthChange: setCurrentMonth,
+    // Handle mode and selection based on type
+    mode: mode,
+    // Cast for type compatibility
+    selected: selected as SelectedDate,
+    onSelect: (date: Date | undefined) => {
+      if (onSelect) onSelect(date);
+    },
+    ...props
+  };
+
+  return <DayPicker {...dayPickerProps} />;
 }
 
 Calendar.displayName = "Calendar";
