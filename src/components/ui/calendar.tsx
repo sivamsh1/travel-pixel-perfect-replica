@@ -1,17 +1,21 @@
-
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, SelectedDate, DayPickerProps } from "react-day-picker";
+import { DayPicker, DayPickerProps } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-// Explicitly import and extend DayPickerProps
+// Define our own types for selected dates based on the mode
+type DateType = Date | undefined;
+type DateRange = { from: Date | undefined; to: Date | undefined };
+type SelectedDateType = DateType | DateType[] | DateRange | undefined;
+
+// Explicitly define our CalendarProps interface
 export interface CalendarProps extends Omit<DayPickerProps, "mode" | "selected" | "onSelect"> {
   ascendingYears?: boolean;
   // Re-add the props we need with correct types
-  mode?: "single" | "range" | "multiple" | undefined;
-  selected?: Date | Date[] | undefined;
-  onSelect?: (date: Date | undefined) => void; 
+  mode?: "single" | "range" | "multiple";
+  selected?: Date | Date[] | { from: Date; to: Date } | undefined;
+  onSelect?: (date: Date | undefined) => void;
 }
 
 function Calendar({
@@ -256,57 +260,153 @@ function Calendar({
     );
   };
 
-  // Prepare props for DayPicker, adapting to the expected types
-  const dayPickerProps: DayPickerProps = {
-    showOutsideDays,
-    className: cn("p-3 pointer-events-auto", className),
-    classNames: {
-      months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-      month: "space-y-4",
-      caption: "flex justify-center pt-1 relative items-center",
-      caption_label: "hidden",  // Hide default caption label as we're using custom selectors
-      nav: "space-x-1 flex items-center",
-      nav_button: cn(
-        buttonVariants({ variant: "outline" }),
-        "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
-      ),
-      nav_button_previous: "absolute left-1",
-      nav_button_next: "absolute right-1",
-      table: "w-full border-collapse space-y-1",
-      head_row: "flex",
-      head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-      row: "flex w-full mt-2",
-      cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9 pointer-events-auto",
-      day: cn(
-        buttonVariants({ variant: "ghost" }),
-        "h-9 w-9 p-0 font-normal aria-selected:opacity-100 pointer-events-auto"
-      ),
-      day_range_end: "day-range-end",
-      day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-      day_today: "bg-accent text-accent-foreground",
-      day_outside: "text-muted-foreground opacity-50",
-      day_disabled: "text-muted-foreground opacity-50",
-      day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-      day_hidden: "invisible",
-      ...(classNames || {}),
-    },
-    components: {
-      IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-      IconRight: () => <ChevronRight className="h-4 w-4" />,
-      Caption: CustomCaption,
-    },
-    captionLayout: "buttons",
-    month: currentMonth,
-    onMonthChange: setCurrentMonth,
-    // Handle mode and selection based on type
-    mode: mode,
-    // Cast for type compatibility
-    selected: selected as SelectedDate,
-    onSelect: (date: Date | undefined) => {
-      if (onSelect) onSelect(date);
-    },
-    ...props
-  };
+  // Create type-safe props for DayPicker
+  let dayPickerProps: DayPickerProps;
+  
+  // Handle different modes correctly
+  if (mode === "range") {
+    dayPickerProps = {
+      mode: "range",
+      selected: selected as { from: Date | undefined; to: Date | undefined } | undefined,
+      onSelect: onSelect as any,
+      showOutsideDays,
+      className: cn("p-3 pointer-events-auto", className),
+      classNames: {
+        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+        month: "space-y-4",
+        caption: "flex justify-center pt-1 relative items-center",
+        caption_label: "hidden",  // Hide default caption label as we're using custom selectors
+        nav: "space-x-1 flex items-center",
+        nav_button: cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
+        ),
+        nav_button_previous: "absolute left-1",
+        nav_button_next: "absolute right-1",
+        table: "w-full border-collapse space-y-1",
+        head_row: "flex",
+        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+        row: "flex w-full mt-2",
+        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9 pointer-events-auto",
+        day: cn(
+          buttonVariants({ variant: "ghost" }),
+          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 pointer-events-auto"
+        ),
+        day_range_end: "day-range-end",
+        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        day_today: "bg-accent text-accent-foreground",
+        day_outside: "text-muted-foreground opacity-50",
+        day_disabled: "text-muted-foreground opacity-50",
+        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+        day_hidden: "invisible",
+        ...(classNames || {}),
+      },
+      components: {
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
+        Caption: CustomCaption,
+      },
+      captionLayout: "buttons",
+      month: currentMonth,
+      onMonthChange: setCurrentMonth,
+      ...props
+    };
+  } else if (mode === "multiple") {
+    dayPickerProps = {
+      mode: "multiple",
+      selected: selected as Date[] | undefined,
+      onSelect: onSelect as any,
+      showOutsideDays,
+      className: cn("p-3 pointer-events-auto", className),
+      classNames: {
+        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+        month: "space-y-4",
+        caption: "flex justify-center pt-1 relative items-center",
+        caption_label: "hidden",
+        nav: "space-x-1 flex items-center",
+        nav_button: cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
+        ),
+        nav_button_previous: "absolute left-1",
+        nav_button_next: "absolute right-1",
+        table: "w-full border-collapse space-y-1",
+        head_row: "flex",
+        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+        row: "flex w-full mt-2",
+        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9 pointer-events-auto",
+        day: cn(
+          buttonVariants({ variant: "ghost" }),
+          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 pointer-events-auto"
+        ),
+        day_range_end: "day-range-end",
+        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        day_today: "bg-accent text-accent-foreground",
+        day_outside: "text-muted-foreground opacity-50",
+        day_disabled: "text-muted-foreground opacity-50",
+        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+        day_hidden: "invisible",
+        ...(classNames || {}),
+      },
+      components: {
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
+        Caption: CustomCaption,
+      },
+      captionLayout: "buttons",
+      month: currentMonth,
+      onMonthChange: setCurrentMonth,
+      ...props
+    };
+  } else {
+    // Default: single mode
+    dayPickerProps = {
+      mode: "single",
+      selected: selected as Date | undefined,
+      onSelect: onSelect as any,
+      showOutsideDays,
+      className: cn("p-3 pointer-events-auto", className),
+      classNames: {
+        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+        month: "space-y-4",
+        caption: "flex justify-center pt-1 relative items-center",
+        caption_label: "hidden",
+        nav: "space-x-1 flex items-center",
+        nav_button: cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 pointer-events-auto"
+        ),
+        nav_button_previous: "absolute left-1",
+        nav_button_next: "absolute right-1",
+        table: "w-full border-collapse space-y-1",
+        head_row: "flex",
+        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+        row: "flex w-full mt-2",
+        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent h-9 w-9 pointer-events-auto",
+        day: cn(
+          buttonVariants({ variant: "ghost" }),
+          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 pointer-events-auto"
+        ),
+        day_range_end: "day-range-end",
+        day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        day_today: "bg-accent text-accent-foreground",
+        day_outside: "text-muted-foreground opacity-50",
+        day_disabled: "text-muted-foreground opacity-50",
+        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+        day_hidden: "invisible",
+        ...(classNames || {}),
+      },
+      components: {
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
+        Caption: CustomCaption,
+      },
+      captionLayout: "buttons",
+      month: currentMonth,
+      onMonthChange: setCurrentMonth,
+      ...props
+    };
+  }
 
   return <DayPicker {...dayPickerProps} />;
 }
