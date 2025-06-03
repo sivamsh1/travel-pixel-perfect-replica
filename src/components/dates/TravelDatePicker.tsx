@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { format, differenceInDays, addDays, isAfter } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
@@ -72,7 +73,6 @@ const TravelDatePicker = ({
             }} 
             initialFocus 
             className={cn("p-3 pointer-events-auto")} 
-            ascendingYears={ascendingYears}
           />
         </PopoverContent>
       </Popover>
