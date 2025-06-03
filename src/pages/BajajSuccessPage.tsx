@@ -1,23 +1,116 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Check, Download, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { toast } from '@/hooks/use-toast';
 import bajajLogo from '@/assets/bajajLogo.png';
 
 const BajajSuccessPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState<{
+    status: string;
+    amount: string;
+    txn: string;
+    referenceNo: string;
+    quoteNo: string;
+  } | null>(null);
 
-  const handleDownloadPolicy = () => {
-    // This would typically trigger a download of the policy document
-    console.log('Downloading Bajaj policy...');
-    // In a real implementation, this would fetch and download the policy PDF
+  useEffect(() => {
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(location.search);
+    const status = urlParams.get('status');
+    const amt = urlParams.get('amt');
+    const txn = urlParams.get('txn');
+    const referenceno = urlParams.get('referenceno');
+    const quoteno = urlParams.get('quoteno');
+
+    if (status && amt && txn && referenceno) {
+      setPaymentDetails({
+        status,
+        amount: amt,
+        txn,
+        referenceNo: referenceno,
+        quoteNo: quoteno || ''
+      });
+    }
+  }, [location.search]);
+
+  const handleDownloadPolicy = async () => {
+    if (!paymentDetails?.referenceNo) {
+      toast({
+        title: "Error",
+        description: "Policy number not found. Please contact support.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsDownloading(true);
+    
+    try {
+      const response = await fetch('https://travel-uat.policyinsure.com/api/v1/policy-download/bajaj', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          policyNo: paymentDetails.referenceNo
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Get the PDF as blob
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Bajaj_Policy_${paymentDetails.referenceNo}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+
+      toast({
+        title: "Success",
+        description: "Policy document downloaded successfully!",
+      });
+    } catch (error) {
+      console.error('Error downloading policy:', error);
+      toast({
+        title: "Download Error",
+        description: "Failed to download policy. Please try again or contact support.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleBackHome = () => {
     navigate('/');
   };
+
+  if (!paymentDetails) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading payment details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
@@ -64,24 +157,41 @@ const BajajSuccessPage = () => {
               </p>
             </div>
 
-            {/* Policy Details */}
+            {/* Payment Details */}
             <div 
-              className="bg-gray-50 rounded-lg p-4 mb-6 animate-fade-in"
+              className="bg-gray-50 rounded-lg p-4 mb-6 animate-fade-in space-y-2"
               style={{ animationDelay: '0.5s' }}
             >
-              <div className="text-sm text-gray-600 mb-2">Policy Number</div>
-              <div className="font-semibold text-gray-900 text-lg">BA-{Date.now().toString().slice(-8)}</div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Amount Paid:</span>
+                <span className="font-semibold text-gray-900">₹{paymentDetails.amount}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Transaction ID:</span>
+                <span className="font-semibold text-gray-900">{paymentDetails.txn}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Policy Number:</span>
+                <span className="font-semibold text-gray-900">{paymentDetails.referenceNo}</span>
+              </div>
+              {paymentDetails.quoteNo && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Quote Number:</span>
+                  <span className="font-semibold text-gray-900">{paymentDetails.quoteNo}</span>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
             <div className="space-y-3">
               <Button 
                 onClick={handleDownloadPolicy}
+                disabled={isDownloading}
                 className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 animate-fade-in"
                 style={{ animationDelay: '0.6s' }}
               >
                 <Download className="w-5 h-5 mr-2" />
-                Download Policy
+                {isDownloading ? 'Downloading...' : 'Download Policy'}
               </Button>
               
               <Button 
