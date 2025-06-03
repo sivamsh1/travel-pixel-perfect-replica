@@ -16,6 +16,7 @@ import ReviewStep from "./pages/ReviewStep";
 import ComparePlans from "./pages/ComparePlans";
 import NotFound from "./pages/NotFound";
 import LandingPage from "./pages/LandingPage";
+import BajajSuccessPage from "./pages/BajajSuccessPage";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/traveller-details" element={<TravellersDetailsStep />} />
             <Route path="/review" element={<ReviewStep />} />
             <Route path="/compare" element={<ComparePlans />} />
+            <Route path="/successBajaj" element={<BajajSuccessPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
